@@ -1,0 +1,81 @@
+{{#> main_layout}}
+  {{#*inline "head_scripts"}}
+  {{/inline}}
+
+  {{#*inline "body"}}
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col text-center">
+          <a href="/"><img src="/images/logo-sm.png" class="img-fluid"></a>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h1>{{title}}</h1>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-sm"></div>
+        <div class="col-sm-7">
+          <form method="post">
+            {{> csrf_token_field}}
+
+            <div class="form-row">
+              <div class="col mb-2">
+                {{> textbox_field name="backingUrl" type="text" value=backingUrl error=backingUrl_error valid=backingUrl_valid placeholder="File URL" required=true}}
+              </div>
+              <div class="col-sm-auto text-center">
+                <button type="submit" class="btn btn-secondary mb-2" name="action" value="validate">Validate</button>
+              </div>
+            </div>
+
+            {{#if fileTitle}}
+            <div class="form-row mt-2">
+              <div class="col text-center">
+                <span class="badge badge-{{fileTypeStyle}}">{{fileType}}</span>
+              </div>
+            </div>
+            <div class="form-row mt-1">
+              <div class="col text-center">
+                <code>{{fileTitle}}</code>
+              </div>
+            </div>
+            {{/if}}
+
+            {{#if backingUrl_valid}}
+            <div class="form-row mt-2">
+              <div class="col-sm mb-2">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">@</div>
+                  </div>
+                  {{> textbox_field name="toUsername" type="text" value=toUsername error=toUsername_error placeholder="Share to (optional)"}}
+                </div>
+              </div>
+
+              <div class="col-sm-auto mb-2">
+                <select class="form-control" name="expires">
+                  <option {{#unless expires}}selected{{/unless}} value="">Never expires</option>
+                  {{#each expirations}}
+                  <option value="{{value}}"{{#if selected}}selected{{/if}}>{{description}}</option>
+                  {{/each}}
+                </select>
+              </div>
+
+              <div class="col-sm-auto mb-2 text-center">
+                <button type="submit" class="btn btn-primary" name="action" value="create">Create</button>
+              </div>
+            </div>
+            {{/if}}
+          </form>
+        </div>
+        <div class="col-sm"></div>
+      </div>
+    </div>
+  {{/inline}}
+
+  {{#*inline "body_scripts"}}
+  {{/inline}}
+{{/main_layout}}

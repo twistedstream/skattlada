@@ -1,0 +1,125 @@
+{{#> main_layout}}
+  {{#*inline "head_scripts"}}
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.5/base64.min.js"></script>
+    {{> passkey_scripts }}
+  {{/inline}}
+
+  {{#*inline "body"}}
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col text-center">
+          <a href="/"><img src="/images/logo-sm.png" class="img-fluid"></a>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h1>Let's get signed in</h1>
+        </div>
+      </div>
+
+      <div class="row mt-3 passkeys_supported" hidden>
+        <form class="col text-center" id="sign_in_form">
+          <div class="form-row justify-content-center">
+            <div class="col-sm-auto">
+              <label class="sr-only" for="username">Username</label>
+              <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">@</div>
+                </div>
+                <input type="text" class="form-control" id="username" autocomplete="username webauthn" placeholder="Username" name="username" value="{{user_name}}">
+              </div>
+            </div>
+            <div class="col-sm-auto">
+              <button type="submit" class="btn btn-primary mb-2" id="sign_in_button" disabled>Sign in</button>
+            </div>
+          </div>
+        </form>  
+      </div>
+    </div>
+
+    <div class="row mt-3 passkeys_supported" hidden>
+      <div class="col text-center">
+        <a href="/register?return_to={{return_to}}">Sign up instead?</a>
+      </div>
+    </div>
+
+    <div class="row mt-3 passkeys_not_supported" hidden>
+      <div class="col text-center" id="no_passkey_support">
+        {{> no_passkey_support }}
+      </div>
+    </div>
+  {{/inline}}
+
+  {{#*inline "body_scripts"}}
+    <script>
+      window.addEventListener("load", async () => {
+        // elements
+        const passkeysNotSupportedElements = document.querySelectorAll(
+          ".passkeys_not_supported"
+        );
+        const passkeysSupportedElements = document.querySelectorAll(
+          ".passkeys_supported"
+        );
+        const signInForm = document.querySelector("#sign_in_form");
+        const usernameInput = document.querySelector("#username");
+        const signInButton = document.querySelector("#sign_in_button");
+
+        // detect passkey support
+        const passkeysSupported = arePasskeysSupported();
+        const autofillSupported = await isPasskeyAutofillSupported();
+
+        // update UI based on passkey support
+        if (!passkeysSupported) {
+          passkeysNotSupportedElements.forEach((e) => e.hidden = false);
+
+          // exit
+          return;
+        }
+        passkeysSupportedElements.forEach((e) => e.hidden = false);
+
+        // support autofill sign-in
+        function startSignIn() {
+          if (autofillSupported) {
+            // perform autofill
+            authenticateUser()
+              .then((returnTo) => {
+                if (returnTo) {
+                  window.location = returnTo;
+                }
+              })
+              .catch((err) => {
+                return displayError(err);
+              });
+          }
+
+          usernameInput.focus();
+        }
+
+        // support manual sign-in
+        signInForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          try {
+            const returnTo = await authenticateUser(usernameInput.value);
+            if (returnTo) {
+              window.location = returnTo;
+            }
+          } catch (err) {
+            displayError(err);
+
+            // reset sign-in UX
+            startSignIn();
+          }
+        });
+
+        usernameInput.addEventListener("keyup", () => {
+          signInButton.disabled = !usernameInput.value;
+        });
+
+        // initial state
+        startSignIn();
+      });
+    </script>
+  {{/inline}}
+{{/main_layout}}

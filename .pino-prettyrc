@@ -1,0 +1,4 @@
+{
+  "ignore": "req,res,responseTime",
+  "messageFormat": "{msg} {res.statusCode} {req.method} {req.url}"
+}

@@ -1,0 +1,49 @@
+{{#> main_layout}}
+  {{#*inline "head_scripts"}}
+  {{/inline}}
+
+  {{#*inline "body"}}
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col text-center">
+          <a href="/"><img src="/images/logo-sm.png" class="img-fluid"></a>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h1>{{title}}</h1>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <span class="badge badge-{{fileTypeStyle}}">{{fileType}}</span>
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="col text-center">
+          <code>{{fileTitle}}</code>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h3>Pick a format to download</h3>
+
+          {{#each downloadLinks}}
+          <div>
+            <a class="download_link" href="{{url}}">
+              <strong>{{media_description}}</strong>
+              (<code>.{{file_extension}}</code>)
+            </a>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  {{/inline}}
+
+  {{#*inline "body_scripts"}}
+  {{/inline}}
+{{/main_layout}}
