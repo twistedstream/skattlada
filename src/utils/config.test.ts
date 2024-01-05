@@ -30,7 +30,6 @@ test("utils/config", async (t) => {
       { name: "googleSpreadsheetId", value: "google-provider-spreadsheet-id" },
       { name: "fileProviderName", value: "local" },
       { name: "googleAuthClientEmail", value: "google-client@example.com" },
-      { name: "googleAuthPrivateKey", value: "google_Bananas!" },
       { name: "packageName", value: "test-package" },
       { name: "packageDescription", value: "Test Package" },
       { name: "packageVersion", value: "42.0" },
@@ -39,13 +38,33 @@ test("utils/config", async (t) => {
     });
   });
 
-  t.test("googleAuthPrivateKey (base64)", async (t) => {
-    delete process.env.GOOGLE_AUTH_PRIVATE_KEY;
-    process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64 = "Z29vZ2xlX0JhbmFuYXMh";
-    const { googleAuthPrivateKey } = importModule(t);
+  t.test("googleAuthPrivateKey", async (t) => {
+    t.test("using GOOGLE_AUTH_PRIVATE_KEY", async (t) => {
+      const { googleAuthPrivateKey } = importModule(t);
 
-    t.test("is expected value", async (t) => {
-      t.equal(googleAuthPrivateKey, "google_Bananas!");
+      t.test("is expected value", async (t) => {
+        t.equal(googleAuthPrivateKey, "google_Bananas!");
+      });
+    });
+
+    t.test("using GOOGLE_AUTH_PRIVATE_KEY_BASE64", async (t) => {
+      delete process.env.GOOGLE_AUTH_PRIVATE_KEY;
+      process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64 = "Z29vZ2xlX0JhbmFuYXMh";
+      const { googleAuthPrivateKey } = importModule(t);
+
+      t.test("is expected value", async (t) => {
+        t.equal(googleAuthPrivateKey, "google_Bananas!");
+      });
+    });
+
+    t.test("when no env vars are set", async (t) => {
+      delete process.env.GOOGLE_AUTH_PRIVATE_KEY;
+      delete process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64;
+      const { googleAuthPrivateKey } = importModule(t);
+
+      t.test("is expected value", async (t) => {
+        t.equal(googleAuthPrivateKey, undefined);
+      });
     });
   });
 });

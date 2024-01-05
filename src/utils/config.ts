@@ -22,10 +22,12 @@ export const googleAuthClientEmail = <string>(
 );
 export const googleAuthPrivateKey =
   <string>process.env.GOOGLE_AUTH_PRIVATE_KEY ??
-  Buffer.from(
-    <string>process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64,
-    "base64"
-  ).toString("utf-8");
+  (process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64
+    ? Buffer.from(
+        <string>process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64,
+        "base64"
+      ).toString("utf-8")
+    : undefined);
 
 // Package configuration
 
