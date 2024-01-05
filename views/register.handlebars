@@ -43,12 +43,18 @@
     </div>
 
     {{#if show_sign_in}}
-    <div class="row mt-3 passkeys_supported" hidden>
+    <div class="row mt-1 passkeys_supported" hidden>
       <div class="col text-center">
         <a href="/login?return_to={{return_to}}">Sign in instead?</a>
       </div>
     </div>
     {{/if}}
+
+    <div class="col mt-5 text-center">
+      <a href="https://fidoalliance.org/fido2/" target="_blank">
+        <img src="/images/fido.png" class="img-fluid" alt="Login with FIDO">
+      </a>
+    </div>
 
     <div class="row mt-3 passkeys_not_supported" hidden>
       <div class="col text-center" id="no_passkey_support">

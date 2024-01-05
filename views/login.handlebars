@@ -34,14 +34,20 @@
               <button type="submit" class="btn btn-primary mb-2" id="sign_in_button" disabled>Sign in</button>
             </div>
           </div>
-        </form>  
+        </form>
       </div>
     </div>
 
-    <div class="row mt-3 passkeys_supported" hidden>
+    <div class="row mt-1 passkeys_supported" hidden>
       <div class="col text-center">
         <a href="/register?return_to={{return_to}}">Sign up instead?</a>
       </div>
+    </div>
+
+    <div class="col mt-5 text-center">
+      <a href="https://fidoalliance.org/fido2/" target="_blank">
+        <img src="/images/fido.png" class="img-fluid" alt="Login with FIDO">
+      </a>
     </div>
 
     <div class="row mt-3 passkeys_not_supported" hidden>
