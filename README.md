@@ -14,7 +14,7 @@ Out of the box, share files from Google Drive. The server is extensible so its p
 
 ## Setup
 
-**Skattlåda** runs in Docker, so that's easy.
+**Skattlåda** [runs in Docker](https://hub.docker.com/r/twistedstream/skattlada), so that's easy.
 
 ### Environment
 
