@@ -1,7 +1,6 @@
 import { Request, Response, Router } from "express";
 import { RequestWithTypedQuery } from "../types/express";
 import { capturePreAuthState, getRegisterable, signOut } from "../utils/auth";
-import { packageDescription } from "../utils/config";
 import { ForbiddenError } from "../utils/error";
 import fido2 from "./fido2";
 import invites from "./invites";
@@ -13,9 +12,7 @@ const router = Router();
 // endpoints
 
 router.get("/", (_req: Request, res: Response) => {
-  res.render("home", {
-    title: packageDescription,
-  });
+  res.redirect("/shares");
 });
 
 router.get(
