@@ -1,0 +1,43 @@
+{{#> main_layout}}
+  {{#*inline "head_scripts"}}
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.5/base64.min.js"></script>
+    {{> passkey_scripts }}
+  {{/inline}}
+
+  {{#*inline "body"}}
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col text-center">
+          <a href="/"><img src="/images/logo-sm.png" class="img-fluid"></a>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h1>{{title}}</h1>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <p>
+            <strong>@{{invite.createdBy.username}}</strong> has 
+            invited you to create an account.
+          </p>
+        </div>
+      </div>
+
+      <form method="post">
+        {{> csrf_token_field}}
+
+        <div class="form-row justify-content-center">
+          <div class="col text-center">
+            <button type="submit" class="btn btn-primary" name="action" value="accept">Accept</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  {{/inline}}
+  {{#*inline "body_scripts"}}
+  {{/inline}}
+{{/main_layout}}

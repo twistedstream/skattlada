@@ -1,0 +1,26 @@
+{{#> main_layout}}
+  {{#*inline "head_scripts"}}
+  {{/inline}}
+
+  {{#*inline "body"}}
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col text-center">
+          <h1>💣 {{ error_status }}</h1>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col text-center">
+          <pre>{{ message }}</pre>
+          {{#if correlation_id}}
+          <small class="text-muted">Correlation ID: <code>{{correlation_id}}</code></small>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  {{/inline}}
+
+  {{#*inline "body_scripts"}}
+  {{/inline}}
+{{/main_layout}}

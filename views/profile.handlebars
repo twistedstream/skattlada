@@ -1,0 +1,157 @@
+{{#> main_layout}}
+  {{#*inline "head_scripts"}}
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.5/base64.min.js"></script>
+    {{> passkey_scripts }}
+  {{/inline}}
+
+  {{#*inline "body"}}
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col text-center">
+          <a href="/"><img src="/images/logo-sm.png" class="img-fluid"></a>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h1>Your profile</h1>
+        </div>
+      </div>
+
+      <form id="manage_profile" method="post">
+        {{> csrf_token_field}}
+
+        <div class="row mt-3">
+          <div class="col text-center">        
+            <div class="form-row justify-content-center">
+              <div class="col-sm-auto">
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">@</div>
+                  </div>
+                  <input type="text" class="form-control" id="user_name" readonly value="{{profile.username}}">
+                </div>
+              </div>
+              <div class="col-sm-auto">
+                <input type="text" class="form-control mb-2" id="display_name" name="display_name" value="{{profile.displayName}}">
+              </div>
+              <div class="col-sm-auto">
+                <button type="submit" class="btn btn-primary mb-2" name="action" value="update_profile">Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col text-center">
+            Admin: {{#if profile.isAdmin }}<strong>true</strong>{{else}}false{{/if}}
+          </div>
+        </div>
+
+        <div class="row mt-3 passkeys_not_supported" hidden>
+          <div class="col text-center">
+            <p class="text-danger">
+              Managing of passkeys is only allowed in browsers that support passkeys
+            </p>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col text-center">
+            <h3>Passkeys</h3>
+
+            <table class="table d-flex justify-content-center">
+              <tr>
+                <th>type</th>
+                <th>created</th>
+                <th></th>
+              </tr>
+              <tr>
+                <td>{{profile.activePasskey.type}}</td>
+                <td>{{profile.activePasskey.created}}</td>
+                <td>
+                  (active)
+                </td>
+              </tr>
+              {{#each profile.otherPasskeys}}
+              <tr>
+                <td>{{type}}</td>
+                <td>{{created}}</td>
+                <td>
+                  <input type="hidden" name="cred_id" value="{{id}}">
+                  <button type="submit" class="btn btn-danger btn-sm passkeys_supported" name="action" value="delete_cred" hidden>forget</button>
+                </td>
+              </tr>
+              {{/each}}
+            </table>
+          </div>
+        </div>
+
+        <div class="row mt-3 passkeys_supported" hidden>
+          <div class="col text-center">
+            <button type="button" id="add_credential" class="btn btn-primary mb-2">Add Passkey</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  {{/inline}}
+
+  {{#*inline "body_scripts"}}
+    <script>
+      window.addEventListener("load", async () => {
+        // elements
+        const passkeysNotSupportedElements = document.querySelectorAll(
+          ".passkeys_not_supported"
+        );
+        const passkeysSupportedElements = document.querySelectorAll(
+          ".passkeys_supported"
+        );
+        const addCredentialButton = document.querySelector("#add_credential");
+        const attachmentCrossPlatformCheckbox = 
+          document.querySelector("#attachment_is_cross_platform");
+        const deleteButtons = document.querySelectorAll("button[name='delete_cred']");
+
+        // detect passkey support
+        const passkeysSupported = arePasskeysSupported();
+
+        // update UI based on passkey support
+        if (!passkeysSupported) {
+          passkeysNotSupportedElements.forEach((e) => e.hidden = false);
+
+          // exit
+          return;
+        }
+        passkeysSupportedElements.forEach((e) => e.hidden = false);
+
+        // wire up UI events
+        addCredentialButton.addEventListener("click", async (event) => {
+          const username = "{{profile.username}}";
+          const displayName = "{{profile.displayName}}";
+
+          try {
+            const result = await registerUser(
+              username, 
+              displayName, 
+            );
+            if (result) {
+              window.location.reload();
+            }
+          } catch (err) {
+            return displayError(err);
+          }
+        });
+
+        deleteButtons.forEach((b) => b.addEventListener("click", (event) => {
+          const doDelete = window.confirm(
+            "Are you sure you want to forget this passkey?\n" + 
+            "If you continue, you should also delete the passkey from its device or platform.");
+
+          if (!doDelete) {
+            // cancel the form submit
+            event.preventDefault();
+          }
+        }));
+      });
+    </script>
+  {{/inline}}
+{{/main_layout}}

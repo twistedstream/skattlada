@@ -1,0 +1,105 @@
+{{#> main_layout}}
+  {{#*inline "head_scripts"}}
+  {{/inline}}
+
+  {{#*inline "body"}}
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col text-center">
+          <a href="/"><img src="/images/logo-sm.png" class="img-fluid"></a>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h1>{{title}}</h1>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h3>Files shared with me</h3>
+
+          {{#if sharesWithMe}}
+          <table class="table d-flex justify-content-center">
+            <tr>
+              <th>title</th>
+              <th>created</th>
+              <th>shared by</th>
+              <th>accepted</th>
+            </tr>
+            {{#each sharesWithMe}}
+            <tr>
+              <td><a href="{{url}}" target="_blank">{{title}}</a></td>
+              <td>{{created}}</td>
+              <td>@{{from}}</td>
+              <td>{{claimed}}</td>
+            </tr>
+            {{/each}}
+          </table>
+          {{else}}
+          (none)
+          {{/if}}
+        </div>
+      </div>
+
+      {{#if user.isAdmin}}
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h3>Files I've shared</h3>
+          {{#if sharesByMe}}
+          <table class="table d-flex justify-content-center">
+            <tr>
+              <th>title</th>
+              <th>created</th>
+              <th>expires</th>
+              <th>shared to</th>
+              <th>claimed</th>
+              <th>claimed by</th>
+            </tr>
+            {{#each sharesByMe}}
+            <tr>
+              <td>
+                <strong>{{title}}</strong>
+                <small>[<a class="copy_link" href="#" data-url="{{url}}">copy</a>]</small>
+              </td>
+              <td>{{created}}</td>
+              <td>{{#if expires}}{{expires}}{{else}}(never){{/if}}</td>
+              <td>{{#if to}}@{{to}}{{else}}(anyone){{/if}}</td>
+              <td>{{claimed}}</td>
+              <td>{{#if claimed_by}}@{{claimed_by}}{{/if}}</td>
+            </tr>
+            {{/each}}
+          </table>
+          {{else}}
+          <p>
+            (none)
+          </p>
+          {{/if}}
+          <a class="btn btn-primary mb-2" href="/shares/new">New Share</a>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  {{/inline}}
+
+  {{#*inline "body_scripts"}}
+    <script>
+      async function copyToClipboard (event) {
+        const text = window.origin + this.dataset.url;
+        try {
+          await navigator.clipboard.writeText(text);
+          this.replaceWith("copied");
+        } catch (err) {
+          console.error('Copy to clipboard failed:', err);
+        }
+      }
+
+      window.addEventListener("load", async () => {
+        for (const copyLinks of document.querySelectorAll(".copy_link")) {
+          copyLinks.addEventListener("click", copyToClipboard);
+        }
+      });
+    </script>  
+  {{/inline}}
+{{/main_layout}}

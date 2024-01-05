@@ -1,0 +1,68 @@
+{{#> main_layout}}
+  {{#*inline "head_scripts"}}
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.5/base64.min.js"></script>
+    {{> passkey_scripts }}
+  {{/inline}}
+
+  {{#*inline "body"}}
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col text-center">
+          <a href="/"><img src="/images/logo-sm.png" class="img-fluid"></a>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <h1>{{title}}</h1>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <strong>@{{share.createdBy.username}}</strong> has 
+          share the following file{{#if share.toUsername}} <i>directly with you</i>{{/if}}:
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col text-center">
+          <span class="badge badge-{{fileTypeStyle}}">{{share.fileType}}</span>
+        </div>
+      </div>
+      <div class="row mt-1 mb-2">
+        <div class="col text-center">
+            <code>{{share.fileTitle}}</code>
+        </div>
+      </div>
+
+      <form method="post">
+        {{> csrf_token_field}}
+        
+        <div class="form-row justify-content-center">
+          <div class="col text-center">
+            <button type="submit" class="btn btn-primary" name="action" value="accept">Accept</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {{#unless share.toUsername}}
+    <div class="alert alert-warning" role="alert">
+      <p class="text-center">
+        {{#if user}}
+        You are already signed in as <strong>@{{user.username}}</strong>.
+        <br>
+        If you accept, you will claim this shared file as this user.
+        {{else}}
+        You are not signed in yet.
+        <br>
+        If you accept, you will be required to register for a new account
+        or sign into an existing one.
+        {{/if}}
+      </p>
+    </div>
+    {{/unless}}
+  {{/inline}}
+  {{#*inline "body_scripts"}}
+  {{/inline}}
+{{/main_layout}}

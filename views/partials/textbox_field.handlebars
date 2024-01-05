@@ -1,0 +1,17 @@
+{{!-- 
+Parameters:
+
+type: The <input type="?">
+name: The name of the field
+value: The current value of the field
+error: The error message if an error occurred updating the field
+valid: True to indicate value is valid
+pattern: A regex expression used to enforce client-side validation
+required: True if a required field
+placeholder: The <input placeholder="?">
+--}}
+
+<input type="{{type}}" id="{{name}}" name="{{name}}" value="{{value}}" class="form-control{{#if error}} is-invalid{{/if}}{{#if valid}} is-valid{{/if}}"{{#if pattern}} pattern="{{pattern}}"{{/if}}{{#if placeholder}} placeholder="{{placeholder}}"{{/if}}{{#if required}}required{{/if}}>
+{{#if error}}
+<div class="invalid-feedback">{{error}}</div>
+{{/if}}
