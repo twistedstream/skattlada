@@ -1,6 +1,6 @@
 {
   "name": "skattlada",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "private": true,
   "description": "Skattlåda File Sharing Server",
   "main": "server.js",
