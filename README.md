@@ -2,7 +2,7 @@
 
 ![logo](./public/images/logo-lg.png)
 
-**Skattlåda** (pronounced _skaht-loh-dah_) is a Swedish word often used by Scandinavian beekeepers to describe the compartment in a beehive that is used to collect honey. This section of a hive is also known as the "honey super". While a beehive retains some of its honey to feed the colony, most of it gets shared with all of us. Of course, to access this honey, you have follow a strict protocol to avoid getting stung!
+**Skattlåda** (pronounced _skaht-loh-dah_) is a Swedish word often used by Scandinavian beekeepers to describe the compartment in a beehive that is used to collect honey. This section of a hive is also known as the "honey super". While a beehive retains some of its honey to feed the colony, most of it gets shared with all of us. Of course, to access this honey, you have to follow a strict protocol to avoid getting stung!
 
 ## Why another file sharing server?
 
