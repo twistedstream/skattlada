@@ -28,13 +28,19 @@ For local development, set to `debug`. Set to `info` or other values for product
 
 ### `RP_ID`
 
-The hostname used to register and authenticate FIDO credentials.
+The ID of the RP (FIDO) server. Specifically, this is the hostname used to register and authenticate FIDO credentials.  
+Eg. `example.com`
 
 For local development, set to `skattlada.dev`.
 
+### `RP_NAME`
+
+The friendly name of the RP (FIDO) server.  
+Eg. `Bob's Beekeeping`
+
 ### `BASE_URL`
 
-The base URL of the server. This should be the protocol scheme and the `RP_ID`.
+The base URL of the server. This should be the protocol scheme and the `RP_ID`.  
 Eg. `https://example.com`
 
 > Do not use a trailing slash
