@@ -127,16 +127,13 @@ test("routes/index", async (t) => {
   });
 
   t.test("GET /", async (t) => {
-    t.test("returns HTML with expected view state", async (t) => {
-      const { app, renderArgs } = createIndexTestExpressApp(t);
+    t.test("returns expected redirect", async (t) => {
+      const { app } = createIndexTestExpressApp(t);
 
       const response = await request(app).get("/");
-      const { viewName, options } = renderArgs;
 
-      t.equal(response.status, StatusCodes.OK);
-      t.match(response.headers["content-type"], "text/html");
-      t.equal(viewName, "home");
-      t.equal(options.title, "Skattlåda File Sharing Server");
+      t.equal(response.status, StatusCodes.MOVED_TEMPORARILY);
+      t.equal(response.headers.location, "/shares");
     });
   });
 
