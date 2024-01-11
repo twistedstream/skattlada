@@ -21,22 +21,24 @@
           <h3>Files shared with me</h3>
 
           {{#if sharesWithMe}}
-          <table class="table table-striped table-responsive-sm table-sm">
-            <tr>
-              <th scope="col">title</th>
-              <th scope="col">created</th>
-              <th scope="col">shared by</th>
-              <th scope="col">accepted</th>
-            </tr>
-            {{#each sharesWithMe}}
-            <tr>
-              <td><a href="{{url}}" target="_blank">{{title}}</a></td>
-              <td>{{created}}</td>
-              <td>@{{from}}</td>
-              <td>{{claimed}}</td>
-            </tr>
-            {{/each}}
-          </table>
+          <div class="container">
+            <table class="table table-striped table-responsive-sm table-sm">
+              <tr>
+                <th scope="col">title</th>
+                <th scope="col">created</th>
+                <th scope="col">shared by</th>
+                <th scope="col">accepted</th>
+              </tr>
+              {{#each sharesWithMe}}
+              <tr>
+                <td><a href="{{url}}" target="_blank">{{title}}</a></td>
+                <td>{{created}}</td>
+                <td>@{{from}}</td>
+                <td>{{claimed}}</td>
+              </tr>
+              {{/each}}
+            </table>
+          </div>
           {{else}}
           (none)
           {{/if}}
@@ -48,29 +50,31 @@
         <div class="col text-center">
           <h3>Files I've shared</h3>
           {{#if sharesByMe}}
-          <table class="table table-striped table-responsive-sm table-sm">
-            <tr>
-              <th scope="col">title</th>
-              <th scope="col">created</th>
-              <th scope="col">expires</th>
-              <th scope="col">shared to</th>
-              <th scope="col">claimed</th>
-              <th scope="col">claimed by</th>
-            </tr>
-            {{#each sharesByMe}}
-            <tr>
-              <td>
-                <strong>{{title}}</strong>
-                <small>[<a class="copy_link" href="#" data-url="{{url}}">copy</a>]</small>
-              </td>
-              <td>{{created}}</td>
-              <td>{{#if expires}}{{expires}}{{else}}(never){{/if}}</td>
-              <td>{{#if to}}@{{to}}{{else}}(anyone){{/if}}</td>
-              <td>{{claimed}}</td>
-              <td>{{#if claimed_by}}@{{claimed_by}}{{/if}}</td>
-            </tr>
-            {{/each}}
-          </table>
+          <div class="container">
+            <table class="table table-striped table-responsive-sm table-sm">
+              <tr>
+                <th scope="col">title</th>
+                <th scope="col">created</th>
+                <th scope="col">expires</th>
+                <th scope="col">shared to</th>
+                <th scope="col">claimed</th>
+                <th scope="col">claimed by</th>
+              </tr>
+              {{#each sharesByMe}}
+              <tr>
+                <td>
+                  <strong>{{title}}</strong>
+                  <small>[<a class="copy_link" href="#" data-url="{{url}}">copy</a>]</small>
+                </td>
+                <td>{{created}}</td>
+                <td>{{#if expires}}{{expires}}{{else}}(never){{/if}}</td>
+                <td>{{#if to}}@{{to}}{{else}}(anyone){{/if}}</td>
+                <td>{{claimed}}</td>
+                <td>{{#if claimed_by}}@{{claimed_by}}{{/if}}</td>
+              </tr>
+              {{/each}}
+            </table>
+          </div>
           {{else}}
           <p>
             (none)
