@@ -24,6 +24,7 @@ import {
   requiresAdmin,
   requiresAuth,
 } from "../utils/auth";
+import { baseUrl } from "../utils/config";
 import { generateCsrfToken, validateCsrfToken } from "../utils/csrf";
 import {
   BadRequestError,
@@ -50,7 +51,7 @@ router.get(
     const sharesWithMe = (await fetchSharesByClaimedUserId(user.id)).map(
       (s) => ({
         title: s.fileTitle,
-        url: `/shares/${s.id}`,
+        url: `${baseUrl}/shares/${s.id}`,
         created: s.created.toISO(),
         from: s.createdBy.username,
         claimed: assertValue(s.claimed).toISO(),
@@ -58,12 +59,13 @@ router.get(
     );
     const sharesByMe = (await fetchSharesByCreatedUserId(user.id)).map((s) => ({
       title: s.fileTitle,
-      url: `/shares/${s.id}`,
+      url: `${baseUrl}/shares/${s.id}`,
       created: s.created.toISO(),
       to: s.toUsername,
       expires: s.expireDuration?.toHuman(),
       claimed: s.claimed?.toISO(),
       claimed_by: s.claimedBy?.username,
+      backing_url: s.backingUrl,
     }));
 
     res.render("shares", {

@@ -53,17 +53,18 @@
           <div class="container">
             <table class="table table-striped table-responsive-sm table-sm">
               <tr>
-                <th scope="col">title</th>
+                <th scope="col">title [share link]</th>
                 <th scope="col">created</th>
                 <th scope="col">expires</th>
                 <th scope="col">shared to</th>
                 <th scope="col">claimed</th>
                 <th scope="col">claimed by</th>
+                <th scope="col">resource link</th>
               </tr>
               {{#each sharesByMe}}
               <tr>
                 <td>
-                  <strong>{{title}}</strong>
+                  {{title}}
                   <small>[<a class="copy_link" href="#" data-url="{{url}}">copy</a>]</small>
                 </td>
                 <td>{{created}}</td>
@@ -71,6 +72,7 @@
                 <td>{{#if to}}@{{to}}{{else}}(anyone){{/if}}</td>
                 <td>{{claimed}}</td>
                 <td>{{#if claimed_by}}@{{claimed_by}}{{/if}}</td>
+                <td><small>[<a class="copy_link" href="#" data-url="{{backing_url}}">copy</a>]</small></td>
               </tr>
               {{/each}}
             </table>
@@ -90,9 +92,8 @@
   {{#*inline "body_scripts"}}
     <script>
       async function copyToClipboard (event) {
-        const text = window.origin + this.dataset.url;
         try {
-          await navigator.clipboard.writeText(text);
+          await navigator.clipboard.writeText(this.dataset.url);
           this.replaceWith("copied");
         } catch (err) {
           console.error('Copy to clipboard failed:', err);
