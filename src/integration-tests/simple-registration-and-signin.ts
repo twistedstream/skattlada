@@ -63,9 +63,9 @@ test("Navigate, generate invite from root user, register a new user, sign out, s
     t.equal(state.invites.length, 1);
   });
 
-  t.test("Go to home page", async (t) => {
+  t.test("Go to home page, which redirects to shares page", async (t) => {
     const response = await navigatePage(state, "/");
-    assertHtmlResponse(t, response);
+    assertRedirectResponse(t, response, "/shares");
   });
 
   t.test("Go to login page", async (t) => {
