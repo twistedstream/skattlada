@@ -1,0 +1,31 @@
+name: Release
+
+permissions:
+  contents: write
+  packages: read
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Automated version bump
+        id: version-bump
+        uses: "phips28/gh-action-bump-version@8967e27a4427b87c0071975df4b5e8500d0f63de"
+        with:
+          tag-prefix: "v"
+          patch-wording: "fix,chore,docs,style,refactor,test,chore"
+          minor-wording: "feat"
+          major-wording: "BREAKING"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
