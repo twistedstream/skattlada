@@ -1,31 +1,35 @@
-name: Release
+# Bump version and tag on every PR branch merge back into main
 
-permissions:
-  contents: write
-  packages: read
+name: Release
 
 on:
   workflow_dispatch: {}
-  pull_request:
-    branches: ["main"]
+  push:
+    branches:
+      - main
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Log github.event.head_commit.author.username
+        run: echo "${{ github.event.head_commit.author.username }}"
+
       - name: Checkout source code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
 
       - name: Automated version bump
         id: version-bump
-        uses: "phips28/gh-action-bump-version@8967e27a4427b87c0071975df4b5e8500d0f63de"
+        uses: "phips28/gh-action-bump-version@v10.1.1"
         with:
           tag-prefix: "v"
           patch-wording: "fix,chore,docs,style,refactor,test,chore"
           minor-wording: "feat"
           major-wording: "BREAKING"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Needs to be a PAT in order to bypass branch protection
+          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}

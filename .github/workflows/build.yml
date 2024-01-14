@@ -1,3 +1,5 @@
+# Run tests and checks on every push
+
 name: Build
 
 on: push
