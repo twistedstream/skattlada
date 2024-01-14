@@ -164,23 +164,6 @@ test("routes/fido2/assertion", async (t) => {
   });
 
   t.test("POST /options", async (t) => {
-    t.test(
-      "if active user session, renders JSON with expected user error",
-      async (t) => {
-        const { app } = createAssertionTestExpressApp(t, { withAuth: true });
-        const response = await performOptionsPostRequest(app).send({
-          username: "bob",
-        });
-
-        verifyUserErrorFido2ServerResponse(
-          t,
-          response,
-          StatusCodes.FORBIDDEN,
-          "User is already signed in"
-        );
-      }
-    );
-
     t.test("if username is passed in the request", async (t) => {
       t.test("fetches user with trimmed username", async (t) => {
         fetchUserByNameStub.resolves({});
@@ -396,25 +379,47 @@ test("routes/fido2/assertion", async (t) => {
       });
     });
 
-    t.test(
-      "if successful, renders JSON with expected options data",
-      async (t) => {
-        fetchUserByNameStub.resolves({});
-        fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-        generateAuthenticationOptionsStub.returns({
-          challenge: "CHALLENGE!",
-        });
+    t.test("when successful", async (t) => {
+      t.test(
+        "if no existing session, renders JSON with expected options data",
+        async (t) => {
+          fetchUserByNameStub.resolves({});
+          fetchCredentialsByUsernameStub.resolves([testCredential1()]);
+          generateAuthenticationOptionsStub.returns({
+            challenge: "CHALLENGE!",
+          });
 
-        const { app } = createAssertionTestExpressApp(t);
-        const response = await performOptionsPostRequest(app).send({
-          username: "bob",
-        });
+          const { app } = createAssertionTestExpressApp(t);
+          const response = await performOptionsPostRequest(app).send({
+            username: "bob",
+          });
 
-        verifyFido2SuccessResponse(t, response, {
-          challenge: "CHALLENGE!",
-        });
-      }
-    );
+          verifyFido2SuccessResponse(t, response, {
+            challenge: "CHALLENGE!",
+          });
+        }
+      );
+
+      t.test(
+        "if existing session, renders JSON with expected options data",
+        async (t) => {
+          fetchUserByNameStub.resolves({});
+          fetchCredentialsByUsernameStub.resolves([testCredential1()]);
+          generateAuthenticationOptionsStub.returns({
+            challenge: "CHALLENGE!",
+          });
+
+          const { app } = createAssertionTestExpressApp(t, { withAuth: true });
+          const response = await performOptionsPostRequest(app).send({
+            username: "bob",
+          });
+
+          verifyFido2SuccessResponse(t, response, {
+            challenge: "CHALLENGE!",
+          });
+        }
+      );
+    });
   });
 
   t.test("POST /result", async (t) => {
