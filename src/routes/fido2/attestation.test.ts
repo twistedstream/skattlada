@@ -316,7 +316,7 @@ test("routes/fido2/attestation", async (t) => {
             t,
             response,
             StatusCodes.BAD_REQUEST,
-            "User: username: Sorry, can't do it"
+            "Sorry, can't do it"
           );
         }
       );

@@ -249,7 +249,7 @@ test("routes/profile", async (t) => {
             renderArgs,
             StatusCodes.BAD_REQUEST,
             "Error",
-            "User: displayName: Sorry, can't do it"
+            "Sorry, can't do it"
           );
         }
       );
