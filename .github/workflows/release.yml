@@ -2,6 +2,10 @@
 
 name: Release
 
+permissions:
+  contents: write
+  packages: read
+
 on:
   workflow_dispatch: {}
   push:
@@ -10,6 +14,7 @@ on:
 
 jobs:
   release:
+    if: "${{ !startsWith(github.event.head_commit.message, 'chore: ') }}"
     runs-on: ubuntu-latest
 
     steps:
@@ -20,6 +25,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+          # needed to bypass branch protection
           persist-credentials: false
 
       - name: Automated version bump
@@ -31,5 +37,4 @@ jobs:
           minor-wording: "feat"
           major-wording: "BREAKING"
         env:
-          # Needs to be a PAT in order to bypass branch protection
-          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
