@@ -33,10 +33,10 @@
             <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
               Download
             </button>
-            
+
             <div class="dropdown-menu">
               {{#each downloadLinks}}
-              <a class="dropdown-item" href="{{url}}">{{media_description}} (.{{file_extension}})</a>
+              <a class="dropdown-item download_link" href="{{url}}">{{media_description}} (.{{file_extension}})</a>
               {{/each}}
             </div>
           </div>
