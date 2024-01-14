@@ -17,7 +17,7 @@ import { RegisteredAuthenticator, User } from "../../types/entity";
 import { AuthenticatedRequest } from "../../types/express";
 import { beginSignIn, getAuthentication, signIn } from "../../utils/auth";
 import { baseUrl, rpID } from "../../utils/config";
-import { BadRequestError, ForbiddenError } from "../../utils/error";
+import { BadRequestError } from "../../utils/error";
 import { logger } from "../../utils/logger";
 
 const router = Router();
@@ -34,11 +34,6 @@ router.post(
   "/options",
   json(),
   async (req: AuthenticatedRequest, res: Response) => {
-    // ensure there isn't an active user session
-    if (req.user) {
-      throw ForbiddenError("User is already signed in");
-    }
-
     // validate request
     let { username, userVerification } = req.body;
     username = username ? username.trim() : "";
