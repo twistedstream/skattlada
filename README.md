@@ -22,7 +22,7 @@ Export the environment variables specified in [CONFIG](./CONFIG.md). For local d
 
 ### Root invite
 
-When you first start the server, watch the console output for an `INFO` event with the message `Root invite`, then copy the `url` value paste it into a browser. Follow the prompts to enroll the first admin account. The admin user can then create shares which is how they can invite more users.
+When you first start the server, watch the console output for an `INFO` event with the message `Root invite`, then copy the `url` value and paste it into a browser. Follow the prompts to enroll the first admin account. The admin user can then create shares which is how they can invite more users.
 
 ## Local Development
 
