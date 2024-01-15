@@ -2,6 +2,9 @@
 
 name: Release
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch: {}
   push:
@@ -35,3 +38,13 @@ jobs:
         env:
           # need PAT to bypass branch protection
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
+        run: |
+          gh release create "${NEW_TAG}" \
+            --repo="${GITHUB_REPOSITORY}" \
+            --title="${NEW_TAG}" \
+            --generate-notes
