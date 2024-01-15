@@ -94,3 +94,4 @@ npm run test:integration-single ./src/integration-tests/simple-registration-and-
 - [ ] Add support for other data providers (eg. MongoDB)
 - [ ] Add support for other file providers (eg. Dropbox)
 - [ ] Support multiple file providers at once
+- [ ] Make Skattlåda somehow able to share real honey
