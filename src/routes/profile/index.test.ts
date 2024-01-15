@@ -120,7 +120,7 @@ function performPostRequest(app: Express): SuperTest {
 
 // tests
 
-test("routes/profile", async (t) => {
+test("routes/profile/index", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

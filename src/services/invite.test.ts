@@ -13,7 +13,6 @@ const dataProvider = {
 
 const uniqueStub = sinon.stub();
 const nowFake = sinon.fake.returns(testNowDate);
-const newInviteStub = sinon.stub();
 
 // helpers
 
