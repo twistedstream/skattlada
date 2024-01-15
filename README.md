@@ -89,6 +89,12 @@ Run a specific test file:
 npm run test:integration-single ./src/integration-tests/simple-registration-and-signin.ts
 ```
 
+## Deployments
+
+Examples of **Skattlåda** in the wild:
+
+- <https://share.twistedstream.com>
+
 ## Contribution ideas
 
 - [ ] Add support for other data providers (eg. MongoDB)
