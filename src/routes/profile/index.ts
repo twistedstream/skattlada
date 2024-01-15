@@ -1,18 +1,15 @@
 import { urlencoded } from "body-parser";
 import { Response, Router } from "express";
 
-import {
-  fetchCredentialsByUserId,
-  modifyUser,
-  removeUserCredential,
-} from "../services/user";
+import { modifyUser, removeUserCredential } from "../../services/user";
 import {
   AuthenticatedRequest,
   AuthenticatedRequestWithTypedBody,
-} from "../types/express";
-import { requiresAuth } from "../utils/auth";
-import { generateCsrfToken, validateCsrfToken } from "../utils/csrf";
-import { BadRequestError, assertValue } from "../utils/error";
+} from "../../types/express";
+import { requiresAuth } from "../../utils/auth";
+import { generateCsrfToken, validateCsrfToken } from "../../utils/csrf";
+import { BadRequestError, assertValue } from "../../utils/error";
+import { buildViewData } from "./view";
 
 const router = Router();
 
@@ -24,25 +21,12 @@ router.get(
   async (req: AuthenticatedRequest, res: Response) => {
     const user = assertValue(req.user);
     const credential = assertValue(req.credential);
+    const csrfToken = generateCsrfToken(req, res);
+    const viewData = await buildViewData(user, credential, csrfToken);
 
-    const credentials = await fetchCredentialsByUserId(user.id);
-    const passkeys = [...credentials].map((c) => ({
-      id: c.credentialID,
-      type: c.credentialDeviceType,
-      created: c.created.toISO(),
-    }));
-
-    const viewProfile = {
-      ...req.user,
-      activePasskey: passkeys.find((p) => p.id === credential.credentialID),
-      otherPasskeys: passkeys.filter((p) => p.id !== credential.credentialID),
-    };
-
-    const csrf_token = generateCsrfToken(req, res);
     res.render("profile", {
-      csrf_token,
+      ...viewData,
       title: "Profile",
-      profile: viewProfile,
     });
   }
 );
@@ -55,7 +39,7 @@ router.post(
   async (
     req: AuthenticatedRequestWithTypedBody<{
       action: "update_profile" | "delete_cred";
-      display_name?: string;
+      display_name: string;
       cred_id?: string;
     }>,
     res: Response
@@ -64,14 +48,24 @@ router.post(
     const credential = assertValue(req.credential);
 
     const { action, display_name } = req.body;
-    if (action === "update_profile" && display_name) {
+    if (action === "update_profile") {
       // update user profile
       user.displayName = display_name;
       try {
         await modifyUser(user);
       } catch (err: any) {
         if (err.type === "validation") {
-          throw BadRequestError(err.message);
+          if (err.context === "User.displayName") {
+            const csrfToken = generateCsrfToken(req, res);
+            const viewData = await buildViewData(user, credential, csrfToken);
+            viewData.display_name_error = err.message;
+            return res.render("profile", {
+              ...viewData,
+              title: "Profile error",
+            });
+          }
+
+          throw BadRequestError(err.message, err.context);
         }
 
         throw err;

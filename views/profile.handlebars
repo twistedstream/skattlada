@@ -29,11 +29,11 @@
                   <div class="input-group-prepend">
                     <div class="input-group-text">@</div>
                   </div>
-                  <input type="text" class="form-control" id="user_name" readonly value="{{profile.username}}">
+                  <input type="text" class="form-control" id="username" readonly value="{{username}}">
                 </div>
               </div>
-              <div class="col-sm-auto">
-                <input type="text" class="form-control mb-2" id="display_name" name="display_name" value="{{profile.displayName}}">
+              <div class="col-sm-auto mb-2">
+                {{> textbox_field name="display_name" type="text" value=display_name error=display_name_error}}
               </div>
               <div class="col-sm-auto">
                 <button type="submit" class="btn btn-primary mb-2" name="action" value="update_profile">Update</button>
@@ -44,7 +44,7 @@
 
         <div class="row mt-3">
           <div class="col text-center">
-            Admin: {{#if profile.isAdmin }}<strong>true</strong>{{else}}false{{/if}}
+            Admin: {{#if is_admin }}<strong>true</strong>{{else}}false{{/if}}
           </div>
         </div>
 
@@ -68,13 +68,13 @@
                   <th scope="col"></th>
                 </tr>
                 <tr>
-                  <td>{{profile.activePasskey.type}}</td>
-                  <td>{{profile.activePasskey.created}}</td>
+                  <td>{{passkeys.active.type}}</td>
+                  <td>{{passkeys.active.created}}</td>
                   <td>
                     (active)
                   </td>
                 </tr>
-                {{#each profile.otherPasskeys}}
+                {{#each passkeys.others}}
                 <tr>
                   <td>{{type}}</td>
                   <td>{{created}}</td>

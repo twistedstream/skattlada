@@ -103,6 +103,7 @@ test("routes/fido2: error handler", async (t) => {
     t.test("renders JSON with the expected data", async (t) => {
       buildErrorHandlerDataStub.returns({
         message: "Really bad request",
+        context: "malarkey",
         statusCode: 400,
       });
 
@@ -118,7 +119,8 @@ test("routes/fido2: error handler", async (t) => {
         t,
         response,
         StatusCodes.BAD_REQUEST,
-        "Really bad request"
+        "Really bad request",
+        "malarkey"
       );
     });
 

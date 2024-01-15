@@ -12,7 +12,7 @@
 
       <div class="row">
         <div class="col text-center">
-          <pre>{{ message }}</pre>
+          <pre>{{#if context }}{{context}}: {{/if}}{{ message }}</pre>
           {{#if correlation_id}}
           <small class="text-muted">Correlation ID: <code>{{correlation_id}}</code></small>
           {{/if}}

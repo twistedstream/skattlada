@@ -78,7 +78,7 @@ router.post(
         registeringUser = await newUser(username, displayName);
       } catch (err: any) {
         if (err.type === "validation") {
-          throw BadRequestError(err.message);
+          throw BadRequestError(err.message, err.context);
         }
         throw err;
       }
@@ -88,7 +88,8 @@ router.post(
       const existingUser = await fetchUserByName(username);
       if (existingUser) {
         throw BadRequestError(
-          `A user with username '${username}' already exists`
+          `A user with username '${username}' already exists`,
+          "User.username"
         );
       }
     }

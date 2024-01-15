@@ -106,6 +106,9 @@ function importModule(
         generateCsrfToken: generateCsrfTokenFake,
         validateCsrfToken: validateCsrfTokenStub,
       },
+      "../utils/config": {
+        baseUrl: "https://example.com",
+      },
     }),
   });
 
@@ -262,14 +265,14 @@ test("routes/shares", async (t) => {
       t.same(options.sharesWithMe, [
         {
           title: share1.fileTitle,
-          url: "/shares/" + share1.id,
+          url: "https://example.com/shares/" + share1.id,
           created: share1.created.toISO(),
           from: share1.createdBy.username,
           claimed: share1.claimed?.toISO(),
         },
         {
           title: share2.fileTitle,
-          url: "/shares/" + share2.id,
+          url: "https://example.com/shares/" + share2.id,
           created: share2.created.toISO(),
           from: share2.createdBy.username,
           claimed: share2.claimed?.toISO(),
@@ -278,21 +281,23 @@ test("routes/shares", async (t) => {
       t.same(options.sharesByMe, [
         {
           title: share3.fileTitle,
-          url: "/shares/" + share3.id,
+          url: "https://example.com/shares/" + share3.id,
           created: share3.created.toISO(),
           to: share3.toUsername,
           expires: share3.expireDuration?.toHuman(),
           claimed: share3.claimed?.toISO(),
           claimed_by: share3.claimedBy?.username,
+          backing_url: share3.backingUrl,
         },
         {
           title: share4.fileTitle,
-          url: "/shares/" + share4.id,
+          url: "https://example.com/shares/" + share4.id,
           created: share4.created.toISO(),
           to: share4.toUsername,
           expires: share4.expireDuration?.toHuman(),
           claimed: undefined,
           claimed_by: undefined,
+          backing_url: share4.backingUrl,
         },
       ]);
     });

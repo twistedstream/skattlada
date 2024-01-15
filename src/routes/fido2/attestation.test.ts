@@ -316,7 +316,8 @@ test("routes/fido2/attestation", async (t) => {
             t,
             response,
             StatusCodes.BAD_REQUEST,
-            "User: username: Sorry, can't do it"
+            "Sorry, can't do it",
+            "User.username"
           );
         }
       );
@@ -370,7 +371,8 @@ test("routes/fido2/attestation", async (t) => {
             t,
             response,
             StatusCodes.BAD_REQUEST,
-            "A user with username 'bob' already exists"
+            "A user with username 'bob' already exists",
+            "User.username"
           );
         }
       );

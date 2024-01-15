@@ -4,18 +4,19 @@ import sinon from "sinon";
 import request, { Test as SuperTest } from "supertest";
 import { test } from "tap";
 
-import { ValidationError } from "../types/error";
+import { Authenticator, User } from "../../types/entity";
+import { ValidationError } from "../../types/error";
 import {
   testCredential1,
   testCredential2,
   testUser1,
-} from "../utils/testing/data";
+} from "../../utils/testing/data";
 import {
   ViewRenderArgs,
   createTestExpressApp,
   verifyHtmlErrorResponse,
   verifyRedirectResponse,
-} from "../utils/testing/unit";
+} from "../../utils/testing/unit";
 
 type MockOptions = {
   mockExpress?: boolean;
@@ -25,6 +26,8 @@ type MockOptions = {
 type ProfileTestExpressAppOptions = {
   withAuth?: boolean;
   suppressErrorOutput?: boolean;
+  activeUser?: User;
+  activeCredential?: Authenticator;
 };
 
 // test objects
@@ -34,13 +37,13 @@ const expressRouter = {
   post: sinon.fake(),
 };
 const routerFake = sinon.fake.returns(expressRouter);
-const fetchCredentialsByUserIdStub = sinon.stub();
 const modifyUserStub = sinon.stub();
 const removeUserCredentialStub = sinon.stub();
 const requiresAuthStub = sinon.stub();
 const testCsrfToken = "CSRF_TOKEN";
 const generateCsrfTokenFake = sinon.fake.returns(testCsrfToken);
 const validateCsrfTokenStub = sinon.stub();
+const buildViewDataStub = sinon.stub();
 
 // helpers
 
@@ -48,24 +51,26 @@ function importModule(
   test: Tap.Test,
   { mockExpress = false, mockModules = false }: MockOptions = {}
 ) {
-  const { default: router } = test.mock("./profile", {
+  const { default: router } = test.mock("./index", {
     ...(mockExpress && {
       express: {
         Router: routerFake,
       },
     }),
     ...(mockModules && {
-      "../services/user": {
-        fetchCredentialsByUserId: fetchCredentialsByUserIdStub,
+      "../../services/user": {
         modifyUser: modifyUserStub,
         removeUserCredential: removeUserCredentialStub,
       },
-      "../utils/auth": {
+      "../../utils/auth": {
         requiresAuth: requiresAuthStub,
       },
-      "../utils/csrf": {
+      "../../utils/csrf": {
         generateCsrfToken: generateCsrfTokenFake,
         validateCsrfToken: validateCsrfTokenStub,
+      },
+      "./view": {
+        buildViewData: buildViewDataStub,
       },
     }),
   });
@@ -75,7 +80,12 @@ function importModule(
 
 function createProfileTestExpressApp(
   test: Tap.Test,
-  { withAuth, suppressErrorOutput }: ProfileTestExpressAppOptions = {}
+  {
+    withAuth,
+    suppressErrorOutput,
+    activeUser = testUser1(),
+    activeCredential = testCredential1(),
+  }: ProfileTestExpressAppOptions = {}
 ) {
   const router = importModule(test, { mockModules: true });
 
@@ -83,8 +93,8 @@ function createProfileTestExpressApp(
     authSetup: withAuth
       ? {
           originalUrl: "/",
-          activeUser: testUser1(),
-          activeCredential: testCredential1(),
+          activeUser,
+          activeCredential,
         }
       : undefined,
     middlewareSetup: (app) => {
@@ -110,7 +120,7 @@ function performPostRequest(app: Express): SuperTest {
 
 // tests
 
-test("routes/profile", async (t) => {
+test("routes/profile/index", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();
@@ -154,8 +164,11 @@ test("routes/profile", async (t) => {
     let renderArgs: ViewRenderArgs;
 
     t.beforeEach(async () => {
-      fetchCredentialsByUserIdStub.withArgs(user1.id).resolves([cred1, cred2]);
-      const result = createProfileTestExpressApp(t, { withAuth: true });
+      const result = createProfileTestExpressApp(t, {
+        withAuth: true,
+        activeUser: user1,
+        activeCredential: cred1,
+      });
 
       app = result.app;
       renderArgs = result.renderArgs;
@@ -167,33 +180,27 @@ test("routes/profile", async (t) => {
       t.ok(requiresAuthStub.called);
     });
 
+    t.test("builds view data", async (t) => {
+      await performGetRequest(app);
+
+      t.ok(buildViewDataStub.called);
+      t.equal(buildViewDataStub.firstCall.args[0], user1);
+      t.equal(buildViewDataStub.firstCall.args[1], cred1);
+      t.equal(buildViewDataStub.firstCall.args[2], testCsrfToken);
+    });
+
     t.test("renders HTML with expected view state", async (t) => {
+      const viewData = { other_data: { foo: 42 } };
+      buildViewDataStub.resolves(viewData);
+
       const response = await performGetRequest(app);
       const { viewName, options } = renderArgs;
 
       t.equal(response.status, StatusCodes.OK);
       t.match(response.headers["content-type"], "text/html");
       t.equal(viewName, "profile");
-      t.equal(options.title, "Profile");
-      t.same(options.profile, {
-        id: user1.id,
-        created: user1.created,
-        username: user1.username,
-        displayName: user1.displayName,
-        isAdmin: user1.isAdmin,
-        activePasskey: {
-          id: cred1.credentialID,
-          type: cred1.credentialDeviceType,
-          created: cred1.created.toISO(),
-        },
-        otherPasskeys: [
-          {
-            id: cred2.credentialID,
-            type: cred2.credentialDeviceType,
-            created: cred2.created.toISO(),
-          },
-        ],
-      });
+      t.same(options.title, "Profile");
+      t.same(options.other_data, viewData.other_data);
     });
   });
 
@@ -220,10 +227,48 @@ test("routes/profile", async (t) => {
 
     t.test("user update", async (t) => {
       t.test(
-        "if a validation error occurs while updating profile, renders HTML with expected user error",
+        "if a user display name validation error occurs while updating profile, renders HTML with the expected view state",
         async (t) => {
+          const viewData = { other_data: { foo: 42 } };
+          buildViewDataStub.resolves(viewData);
           modifyUserStub.rejects(
             new ValidationError("User", "displayName", "Sorry, can't do it")
+          );
+
+          const { app, renderArgs } = createProfileTestExpressApp(t, {
+            withAuth: true,
+          });
+          const user1 = testUser1();
+
+          const response = await performPostRequest(app).send({
+            action: "update_profile",
+            display_name: "Bad Bob",
+          });
+          const { viewName, options } = renderArgs;
+
+          t.same(modifyUserStub.firstCall.firstArg, {
+            id: user1.id,
+            created: user1.created,
+            username: user1.username,
+            displayName: "Bad Bob",
+            isAdmin: user1.isAdmin,
+          });
+          t.equal(response.status, StatusCodes.OK);
+          t.match(response.headers["content-type"], "text/html");
+          t.equal(viewName, "profile");
+          t.same(options.title, "Profile error");
+          t.same(options.display_name_error, "Sorry, can't do it");
+          t.same(options.other_data, viewData.other_data);
+        }
+      );
+
+      t.test(
+        "if a different validation error occurs while updating profile, renders HTML with expected user error",
+        async (t) => {
+          const viewData = { other_data: { foo: 42 } };
+          buildViewDataStub.resolves(viewData);
+          modifyUserStub.rejects(
+            new ValidationError("User", "otherField", "Um, nope.")
           );
 
           const { app, renderArgs } = createProfileTestExpressApp(t, {
@@ -249,7 +294,7 @@ test("routes/profile", async (t) => {
             renderArgs,
             StatusCodes.BAD_REQUEST,
             "Error",
-            "User: displayName: Sorry, can't do it"
+            "Um, nope"
           );
         }
       );

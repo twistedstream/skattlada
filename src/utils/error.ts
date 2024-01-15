@@ -3,6 +3,7 @@ import ShortUniqueId from "short-unique-id";
 
 type ErrorHandlerData = {
   message: string;
+  context?: string;
   statusCode: number;
   correlation_id?: string;
 };
@@ -19,30 +20,28 @@ export class ErrorWithData extends Error {
   readonly data: any;
 }
 
-export class ErrorWithStatusCode extends Error {
-  constructor(
-    statusCode: StatusCodes,
-    message: string | undefined = undefined
-  ) {
-    super(getReasonPhrase(statusCode) + (message ? `: ${message}` : ""));
+export class HttpError extends Error {
+  constructor(statusCode: StatusCodes, message?: string, context?: string) {
+    super(message || getReasonPhrase(statusCode));
 
     this.statusCode = statusCode;
+    this.context = context;
   }
 
   readonly statusCode: StatusCodes;
+  readonly context?: string;
 }
 
-export const NotFoundError = () =>
-  new ErrorWithStatusCode(StatusCodes.NOT_FOUND);
+export const NotFoundError = () => new HttpError(StatusCodes.NOT_FOUND);
 
-export const BadRequestError = (message: string) =>
-  new ErrorWithStatusCode(StatusCodes.BAD_REQUEST, message);
+export const BadRequestError = (message: string, context?: string) =>
+  new HttpError(StatusCodes.BAD_REQUEST, message, context);
 
 export const UnauthorizedError = (message?: string) =>
-  new ErrorWithStatusCode(StatusCodes.UNAUTHORIZED, message);
+  new HttpError(StatusCodes.UNAUTHORIZED, message);
 
 export const ForbiddenError = (message: string) =>
-  new ErrorWithStatusCode(StatusCodes.FORBIDDEN, message);
+  new HttpError(StatusCodes.FORBIDDEN, message);
 
 export function assertValue<T>(
   value: T | undefined | null,
@@ -74,6 +73,7 @@ export function buildErrorHandlerData(err: any): ErrorHandlerData {
 
   return {
     message,
+    context: err.context,
     statusCode,
     correlation_id,
   };

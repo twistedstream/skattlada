@@ -29,16 +29,17 @@
 
       <div class="row mt-3">
         <div class="col text-center">
-          <h3>Pick a format to download</h3>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+              Download
+            </button>
 
-          {{#each downloadLinks}}
-          <div>
-            <a class="download_link" href="{{url}}">
-              <strong>{{media_description}}</strong>
-              (<code>.{{file_extension}}</code>)
-            </a>
+            <div class="dropdown-menu">
+              {{#each downloadLinks}}
+              <a class="dropdown-item download_link" href="{{url}}">{{media_description}} (.{{file_extension}})</a>
+              {{/each}}
+            </div>
           </div>
-          {{/each}}
         </div>
       </div>
     </div>
