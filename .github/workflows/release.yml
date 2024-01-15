@@ -40,6 +40,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
       - name: Create release
+        if: "${{ steps.version-bump.outputs.newTag != '' }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
