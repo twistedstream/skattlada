@@ -175,7 +175,8 @@ export function verifyFido2ErrorResponse(
   test: Tap.Test,
   response: SupertestResponse,
   statusCode: StatusCodes,
-  errorMessage: string | RegExp
+  errorMessage: string | RegExp,
+  errorContext?: string
 ) {
   test.equal(response.statusCode, statusCode, "expected HTTP status");
   test.match(
@@ -186,6 +187,9 @@ export function verifyFido2ErrorResponse(
   const json = JSON.parse(response.text);
   test.equal(json.status, "failed", "expected FIDO status");
   test.match(json.errorMessage, errorMessage, "expected FIDO error message");
+  if (errorContext) {
+    test.match(json.errorContext, errorContext, "expected FIDO error context");
+  }
 
   delete json.status;
   delete json.errorMessage;
@@ -196,7 +200,8 @@ export function verifyUserErrorFido2ServerResponse(
   test: Tap.Test,
   response: SupertestResponse,
   statusCode: StatusCodes,
-  errorMessage: string | RegExp
+  errorMessage: string | RegExp,
+  errorContext?: string
 ) {
   test.ok(statusCode >= 400 && statusCode < 500, "HTTP status is user error");
 
@@ -204,7 +209,8 @@ export function verifyUserErrorFido2ServerResponse(
     test,
     response,
     statusCode,
-    errorMessage
+    errorMessage,
+    errorContext
   );
 
   // assert no correlation ID

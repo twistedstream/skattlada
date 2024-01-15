@@ -130,6 +130,7 @@ test("(root): error handler", async (t) => {
     t.test("renders HTML with the expected view state", async (t) => {
       buildErrorHandlerDataStub.returns({
         message: "Really bad request",
+        context: "malarkey",
         statusCode: StatusCodes.BAD_REQUEST,
         correlation_id: "",
       });
@@ -148,6 +149,7 @@ test("(root): error handler", async (t) => {
       t.equal(viewName, "error");
       t.equal(options.title, "Error");
       t.equal(options.message, "Really bad request");
+      t.equal(options.context, "malarkey");
       t.equal(options.error_status, 400);
       t.notOk(options.correlation_id);
     });

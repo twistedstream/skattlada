@@ -20,7 +20,7 @@ const errorHandler = (router: IRouter) => {
       res: Response,
       _next: NextFunction
     ) => {
-      const { message, statusCode, correlation_id } =
+      const { message, context, statusCode, correlation_id } =
         buildErrorHandlerData(err);
 
       if (statusCode === StatusCodes.UNAUTHORIZED) {
@@ -44,6 +44,7 @@ const errorHandler = (router: IRouter) => {
       res.render("error", {
         title: "Error",
         message,
+        context,
         error_status: statusCode,
         correlation_id,
       });

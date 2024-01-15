@@ -27,7 +27,7 @@
                 <div class="input-group-prepend">
                   <div class="input-group-text">@</div>
                 </div>
-                <input type="text" class="form-control" id="username" placeholder="Username" required>
+                <input type="text" class="form-control" id="username" placeholder="Username">
               </div>
             </div>
             <div class="col-sm-auto">
@@ -98,6 +98,9 @@
           const username = usernameInput.value;
           const displayName = displayNameInput.value;
 
+          clearValidationFeedback(usernameInput);
+          clearValidationFeedback(displayNameInput);
+
           try {
             const returnTo = await registerUser(
               username,
@@ -107,6 +110,15 @@
               window.location = returnTo;
             }
           } catch (err) {
+            const { errorContext, errorMessage } = err;
+            if (errorContext) {
+              if (errorContext === "User.username") {
+                return displayInvalidFeedback(usernameInput, errorMessage);
+              }
+              if (errorContext === "User.displayName") {
+                return displayInvalidFeedback(displayNameInput, errorMessage);
+              }
+            }
             return displayError(err);
           }
         });

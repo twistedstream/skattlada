@@ -19,7 +19,7 @@ const errorHandler = (router: IRouter) => {
       res: Response,
       _next: NextFunction
     ) => {
-      const { message, statusCode, correlation_id } =
+      const { message, context, statusCode, correlation_id } =
         buildErrorHandlerData(err);
 
       res.status(statusCode);
@@ -31,6 +31,7 @@ const errorHandler = (router: IRouter) => {
       return res.status(statusCode).json({
         status: "failed",
         errorMessage: message,
+        errorContext: context,
         correlation_id,
       });
     }
