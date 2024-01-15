@@ -2,10 +2,6 @@
 
 name: Release
 
-permissions:
-  contents: write
-  packages: read
-
 on:
   workflow_dispatch: {}
   push:
@@ -37,4 +33,5 @@ jobs:
           minor-wording: "feat"
           major-wording: "BREAKING"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # need PAT to bypass branch protection
+          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
