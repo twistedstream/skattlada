@@ -4,8 +4,8 @@
   "private": true,
   "description": "Skattlåda File Sharing Server",
   "engines": {
-    "node": ">=18.10.0",
-    "npm": ">=10.2.3"
+    "node": ">=20.11.0",
+    "npm": ">=10.2.4"
   },
   "config": {
     "docker_org": "twistedstream"
