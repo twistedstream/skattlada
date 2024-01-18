@@ -1,0 +1,22 @@
+version: "2"
+
+services:
+  skattlada:
+    container_name: skattlada-prod
+    image: twistedstream/skattlada:${APP_VERSION}
+    restart: always
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL}
+      - RP_ID=${RP_ID}
+      - RP_NAME=${RP_NAME}
+      - BASE_URL=${BASE_URL}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - CSRF_SECRET=${CSRF_SECRET}
+      - MAX_INVITE_LIFETIME=${MAX_INVITE_LIFETIME}
+      - DATA_PROVIDER_NAME=${DATA_PROVIDER_NAME}
+      - FILE_PROVIDER_NAME=${FILE_PROVIDER_NAME}
+      - GOOGLE_SPREADSHEET_ID=${GOOGLE_SPREADSHEET_ID}
+      - GOOGLE_AUTH_CLIENT_EMAIL=${GOOGLE_AUTH_CLIENT_EMAIL}
+      - GOOGLE_AUTH_PRIVATE_KEY_BASE64=${GOOGLE_AUTH_PRIVATE_KEY_BASE64}
+    ports:
+      - ${HOST_PORT}:8000

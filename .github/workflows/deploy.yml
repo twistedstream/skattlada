@@ -62,3 +62,38 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ steps.get_docker_org.outputs.result }}/${{ steps.get_docker_repo.outputs.result }}:${{ steps.get_image_tag.outputs.result }}
+
+      - name: Build Portainer environment variables
+        id: build_portainer_env_vars
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const vars = {
+              APP_VERSION: "${{ steps.get_image_tag.outputs.result }}",
+              HOST_PORT: "${{ vars.HOST_PORT_PROD }}",
+              LOG_LEVEL: "${{ vars.LOG_LEVEL_PROD }}",
+              RP_ID: "${{ vars.RP_ID_PROD }}",
+              RP_NAME: "${{ vars.RP_NAME_PROD }}",
+              BASE_URL: "${{ vars.BASE_URL_PROD }}",
+              COOKIE_SECRET: "${{ secrets.COOKIE_SECRET_PROD }}",
+              CSRF_SECRET: "${{ secrets.CSRF_SECRET_PROD }}",
+              MAX_INVITE_LIFETIME: "${{ vars.MAX_INVITE_LIFETIME_PROD }}",
+              DATA_PROVIDER_NAME: "${{ vars.DATA_PROVIDER_NAME_PROD }}",
+              FILE_PROVIDER_NAME: "${{ vars.FILE_PROVIDER_NAME_PROD }}",
+              GOOGLE_SPREADSHEET_ID: "${{ vars.GOOGLE_SPREADSHEET_ID_PROD }}",
+              GOOGLE_AUTH_CLIENT_EMAIL: "${{ vars.GOOGLE_AUTH_CLIENT_EMAIL_PROD }}",
+              GOOGLE_AUTH_PRIVATE_KEY_BASE64: "${{ secrets.GOOGLE_AUTH_PRIVATE_KEY_BASE64_PROD }}"
+            }
+            const varsArray = Object.keys(vars).map((k) => ({ name: k, value: vars[k]}));
+            return JSON.stringify(varsArray);
+          result-encoding: string
+
+      - name: Deploy Docker image to Portainer
+        uses: datntdev0/action-deploy-to-portainer@v0.1.1
+        with:
+          portainerHost: ${{ vars.PORTAINER_HOST }}
+          portainerApiKey: ${{ secrets.PORTAINER_API_KEY }}
+          portainerEnvId: ${{ vars.PORTAINER_ENV_ID }}
+          portainerStackName: ${{ vars.PORTAINER_STACK_NAME_PROD }}
+          portainerFilePath: "./docker-compose.yml"
+          portainerEnvVars: "${{ steps.build_portainer_env_vars.outputs.result }}"
