@@ -1,4 +1,4 @@
-import base64 from "@hexagon/base64";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import { Express } from "express";
 import sinon from "sinon";
 import request, {
@@ -268,7 +268,7 @@ test("routes/fido2/assertion", async (t) => {
           generateAuthenticationOptionsStub.firstCall.args[0].allowCredentials,
           [
             {
-              id: base64.toArrayBuffer(cred1.credentialID, true),
+              id: isoBase64URL.toBuffer(cred1.credentialID),
               type: "public-key",
               transports: cred1.transports ? [...cred1.transports] : [],
             },
@@ -622,12 +622,8 @@ test("routes/fido2/assertion", async (t) => {
         expectedRPID: "example.com",
         authenticator: {
           ...cred1,
-          credentialID: new Uint8Array(
-            base64.toArrayBuffer(cred1.credentialID, true)
-          ),
-          credentialPublicKey: new Uint8Array(
-            base64.toArrayBuffer(cred1.credentialPublicKey, true)
-          ),
+          credentialID: isoBase64URL.toBuffer(cred1.credentialID),
+          credentialPublicKey: isoBase64URL.toBuffer(cred1.credentialPublicKey),
           user: user1,
         },
       });

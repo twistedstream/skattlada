@@ -1,4 +1,4 @@
-import base64 from "@hexagon/base64";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import {
   AuthenticatorTransport,
   CredentialDeviceType,
@@ -67,13 +67,11 @@ export function testUser2(): User {
   };
 }
 
-const testCredential1Identifier = base64.fromArrayBuffer(
-  crypto.randomBytes(8).buffer,
-  true
+const testCredential1Identifier = isoBase64URL.fromBuffer(
+  crypto.randomBytes(8)
 );
-const testCredential1PublicKey = base64.fromArrayBuffer(
-  crypto.randomBytes(42).buffer,
-  true
+const testCredential1PublicKey = isoBase64URL.fromBuffer(
+  crypto.randomBytes(42)
 );
 
 export function testCredential1(): Authenticator {
@@ -96,13 +94,11 @@ export function testCredential1(): Authenticator {
   };
 }
 
-const testCredential2Identifier = base64.fromArrayBuffer(
-  crypto.randomBytes(8).buffer,
-  true
+const testCredential2Identifier = isoBase64URL.fromBuffer(
+  crypto.randomBytes(8)
 );
-const testCredential2PublicKey = base64.fromArrayBuffer(
-  crypto.randomBytes(42).buffer,
-  true
+const testCredential2PublicKey = isoBase64URL.fromBuffer(
+  crypto.randomBytes(42)
 );
 
 export function testCredential2(): Authenticator {

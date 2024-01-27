@@ -1,9 +1,9 @@
-import base64 from "@hexagon/base64";
 import {
   VerifiedAuthenticationResponse,
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
 } from "@simplewebauthn/server";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import { json } from "body-parser";
 import { Request, Response, Router } from "express";
 
@@ -61,7 +61,7 @@ router.post(
     const assertionOptions = generateAuthenticationOptions({
       // Require users to use a previously-registered authenticator
       allowCredentials: existingCredentials.map((authenticator) => ({
-        id: base64.toArrayBuffer(authenticator.credentialID),
+        id: isoBase64URL.toBuffer(authenticator.credentialID),
         type: "public-key",
         // Optional
         transports: authenticator.transports,
@@ -154,11 +154,9 @@ router.post("/result", json(), async (req: Request, res: Response) => {
       expectedRPID: rpID,
       authenticator: {
         ...activeCredential,
-        credentialID: new Uint8Array(
-          base64.toArrayBuffer(activeCredential.credentialID, true)
-        ),
-        credentialPublicKey: new Uint8Array(
-          base64.toArrayBuffer(activeCredential.credentialPublicKey, true)
+        credentialID: isoBase64URL.toBuffer(activeCredential.credentialID),
+        credentialPublicKey: isoBase64URL.toBuffer(
+          activeCredential.credentialPublicKey
         ),
       },
     });

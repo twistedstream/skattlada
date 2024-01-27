@@ -1,4 +1,4 @@
-import base64 from "@hexagon/base64";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import { Express } from "express";
 import sinon from "sinon";
 import request, { Test as SuperTest } from "supertest";
@@ -34,11 +34,8 @@ type AttestationTestExpressAppOptions = {
 const testCred1 = testCredential1();
 const testValidatedCredential = {
   ...testCred1,
-  credentialID: base64.toArrayBuffer(testCred1.credentialID, true),
-  credentialPublicKey: base64.toArrayBuffer(
-    testCred1.credentialPublicKey,
-    true
-  ),
+  credentialID: isoBase64URL.toBuffer(testCred1.credentialID),
+  credentialPublicKey: isoBase64URL.toBuffer(testCred1.credentialPublicKey),
 };
 
 const testRegistration = {
@@ -403,7 +400,7 @@ test("routes/fido2/attestation", async (t) => {
         attestationType: "platform",
         excludeCredentials: [
           {
-            id: base64.toArrayBuffer(cred1.credentialID, true),
+            id: isoBase64URL.toBuffer(cred1.credentialID),
             type: "public-key",
             transports: cred1.transports ? [...cred1.transports] : [],
           },
