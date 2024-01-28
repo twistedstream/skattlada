@@ -3,7 +3,6 @@
   "version": "0.10.3",
   "private": true,
   "description": "Skattlåda File Sharing Server",
-  "main": "server.js",
   "engines": {
     "node": ">=18.10.0",
     "npm": ">=10.2.3"
