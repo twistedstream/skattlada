@@ -58,7 +58,7 @@ router.post(
     }
 
     // generate assertion options (challenge)
-    const assertionOptions = generateAuthenticationOptions({
+    const assertionOptions = await generateAuthenticationOptions({
       // Require users to use a previously-registered authenticator
       allowCredentials: existingCredentials.map((authenticator) => ({
         id: isoBase64URL.toBuffer(authenticator.credentialID),

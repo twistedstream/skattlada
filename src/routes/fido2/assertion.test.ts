@@ -256,7 +256,7 @@ test("routes/fido2/assertion", async (t) => {
         const cred1 = testCredential1();
         fetchUserByNameStub.resolves({});
         fetchCredentialsByUsernameStub.resolves([cred1]);
-        generateAuthenticationOptionsStub.returns({});
+        generateAuthenticationOptionsStub.resolves({});
 
         const { app } = createAssertionTestExpressApp(t);
         await performOptionsPostRequest(app).send({
@@ -281,7 +281,7 @@ test("routes/fido2/assertion", async (t) => {
         async (t) => {
           fetchUserByNameStub.resolves({});
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({});
+          generateAuthenticationOptionsStub.resolves({});
 
           const { app } = createAssertionTestExpressApp(t);
           await performOptionsPostRequest(app).send({
@@ -301,7 +301,7 @@ test("routes/fido2/assertion", async (t) => {
       t.test("with expected default user verification", async (t) => {
         fetchUserByNameStub.resolves({});
         fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-        generateAuthenticationOptionsStub.returns({});
+        generateAuthenticationOptionsStub.resolves({});
 
         const { app } = createAssertionTestExpressApp(t);
         await performOptionsPostRequest(app).send({
@@ -323,7 +323,7 @@ test("routes/fido2/assertion", async (t) => {
           const existingUser = {};
           fetchUserByNameStub.resolves(existingUser);
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({
+          generateAuthenticationOptionsStub.resolves({
             challenge: "CHALLENGE!",
           });
 
@@ -347,7 +347,7 @@ test("routes/fido2/assertion", async (t) => {
         async (t) => {
           fetchUserByNameStub.resolves({});
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({
+          generateAuthenticationOptionsStub.resolves({
             challenge: "CHALLENGE!",
           });
 
@@ -365,7 +365,7 @@ test("routes/fido2/assertion", async (t) => {
       t.test("with expected default user verification", async (t) => {
         fetchUserByNameStub.resolves({});
         fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-        generateAuthenticationOptionsStub.returns({
+        generateAuthenticationOptionsStub.resolves({
           challenge: "CHALLENGE!",
         });
 
@@ -385,7 +385,7 @@ test("routes/fido2/assertion", async (t) => {
         async (t) => {
           fetchUserByNameStub.resolves({});
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({
+          generateAuthenticationOptionsStub.resolves({
             challenge: "CHALLENGE!",
           });
 
@@ -405,7 +405,7 @@ test("routes/fido2/assertion", async (t) => {
         async (t) => {
           fetchUserByNameStub.resolves({});
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({
+          generateAuthenticationOptionsStub.resolves({
             challenge: "CHALLENGE!",
           });
 

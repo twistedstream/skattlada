@@ -95,7 +95,7 @@ router.post(
     }
 
     // generate options
-    const attestationOptions = generateRegistrationOptions({
+    const attestationOptions = await generateRegistrationOptions({
       rpName,
       rpID,
       userID: registeringUser.id,

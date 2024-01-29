@@ -2,7 +2,7 @@ import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import {
   AuthenticatorTransport,
   CredentialDeviceType,
-} from "@simplewebauthn/typescript-types";
+} from "@simplewebauthn/types";
 import crypto from "crypto";
 import { DateTime } from "luxon";
 import {

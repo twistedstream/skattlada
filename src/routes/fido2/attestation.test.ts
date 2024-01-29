@@ -383,7 +383,7 @@ test("routes/fido2/attestation", async (t) => {
         displayName: "Bob User",
       });
       fetchCredentialsByUserIdStub.resolves([cred1]);
-      generateRegistrationOptionsStub.returns({});
+      generateRegistrationOptionsStub.resolves({});
 
       const { app } = createAttestationTestExpressApp(t, { withAuth: true });
       await performOptionsPostRequest(app).send({
@@ -413,7 +413,7 @@ test("routes/fido2/attestation", async (t) => {
       const registeringUser = {};
       newUserStub.resolves(registeringUser);
       fetchUserByNameStub.resolves();
-      generateRegistrationOptionsStub.returns({
+      generateRegistrationOptionsStub.resolves({
         challenge: "CHALLENGE!",
       });
 
@@ -436,7 +436,7 @@ test("routes/fido2/attestation", async (t) => {
         const registeringUser = {};
         newUserStub.resolves(registeringUser);
         fetchUserByNameStub.resolves();
-        generateRegistrationOptionsStub.returns({
+        generateRegistrationOptionsStub.resolves({
           challenge: "CHALLENGE!",
         });
 

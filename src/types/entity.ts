@@ -1,7 +1,7 @@
 import {
   AuthenticatorTransport,
   CredentialDeviceType,
-} from "@simplewebauthn/typescript-types";
+} from "@simplewebauthn/types";
 import { DateTime, Duration } from "luxon";
 
 export interface User {
