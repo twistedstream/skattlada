@@ -41,7 +41,7 @@
     "@googleapis/drive": "^8.6.0",
     "@googleapis/sheets": "^5.0.5",
     "@simplewebauthn/server": "^7.2.0",
-    "async-mutex": "^0.4.0",
+    "async-mutex": "^0.4.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.0.0",
