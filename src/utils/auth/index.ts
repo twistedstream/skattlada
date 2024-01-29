@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import querystring from "querystring";
 
-import { UserVerificationRequirement } from "@simplewebauthn/typescript-types";
+import { UserVerificationRequirement } from "@simplewebauthn/types";
 import {
   AuthenticatedSession,
   AuthenticatingSession,

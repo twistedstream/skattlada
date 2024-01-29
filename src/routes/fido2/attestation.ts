@@ -1,9 +1,9 @@
-import base64 from "@hexagon/base64";
 import {
   VerifiedRegistrationResponse,
   generateRegistrationOptions,
   verifyRegistrationResponse,
 } from "@simplewebauthn/server";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import { json } from "body-parser";
 import { Response, Router } from "express";
 
@@ -95,7 +95,7 @@ router.post(
     }
 
     // generate options
-    const attestationOptions = generateRegistrationOptions({
+    const attestationOptions = await generateRegistrationOptions({
       rpName,
       rpID,
       userID: registeringUser.id,
@@ -103,7 +103,7 @@ router.post(
       userDisplayName: registeringUser.displayName,
       attestationType: attestation,
       excludeCredentials: excludeCredentials.map((c) => ({
-        id: base64.toArrayBuffer(c.credentialID, true),
+        id: isoBase64URL.toBuffer(c.credentialID),
         type: "public-key",
         transports: c.transports,
       })),
@@ -173,10 +173,9 @@ router.post(
       registrationInfo;
     const validatedCredential: Authenticator = {
       created: now(),
-      credentialID: base64.fromArrayBuffer(registrationInfo.credentialID, true),
-      credentialPublicKey: base64.fromArrayBuffer(
-        registrationInfo.credentialPublicKey,
-        true
+      credentialID: isoBase64URL.fromBuffer(registrationInfo.credentialID),
+      credentialPublicKey: isoBase64URL.fromBuffer(
+        registrationInfo.credentialPublicKey
       ),
       counter,
       aaguid,

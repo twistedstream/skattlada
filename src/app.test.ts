@@ -9,7 +9,7 @@ const expressApp = {
   engine: sinon.fake(),
 };
 const expressPinoMiddleware = {};
-const expressPinoFake = sinon.fake.returns(expressPinoMiddleware);
+const pinoHttpFake = sinon.fake.returns(expressPinoMiddleware);
 const staticMiddleware = {};
 const expressStaticFactoryFake = sinon.fake.returns(staticMiddleware);
 const expressFactoryFake: any = sinon.fake.returns(expressApp);
@@ -25,7 +25,7 @@ const errorHandlerFake = sinon.fake();
 function importModule(test: Tap.Test) {
   const { default: app } = test.mock("./app", {
     express: expressFactoryFake,
-    "express-pino-logger": expressPinoFake,
+    "pino-http": pinoHttpFake,
     "express-handlebars": {
       engine: handlebarsEngineFake,
     },
@@ -62,9 +62,9 @@ test("app", async (t) => {
   t.test("uses express-pino-logger middleware", async (t) => {
     importModule(t);
 
-    t.ok(expressPinoFake.called);
-    t.same(expressPinoFake.firstCall.firstArg, { logger: {} });
-    t.equal(expressPinoFake.firstCall.firstArg.logger, logger);
+    t.ok(pinoHttpFake.called);
+    t.same(pinoHttpFake.firstCall.firstArg, { logger: {} });
+    t.equal(pinoHttpFake.firstCall.firstArg.logger, logger);
 
     t.ok(expressApp.use.called);
     t.equal(expressApp.use.getCalls()[0].firstArg, expressPinoMiddleware);

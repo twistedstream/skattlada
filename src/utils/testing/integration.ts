@@ -1,5 +1,5 @@
-import base64 from "@hexagon/base64";
 import * as simpleWebAuthnServerDefaults from "@simplewebauthn/server";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import fs from "fs/promises";
 import { StatusCodes } from "http-status-codes";
 import { parse as parseHtml } from "node-html-parser";
@@ -323,10 +323,9 @@ export async function doRegistration(
 
   const testValidatedCredential = {
     ...newCredential,
-    credentialID: base64.toArrayBuffer(newCredential.credentialID, true),
-    credentialPublicKey: base64.toArrayBuffer(
-      newCredential.credentialPublicKey,
-      true
+    credentialID: isoBase64URL.toBuffer(newCredential.credentialID),
+    credentialPublicKey: isoBase64URL.toBuffer(
+      newCredential.credentialPublicKey
     ),
   };
 

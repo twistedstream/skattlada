@@ -1,4 +1,4 @@
-import { UserVerificationRequirement } from "@simplewebauthn/typescript-types";
+import { UserVerificationRequirement } from "@simplewebauthn/types";
 import { RegisterableSource, RegisteredAuthenticator, User } from "./entity";
 
 export interface RegisterableSession {

@@ -1,4 +1,4 @@
-import base64 from "@hexagon/base64";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import { Express } from "express";
 import sinon from "sinon";
 import request, {
@@ -256,7 +256,7 @@ test("routes/fido2/assertion", async (t) => {
         const cred1 = testCredential1();
         fetchUserByNameStub.resolves({});
         fetchCredentialsByUsernameStub.resolves([cred1]);
-        generateAuthenticationOptionsStub.returns({});
+        generateAuthenticationOptionsStub.resolves({});
 
         const { app } = createAssertionTestExpressApp(t);
         await performOptionsPostRequest(app).send({
@@ -268,7 +268,7 @@ test("routes/fido2/assertion", async (t) => {
           generateAuthenticationOptionsStub.firstCall.args[0].allowCredentials,
           [
             {
-              id: base64.toArrayBuffer(cred1.credentialID, true),
+              id: isoBase64URL.toBuffer(cred1.credentialID),
               type: "public-key",
               transports: cred1.transports ? [...cred1.transports] : [],
             },
@@ -281,7 +281,7 @@ test("routes/fido2/assertion", async (t) => {
         async (t) => {
           fetchUserByNameStub.resolves({});
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({});
+          generateAuthenticationOptionsStub.resolves({});
 
           const { app } = createAssertionTestExpressApp(t);
           await performOptionsPostRequest(app).send({
@@ -301,7 +301,7 @@ test("routes/fido2/assertion", async (t) => {
       t.test("with expected default user verification", async (t) => {
         fetchUserByNameStub.resolves({});
         fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-        generateAuthenticationOptionsStub.returns({});
+        generateAuthenticationOptionsStub.resolves({});
 
         const { app } = createAssertionTestExpressApp(t);
         await performOptionsPostRequest(app).send({
@@ -323,7 +323,7 @@ test("routes/fido2/assertion", async (t) => {
           const existingUser = {};
           fetchUserByNameStub.resolves(existingUser);
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({
+          generateAuthenticationOptionsStub.resolves({
             challenge: "CHALLENGE!",
           });
 
@@ -347,7 +347,7 @@ test("routes/fido2/assertion", async (t) => {
         async (t) => {
           fetchUserByNameStub.resolves({});
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({
+          generateAuthenticationOptionsStub.resolves({
             challenge: "CHALLENGE!",
           });
 
@@ -365,7 +365,7 @@ test("routes/fido2/assertion", async (t) => {
       t.test("with expected default user verification", async (t) => {
         fetchUserByNameStub.resolves({});
         fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-        generateAuthenticationOptionsStub.returns({
+        generateAuthenticationOptionsStub.resolves({
           challenge: "CHALLENGE!",
         });
 
@@ -385,7 +385,7 @@ test("routes/fido2/assertion", async (t) => {
         async (t) => {
           fetchUserByNameStub.resolves({});
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({
+          generateAuthenticationOptionsStub.resolves({
             challenge: "CHALLENGE!",
           });
 
@@ -405,7 +405,7 @@ test("routes/fido2/assertion", async (t) => {
         async (t) => {
           fetchUserByNameStub.resolves({});
           fetchCredentialsByUsernameStub.resolves([testCredential1()]);
-          generateAuthenticationOptionsStub.returns({
+          generateAuthenticationOptionsStub.resolves({
             challenge: "CHALLENGE!",
           });
 
@@ -622,12 +622,8 @@ test("routes/fido2/assertion", async (t) => {
         expectedRPID: "example.com",
         authenticator: {
           ...cred1,
-          credentialID: new Uint8Array(
-            base64.toArrayBuffer(cred1.credentialID, true)
-          ),
-          credentialPublicKey: new Uint8Array(
-            base64.toArrayBuffer(cred1.credentialPublicKey, true)
-          ),
+          credentialID: isoBase64URL.toBuffer(cred1.credentialID),
+          credentialPublicKey: isoBase64URL.toBuffer(cred1.credentialPublicKey),
           user: user1,
         },
       });

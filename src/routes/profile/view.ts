@@ -1,4 +1,4 @@
-import { CredentialDeviceType } from "@simplewebauthn/typescript-types";
+import { CredentialDeviceType } from "@simplewebauthn/types";
 
 import { fetchCredentialsByUserId } from "../../services/user";
 import { Authenticator, User } from "../../types/entity";
