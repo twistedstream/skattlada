@@ -51,7 +51,7 @@
     "express-async-errors": "^3.1.1",
     "express-handlebars": "^7.1.2",
     "friendly-mimes": "^2.0.0",
-    "google-auth-library": "^9.4.1",
+    "google-auth-library": "^9.5.0",
     "http-status-codes": "^2.3.0",
     "lodash": "^4.17.21",
     "luxon": "^3.4.4",
