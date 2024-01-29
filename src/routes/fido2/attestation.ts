@@ -169,14 +169,18 @@ router.post(
 
     // build credential object
     const registrationInfo = assertValue(verification.registrationInfo);
-    const { aaguid, counter, credentialDeviceType, credentialBackedUp } =
-      registrationInfo;
+    const {
+      aaguid,
+      credentialPublicKey,
+      credentialID,
+      counter,
+      credentialDeviceType,
+      credentialBackedUp,
+    } = registrationInfo;
     const validatedCredential: Authenticator = {
       created: now(),
-      credentialID: isoBase64URL.fromBuffer(registrationInfo.credentialID),
-      credentialPublicKey: isoBase64URL.fromBuffer(
-        registrationInfo.credentialPublicKey
-      ),
+      credentialID: isoBase64URL.fromBuffer(credentialID),
+      credentialPublicKey: isoBase64URL.fromBuffer(credentialPublicKey),
       counter,
       aaguid,
       credentialDeviceType,
