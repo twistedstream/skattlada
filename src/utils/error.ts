@@ -8,7 +8,7 @@ type ErrorHandlerData = {
   correlation_id?: string;
 };
 
-const uid = new ShortUniqueId({ length: 25 });
+const { randomUUID } = new ShortUniqueId({ length: 25 });
 
 export class ErrorWithData extends Error {
   constructor(message: string, data: any) {
@@ -68,7 +68,7 @@ export function buildErrorHandlerData(err: any): ErrorHandlerData {
 
   let correlation_id: string | undefined;
   if (statusCode >= StatusCodes.INTERNAL_SERVER_ERROR) {
-    correlation_id = uid();
+    correlation_id = randomUUID();
   }
 
   return {
