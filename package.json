@@ -74,7 +74,7 @@
     "@types/supertest": "^6.0.2",
     "@types/tap": "^15.0.7",
     "cookie": "^0.6.0",
-    "node-html-parser": "^6.1.10",
+    "node-html-parser": "^6.1.12",
     "nodemon": "^3.0.3",
     "pino-pretty": "^10.2.0",
     "prettier": "^3.2.4",
