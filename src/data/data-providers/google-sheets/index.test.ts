@@ -1,7 +1,13 @@
 import sinon from "sinon";
 import { test } from "tap";
 
-import { RowData } from "../../../types/table";
+import {
+  GoogleSheetsTableOptions,
+  KeyColumnSelector,
+  Row,
+  RowData,
+  SearchPredicate,
+} from "google-sheets-table";
 import {
   testCredential1,
   testInvite1,
@@ -17,13 +23,73 @@ import { USER_CONSTRAINTS, USER_SHEET_NAME } from "./user";
 
 // test objects
 
-const countRowsStub = sinon.stub();
-const deleteRowStub = sinon.stub();
-const findKeyRowsStub = sinon.stub();
-const findRowStub = sinon.stub();
-const findRowsStub = sinon.stub();
-const insertRowStub = sinon.stub();
-const updateRowStub = sinon.stub();
+// TODO: once all tests are passing, go through and see which of these are unused and can be removed
+
+const usersCountRowsStub = sinon.stub();
+const usersFindRowsStub = sinon.stub();
+const usersFindRowStub = sinon.stub();
+const usersFindKeyRowsStub = sinon.stub();
+const usersInsertRowStub = sinon.stub();
+const usersUpdateRowStub = sinon.stub();
+const usersDeleteRowStub = sinon.stub();
+
+const credentialsFindRowsStub = sinon.stub();
+const credentialsFindRowStub = sinon.stub();
+const credentialsFindKeyRowsStub = sinon.stub();
+const credentialsInsertRowStub = sinon.stub();
+const credentialsUpdateRowStub = sinon.stub();
+const credentialsDeleteRowStub = sinon.stub();
+
+const invitesFindRowsStub = sinon.stub();
+const invitesFindRowStub = sinon.stub();
+const invitesFindKeyRowsStub = sinon.stub();
+const invitesInsertRowStub = sinon.stub();
+const invitesUpdateRowStub = sinon.stub();
+const invitesDeleteRowStub = sinon.stub();
+
+const sharesFindRowsStub = sinon.stub();
+const sharesFindRowStub = sinon.stub();
+const sharesFindKeyRowsStub = sinon.stub();
+const sharesInsertRowStub = sinon.stub();
+const sharesUpdateRowStub = sinon.stub();
+const sharesDeleteRowStub = sinon.stub();
+
+class MockGoogleSheetsTable {
+  readonly options: GoogleSheetsTableOptions;
+  private _missingStubBindingError = new Error("Missing test stub binding");
+
+  constructor(options: GoogleSheetsTableOptions) {
+    this.options = options;
+  }
+
+  async countRows(): Promise<number> {
+    throw this._missingStubBindingError;
+  }
+  async findRows(_predicate: SearchPredicate): Promise<{ rows: Row[] }> {
+    throw this._missingStubBindingError;
+  }
+  async findRow(_predicate: SearchPredicate): Promise<{ row?: Row }> {
+    throw this._missingStubBindingError;
+  }
+  async findKeyRows<T extends keyof any>(
+    _selector: KeyColumnSelector<T>,
+    _keys: T[]
+  ): Promise<{ rowsByKey: Record<T, Row> }> {
+    throw this._missingStubBindingError;
+  }
+  async insertRow(_newRow: RowData): Promise<{ insertedRow: Row }> {
+    throw this._missingStubBindingError;
+  }
+  async updateRow(
+    _predicate: SearchPredicate,
+    _rowUpdates: RowData
+  ): Promise<{ updatedRow: Row }> {
+    throw this._missingStubBindingError;
+  }
+  async deleteRow(_predicate: SearchPredicate): Promise<void> {
+    throw this._missingStubBindingError;
+  }
+}
 
 const credentialToRowStub = sinon.stub();
 const rowToCredentialStub = sinon.stub();
@@ -46,14 +112,8 @@ const logger = {
 
 function importModule(test: Tap.Test) {
   return test.mock("./index", {
-    "../../../utils/google/sheets": {
-      countRows: countRowsStub,
-      deleteRow: deleteRowStub,
-      findKeyRows: findKeyRowsStub,
-      findRow: findRowStub,
-      findRows: findRowsStub,
-      insertRow: insertRowStub,
-      updateRow: updateRowStub,
+    "google-sheets-table": {
+      GoogleSheetsTable: MockGoogleSheetsTable,
     },
     "./credential": {
       CREDENTIAL_CONSTRAINTS,
@@ -80,6 +140,11 @@ function importModule(test: Tap.Test) {
       userToRow: userToRowStub,
     },
     "../../../utils/logger": { logger },
+    "../../../utils/config": {
+      googleAuthClientEmail: "service_account@google.com",
+      googleAuthPrivateKey: "private-key",
+      googleSpreadsheetId: "spreadsheet-id",
+    },
   });
 }
 
@@ -100,6 +165,60 @@ test("data/data-providers/google-sheets/index", async (t) => {
 
         t.equal(result._initialized, false);
       });
+
+      t.test("creates expected GoogleSheetsTable objects", async (t) => {
+        const { GoogleSheetsDataProvider } = importModule(t);
+
+        const credentials = {
+          client_email: "service_account@google.com",
+          private_key: "private-key",
+        };
+        const spreadsheetId = "spreadsheet-id";
+
+        t.test("for users", async (t) => {
+          const result = new GoogleSheetsDataProvider();
+
+          t.same(result._usersTable.options, {
+            credentials,
+            spreadsheetId,
+            sheetName: USER_SHEET_NAME,
+            columnConstraints: USER_CONSTRAINTS,
+          });
+        });
+
+        t.test("for credentials", async (t) => {
+          const result = new GoogleSheetsDataProvider();
+
+          t.same(result._credentialsTable.options, {
+            credentials,
+            spreadsheetId,
+            sheetName: CREDENTIAL_SHEET_NAME,
+            columnConstraints: CREDENTIAL_CONSTRAINTS,
+          });
+        });
+
+        t.test("for invites", async (t) => {
+          const result = new GoogleSheetsDataProvider();
+
+          t.same(result._invitesTable.options, {
+            credentials,
+            spreadsheetId,
+            sheetName: INVITE_SHEET_NAME,
+            columnConstraints: INVITE_CONSTRAINTS,
+          });
+        });
+
+        t.test("for shares", async (t) => {
+          const result = new GoogleSheetsDataProvider();
+
+          t.same(result._sharesTable.options, {
+            credentials,
+            spreadsheetId,
+            sheetName: SHARE_SHEET_NAME,
+            columnConstraints: SHARE_CONSTRAINTS,
+          });
+        });
+      });
     });
 
     t.test("instance methods", async (t) => {
@@ -108,6 +227,49 @@ test("data/data-providers/google-sheets/index", async (t) => {
       t.beforeEach(async () => {
         const { GoogleSheetsDataProvider } = importModule(t);
         provider = new GoogleSheetsDataProvider();
+
+        // wire up stubs for users GoogleSheetsTable instance
+        const usersTable = (provider as any)._usersTable;
+        usersTable.countRows = usersCountRowsStub.bind(usersTable);
+        usersTable.findRows = usersFindRowsStub.bind(usersTable);
+        usersTable.findRow = usersFindRowStub.bind(usersTable);
+        usersTable.findKeyRows = usersFindKeyRowsStub.bind(usersTable);
+        usersTable.insertRow = usersInsertRowStub.bind(usersTable);
+        usersTable.updateRow = usersUpdateRowStub.bind(usersTable);
+        usersTable.deleteRow = usersDeleteRowStub.bind(usersTable);
+
+        const credentialsTable = (provider as any)._credentialsTable;
+        // unused: countRows
+        credentialsTable.findRows =
+          credentialsFindRowsStub.bind(credentialsTable);
+        credentialsTable.findRow =
+          credentialsFindRowStub.bind(credentialsTable);
+        credentialsTable.findKeyRows =
+          credentialsFindKeyRowsStub.bind(credentialsTable);
+        credentialsTable.insertRow =
+          credentialsInsertRowStub.bind(credentialsTable);
+        credentialsTable.updateRow =
+          credentialsUpdateRowStub.bind(credentialsTable);
+        credentialsTable.deleteRow =
+          credentialsDeleteRowStub.bind(credentialsTable);
+
+        const invitesTable = (provider as any)._invitesTable;
+        // unused: countRows
+        invitesTable.findRows = invitesFindRowsStub.bind(invitesTable);
+        invitesTable.findRow = invitesFindRowStub.bind(invitesTable);
+        invitesTable.findKeyRows = invitesFindKeyRowsStub.bind(invitesTable);
+        invitesTable.insertRow = invitesInsertRowStub.bind(invitesTable);
+        invitesTable.updateRow = invitesUpdateRowStub.bind(invitesTable);
+        invitesTable.deleteRow = invitesDeleteRowStub.bind(invitesTable);
+
+        const sharesTable = (provider as any)._sharesTable;
+        // unused: countRows
+        sharesTable.findRows = sharesFindRowsStub.bind(sharesTable);
+        sharesTable.findRow = sharesFindRowStub.bind(sharesTable);
+        sharesTable.findKeyRows = sharesFindKeyRowsStub.bind(sharesTable);
+        sharesTable.insertRow = sharesInsertRowStub.bind(sharesTable);
+        sharesTable.updateRow = sharesUpdateRowStub.bind(sharesTable);
+        sharesTable.deleteRow = sharesDeleteRowStub.bind(sharesTable);
       });
 
       t.test("initialize", async (t) => {
@@ -133,12 +295,11 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.getUserCount();
           } catch {}
 
-          t.ok(countRowsStub.called);
-          t.equal(countRowsStub.firstCall.firstArg, USER_SHEET_NAME);
+          t.ok(usersCountRowsStub.called);
         });
 
         t.test("returns expected count", async (t) => {
-          countRowsStub.resolves(42);
+          usersCountRowsStub.resolves(42);
 
           const result = await provider.getUserCount();
 
@@ -152,9 +313,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.findUserById("user-id");
           } catch {}
 
-          t.ok(findRowStub.called);
-          t.equal(findRowStub.firstCall.args[0], USER_SHEET_NAME);
-          const predicate: (r: any) => boolean = findRowStub.firstCall.args[1];
+          t.ok(usersFindRowStub.called);
+          const predicate: (r: any) => boolean =
+            usersFindRowStub.firstCall.firstArg;
           t.ok(predicate({ id: "user-id" }));
           t.notOk(predicate({ id: "not-user-id" }));
         });
@@ -163,7 +324,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const row = {};
 
           t.beforeEach(async () => {
-            findRowStub.resolves({ row });
+            usersFindRowStub.resolves({ row });
           });
 
           t.test("converts it to a user object", async (t) => {
@@ -189,7 +350,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           "if the user row does not exist, returns undefined",
           async (t) => {
             const row = undefined;
-            findRowStub.resolves({ row });
+            usersFindRowStub.resolves({ row });
 
             const result = await provider.findUserById("user-id");
 
@@ -204,9 +365,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.findUserByName("jim");
           } catch {}
 
-          t.ok(findRowStub.called);
-          t.equal(findRowStub.firstCall.args[0], USER_SHEET_NAME);
-          const predicate: (r: any) => boolean = findRowStub.firstCall.args[1];
+          t.ok(usersFindRowStub.called);
+          const predicate: (r: any) => boolean =
+            usersFindRowStub.firstCall.firstArg;
           t.ok(predicate({ username: "jim" }));
           t.notOk(predicate({ username: "not-jim" }));
         });
@@ -215,7 +376,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const row = {};
 
           t.beforeEach(async () => {
-            findRowStub.resolves({ row });
+            usersFindRowStub.resolves({ row });
           });
 
           t.test("converts it to a user object", async (t) => {
@@ -239,7 +400,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
 
         t.test("if a user is not found, returns undefined", async (t) => {
           const row = undefined;
-          findRowStub.resolves({ row });
+          usersFindRowStub.resolves({ row });
 
           const result = await provider.findUserByName("user-id");
 
@@ -267,17 +428,15 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.insertUser(user);
           } catch {}
 
-          t.ok(insertRowStub.called);
-          t.equal(insertRowStub.firstCall.args[0], USER_SHEET_NAME);
-          t.equal(insertRowStub.firstCall.args[1], newRow);
-          t.equal(insertRowStub.firstCall.args[2], USER_CONSTRAINTS);
+          t.ok(usersInsertRowStub.called);
+          t.equal(usersInsertRowStub.firstCall.firstArg, newRow);
         });
 
         t.test("converts the returned row to a user object", async (t) => {
           const newRow = {};
           userToRowStub.returns(newRow);
           const insertedRow = {};
-          insertRowStub.resolves({ insertedRow });
+          usersInsertRowStub.resolves({ insertedRow });
 
           try {
             await provider.insertUser(user);
@@ -291,7 +450,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const newRow = {};
           userToRowStub.returns(newRow);
           const insertedRow = {};
-          insertRowStub.resolves({ insertedRow });
+          usersInsertRowStub.resolves({ insertedRow });
           const insertedUser = testUser1();
           rowToUserStub.returns(insertedUser);
 
@@ -307,16 +466,14 @@ test("data/data-providers/google-sheets/index", async (t) => {
 
           await provider.updateUser(user);
 
-          t.ok(updateRowStub.called);
-          t.equal(updateRowStub.firstCall.args[0], USER_SHEET_NAME);
+          t.ok(usersUpdateRowStub.called);
           const predicate: (r: any) => boolean =
-            updateRowStub.firstCall.args[1];
+            usersUpdateRowStub.firstCall.args[0];
           t.ok(predicate({ id: "123abc" }));
           t.notOk(predicate({ id: "not-123abc" }));
-          t.same(updateRowStub.firstCall.args[2], {
+          t.same(usersUpdateRowStub.firstCall.args[1], {
             display_name: "Bob User",
           });
-          t.equal(updateRowStub.firstCall.args[3], USER_CONSTRAINTS);
         });
       });
 
@@ -326,9 +483,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.findCredentialById("cred-id");
           } catch {}
 
-          t.ok(findRowStub.called);
-          t.equal(findRowStub.firstCall.args[0], CREDENTIAL_SHEET_NAME);
-          const predicate: (r: any) => boolean = findRowStub.firstCall.args[1];
+          t.ok(credentialsFindRowStub.called);
+          const predicate: (r: any) => boolean =
+            credentialsFindRowStub.firstCall.firstArg;
           t.ok(predicate({ id: "cred-id" }));
           t.notOk(predicate({ id: "not-cred-id" }));
         });
@@ -337,7 +494,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const credentialRow = { id: "cred-id", user_id: "user-id" };
 
           t.beforeEach(async () => {
-            findRowStub.onFirstCall().resolves({ row: credentialRow });
+            credentialsFindRowStub.resolves({ row: credentialRow });
           });
 
           t.test(
@@ -347,10 +504,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 await provider.findCredentialById("cred-id");
               } catch {}
 
-              t.ok(findRowStub.called);
-              t.equal(findRowStub.secondCall.args[0], USER_SHEET_NAME);
+              t.ok(usersFindRowStub.called);
               const predicate: (r: any) => boolean =
-                findRowStub.secondCall.args[1];
+                usersFindRowStub.firstCall.firstArg;
               t.ok(predicate({ id: "user-id" }));
               t.notOk(predicate({ id: "not-user-id" }));
             }
@@ -359,7 +515,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           t.test(
             "if the user row doesn't exist, throws expected error",
             async (t) => {
-              findRowStub.onSecondCall().resolves({ row: undefined });
+              usersFindRowStub.resolves({ row: undefined });
 
               t.rejects(() => provider.findCredentialById("cred-id"), {
                 message:
@@ -372,7 +528,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             const userRow = {};
 
             t.beforeEach(async () => {
-              findRowStub.onSecondCall().resolves({ row: userRow });
+              usersFindRowStub.resolves({ row: userRow });
             });
 
             t.test("converts it to a credential object", async (t) => {
@@ -399,7 +555,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
         t.test(
           "if the credential row does not exist, returns undefined",
           async (t) => {
-            findRowStub.onFirstCall().resolves({ row: undefined });
+            credentialsFindRowStub.resolves({ row: undefined });
 
             const result = await provider.findCredentialById("cred-id");
 
@@ -416,15 +572,14 @@ test("data/data-providers/google-sheets/index", async (t) => {
               await provider.findUserCredential("user-id", "cred-id");
             } catch {}
 
-            t.ok(findRowStub.called);
-            t.equal(findRowStub.firstCall.args[0], USER_SHEET_NAME);
+            t.ok(usersFindRowStub.called);
             const userPredicate: (r: any) => boolean =
-              findRowStub.firstCall.args[1];
+              usersFindRowStub.firstCall.firstArg;
             t.ok(userPredicate({ id: "user-id" }));
             t.notOk(userPredicate({ id: "not-user-id" }));
-            t.equal(findRowStub.secondCall.args[0], CREDENTIAL_SHEET_NAME);
+
             const credentialPredicate: (r: any) => boolean =
-              findRowStub.secondCall.args[1];
+              credentialsFindRowStub.firstCall.firstArg;
             t.ok(credentialPredicate({ id: "cred-id", user_id: "user-id" }));
             t.notOk(
               credentialPredicate({ id: "not-cred-id", user_id: "user-id" })
@@ -440,8 +595,8 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const credentialRow = { id: "cred-id", user_id: "user-id" };
 
           t.beforeEach(async () => {
-            findRowStub.onFirstCall().resolves({ row: userRow });
-            findRowStub.onSecondCall().resolves({ row: credentialRow });
+            usersFindRowStub.resolves({ row: userRow });
+            credentialsFindRowStub.resolves({ row: credentialRow });
           });
 
           t.test("converts them to a credential object", async (t) => {
@@ -468,8 +623,8 @@ test("data/data-providers/google-sheets/index", async (t) => {
         });
 
         t.test("if no rows exist, returns nothing", async (t) => {
-          findRowStub.onFirstCall().resolves({ row: undefined });
-          findRowStub.onSecondCall().resolves({ row: undefined });
+          usersFindRowStub.resolves({ row: undefined });
+          credentialsFindRowStub.resolves({ row: undefined });
 
           const result = await provider.findUserCredential(
             "user-id",
@@ -488,17 +643,15 @@ test("data/data-providers/google-sheets/index", async (t) => {
               await provider.findCredentialsByUser("user-id");
             } catch {}
 
-            t.ok(findRowStub.called);
-            t.equal(findRowStub.firstCall.args[0], USER_SHEET_NAME);
+            t.ok(usersFindRowStub.called);
             const userPredicate: (r: any) => boolean =
-              findRowStub.firstCall.args[1];
+              usersFindRowStub.firstCall.firstArg;
             t.ok(userPredicate({ id: "user-id" }));
             t.notOk(userPredicate({ id: "not-user-id" }));
 
-            t.ok(findRowsStub.called);
-            t.equal(findRowsStub.firstCall.args[0], CREDENTIAL_SHEET_NAME);
+            t.ok(credentialsFindRowsStub.called);
             const credentialPredicate: (r: any) => boolean =
-              findRowsStub.firstCall.args[1];
+              credentialsFindRowsStub.firstCall.firstArg;
             t.ok(credentialPredicate({ user_id: "user-id" }));
             t.notOk(credentialPredicate({ user_id: "not-user-id" }));
           }
@@ -511,8 +664,8 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const credentialRow3 = { id: "cred-id-3", user_id: "user-id" };
 
           t.beforeEach(async () => {
-            findRowStub.resolves({ row: userRow });
-            findRowsStub.resolves({
+            usersFindRowStub.resolves({ row: userRow });
+            credentialsFindRowsStub.resolves({
               rows: [credentialRow1, credentialRow2, credentialRow3],
             });
           });
@@ -557,8 +710,8 @@ test("data/data-providers/google-sheets/index", async (t) => {
         });
 
         t.test("if no rows exist, returns an empty array", async (t) => {
-          findRowStub.resolves({ row: undefined });
-          findRowsStub.resolves({
+          usersFindRowStub.resolves({ row: undefined });
+          credentialsFindRowsStub.resolves({
             rows: [],
           });
 
@@ -576,9 +729,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.insertCredential("user-id", credential);
           } catch {}
 
-          t.ok(findRowStub.called);
-          t.equal(findRowStub.firstCall.args[0], USER_SHEET_NAME);
-          const predicate: (r: any) => boolean = findRowStub.firstCall.args[1];
+          t.ok(usersFindRowStub.called);
+          const predicate: (r: any) => boolean =
+            usersFindRowStub.firstCall.firstArg;
           t.ok(predicate({ id: "user-id" }));
           t.notOk(predicate({ id: "not-user-id" }));
         });
@@ -586,7 +739,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
         t.test(
           "if user row does not exist, throws expected error",
           async (t) => {
-            findRowStub.resolves({ row: undefined });
+            usersFindRowStub.resolves({ row: undefined });
 
             t.rejects(() => provider.insertCredential("user-id", credential), {
               message: "User does not exist",
@@ -598,7 +751,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const userRow = {};
 
           t.beforeEach(async () => {
-            findRowStub.resolves({ row: userRow });
+            usersFindRowStub.resolves({ row: userRow });
           });
 
           t.test("converts the credential object to a row", async (t) => {
@@ -619,10 +772,11 @@ test("data/data-providers/google-sheets/index", async (t) => {
 
               await provider.insertCredential("user-id", credential);
 
-              t.ok(insertRowStub.called);
-              t.equal(insertRowStub.firstCall.args[0], CREDENTIAL_SHEET_NAME);
-              t.equal(insertRowStub.firstCall.args[1], credentialRow);
-              t.equal(insertRowStub.firstCall.args[2], CREDENTIAL_CONSTRAINTS);
+              t.ok(credentialsInsertRowStub.called);
+              t.equal(
+                credentialsInsertRowStub.firstCall.firstArg,
+                credentialRow
+              );
             }
           );
         });
@@ -636,10 +790,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
               await provider.deleteCredential("cred-id");
             } catch {}
 
-            t.ok(deleteRowStub.called);
-            t.equal(deleteRowStub.firstCall.args[0], CREDENTIAL_SHEET_NAME);
+            t.ok(credentialsDeleteRowStub.called);
             const predicate: (r: any) => boolean =
-              deleteRowStub.firstCall.args[1];
+              credentialsDeleteRowStub.firstCall.firstArg;
             t.ok(predicate({ id: "cred-id" }));
             t.notOk(predicate({ id: "not-cred-id" }));
           }
@@ -652,9 +805,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.findInviteById("invite-id");
           } catch {}
 
-          t.ok(findRowStub.called);
-          t.equal(findRowStub.firstCall.args[0], INVITE_SHEET_NAME);
-          const predicate: (r: any) => boolean = findRowStub.firstCall.args[1];
+          t.ok(invitesFindRowStub.called);
+          const predicate: (r: any) => boolean =
+            invitesFindRowStub.firstCall.firstArg;
           t.ok(predicate({ id: "invite-id" }));
           t.notOk(predicate({ id: "not-invite-id" }));
         });
@@ -663,7 +816,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           let inviteRow: RowData = {};
 
           t.beforeEach(async () => {
-            findRowStub.resolves({ row: inviteRow });
+            invitesFindRowStub.resolves({ row: inviteRow });
           });
 
           t.test("when the invite has not been claimed", async (t) => {
@@ -678,12 +831,11 @@ test("data/data-providers/google-sheets/index", async (t) => {
                   await provider.findInviteById("invite-id");
                 } catch {}
 
-                t.ok(findKeyRowsStub.called);
-                t.equal(findKeyRowsStub.firstCall.args[0], USER_SHEET_NAME);
+                t.ok(usersFindKeyRowsStub.called);
                 const selector: (r: any) => any =
-                  findKeyRowsStub.firstCall.args[1];
+                  usersFindKeyRowsStub.firstCall.args[0];
                 t.equal(selector({ id: "user-id" }), "user-id");
-                t.same(findKeyRowsStub.firstCall.args[2], [
+                t.same(usersFindKeyRowsStub.firstCall.args[1], [
                   "created-by-user-id",
                 ]);
               }
@@ -691,8 +843,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
 
             t.test("converts the two rows to an invite object", async (t) => {
               const createdByRow = {};
-              const claimedByRow = {};
-              findKeyRowsStub.resolves({
+              usersFindKeyRowsStub.resolves({
                 rowsByKey: { "created-by-user-id": createdByRow },
               });
 
@@ -720,12 +871,11 @@ test("data/data-providers/google-sheets/index", async (t) => {
                   await provider.findInviteById("invite-id");
                 } catch {}
 
-                t.ok(findKeyRowsStub.called);
-                t.equal(findKeyRowsStub.firstCall.args[0], USER_SHEET_NAME);
+                t.ok(usersFindKeyRowsStub.called);
                 const selector: (r: any) => any =
-                  findKeyRowsStub.firstCall.args[1];
+                  usersFindKeyRowsStub.firstCall.args[0];
                 t.equal(selector({ id: "user-id" }), "user-id");
-                t.same(findKeyRowsStub.firstCall.args[2], [
+                t.same(usersFindKeyRowsStub.firstCall.args[1], [
                   "created-by-user-id",
                   "claimed-by-user-id",
                 ]);
@@ -735,7 +885,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             t.test("converts the three rows to an invite object", async (t) => {
               const createdByRow = {};
               const claimedByRow = {};
-              findKeyRowsStub.resolves({
+              usersFindKeyRowsStub.resolves({
                 rowsByKey: {
                   "created-by-user-id": createdByRow,
                   "claimed-by-user-id": claimedByRow,
@@ -754,7 +904,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           });
 
           t.test("returns the invite object", async (t) => {
-            findKeyRowsStub.resolves({
+            usersFindKeyRowsStub.resolves({
               rowsByKey: {},
             });
             const invite = {};
@@ -769,7 +919,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
         t.test(
           "if the invite row doesn't exists, returns nothing",
           async (t) => {
-            findRowStub.resolves({ row: undefined });
+            invitesFindRowStub.resolves({ row: undefined });
 
             const result = await provider.findInviteById("invite-id");
 
@@ -798,10 +948,8 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.insertInvite(invite);
           } catch {}
 
-          t.ok(insertRowStub.called);
-          t.equal(insertRowStub.firstCall.args[0], INVITE_SHEET_NAME);
-          t.equal(insertRowStub.firstCall.args[1], inviteRow);
-          t.equal(insertRowStub.firstCall.args[2], INVITE_CONSTRAINTS);
+          t.ok(invitesInsertRowStub.called);
+          t.equal(invitesInsertRowStub.firstCall.firstArg, inviteRow);
         });
 
         t.test(
@@ -811,7 +959,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             const claimedByRow = {};
             inviteToRowStub.returns({ createdByRow, claimedByRow });
             const insertedRow = {};
-            insertRowStub.resolves({ insertedRow });
+            invitesInsertRowStub.resolves({ insertedRow });
 
             try {
               await provider.insertInvite(invite);
@@ -829,7 +977,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const claimedByRow = {};
           inviteToRowStub.returns({ createdByRow, claimedByRow });
           const insertedRow = {};
-          insertRowStub.resolves({ insertedRow });
+          invitesInsertRowStub.resolves({ insertedRow });
           const newInvite = {};
           rowToInviteStub.returns(newInvite);
 
@@ -848,13 +996,12 @@ test("data/data-providers/google-sheets/index", async (t) => {
             async (t) => {
               await provider.updateInvite(invite);
 
-              t.ok(updateRowStub.called);
-              t.equal(updateRowStub.firstCall.args[0], INVITE_SHEET_NAME);
+              t.ok(invitesUpdateRowStub.called);
               const predicate: (r: any) => boolean =
-                updateRowStub.firstCall.args[1];
+                invitesUpdateRowStub.firstCall.args[0];
               t.ok(predicate({ id: "INVITE_1" }));
               t.notOk(predicate({ id: "not-INVITE_1" }));
-              t.same(updateRowStub.firstCall.args[2], {
+              t.same(invitesUpdateRowStub.firstCall.args[1], {
                 claimed_by: undefined,
                 claimed: undefined,
               });
@@ -871,13 +1018,12 @@ test("data/data-providers/google-sheets/index", async (t) => {
             async (t) => {
               await provider.updateInvite(invite);
 
-              t.ok(updateRowStub.called);
-              t.equal(updateRowStub.firstCall.args[0], INVITE_SHEET_NAME);
+              t.ok(invitesUpdateRowStub.called);
               const predicate: (r: any) => boolean =
-                updateRowStub.firstCall.args[1];
+                invitesUpdateRowStub.firstCall.args[0];
               t.ok(predicate({ id: "INVITE_1" }));
               t.notOk(predicate({ id: "not-INVITE_1" }));
-              t.same(updateRowStub.firstCall.args[2], {
+              t.same(invitesUpdateRowStub.firstCall.args[1], {
                 claimed_by: "123abc",
                 claimed: "2023-01-02T00:00:00.000Z",
               });
@@ -892,9 +1038,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.findShareById("share-id");
           } catch {}
 
-          t.ok(findRowStub.called);
-          t.equal(findRowStub.firstCall.args[0], SHARE_SHEET_NAME);
-          const predicate: (r: any) => boolean = findRowStub.firstCall.args[1];
+          t.ok(sharesFindRowStub.called);
+          const predicate: (r: any) => boolean =
+            sharesFindRowStub.firstCall.firstArg;
           t.ok(predicate({ id: "share-id" }));
           t.notOk(predicate({ id: "not-share-id" }));
         });
@@ -903,7 +1049,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           let shareRow: RowData = {};
 
           t.beforeEach(async () => {
-            findRowStub.resolves({ row: shareRow });
+            sharesFindRowStub.resolves({ row: shareRow });
           });
 
           t.test("when the share has not been claimed", async (t) => {
@@ -918,12 +1064,11 @@ test("data/data-providers/google-sheets/index", async (t) => {
                   await provider.findShareById("share-id");
                 } catch {}
 
-                t.ok(findKeyRowsStub.called);
-                t.equal(findKeyRowsStub.firstCall.args[0], USER_SHEET_NAME);
+                t.ok(usersFindKeyRowsStub.called);
                 const selector: (r: any) => any =
-                  findKeyRowsStub.firstCall.args[1];
+                  usersFindKeyRowsStub.firstCall.args[0];
                 t.equal(selector({ id: "user-id" }), "user-id");
-                t.same(findKeyRowsStub.firstCall.args[2], [
+                t.same(usersFindKeyRowsStub.firstCall.args[1], [
                   "created-by-user-id",
                 ]);
               }
@@ -931,7 +1076,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
 
             t.test("converts the two rows to an share object", async (t) => {
               const createdByRow = {};
-              findKeyRowsStub.resolves({
+              usersFindKeyRowsStub.resolves({
                 rowsByKey: { "created-by-user-id": createdByRow },
               });
 
@@ -959,12 +1104,11 @@ test("data/data-providers/google-sheets/index", async (t) => {
                   await provider.findShareById("share-id");
                 } catch {}
 
-                t.ok(findKeyRowsStub.called);
-                t.equal(findKeyRowsStub.firstCall.args[0], USER_SHEET_NAME);
+                t.ok(usersFindKeyRowsStub.called);
                 const selector: (r: any) => any =
-                  findKeyRowsStub.firstCall.args[1];
+                  usersFindKeyRowsStub.firstCall.args[0];
                 t.equal(selector({ id: "user-id" }), "user-id");
-                t.same(findKeyRowsStub.firstCall.args[2], [
+                t.same(usersFindKeyRowsStub.firstCall.args[1], [
                   "created-by-user-id",
                   "claimed-by-user-id",
                 ]);
@@ -974,7 +1118,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             t.test("converts the three rows to an share object", async (t) => {
               const createdByRow = {};
               const claimedByRow = {};
-              findKeyRowsStub.resolves({
+              usersFindKeyRowsStub.resolves({
                 rowsByKey: {
                   "created-by-user-id": createdByRow,
                   "claimed-by-user-id": claimedByRow,
@@ -993,7 +1137,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           });
 
           t.test("returns the share object", async (t) => {
-            findKeyRowsStub.resolves({
+            usersFindKeyRowsStub.resolves({
               rowsByKey: {},
             });
             const share = {};
@@ -1008,7 +1152,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
         t.test(
           "if the share row doesn't exists, returns nothing",
           async (t) => {
-            findRowStub.resolves({ row: undefined });
+            sharesFindRowStub.resolves({ row: undefined });
 
             const result = await provider.findShareById("share-id");
 
@@ -1025,10 +1169,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
               await provider.findSharesByClaimedUserId("user-id");
             } catch {}
 
-            t.ok(findRowsStub.called);
-            t.equal(findRowsStub.firstCall.args[0], SHARE_SHEET_NAME);
+            t.ok(sharesFindRowsStub.called);
             const predicate: (r: any) => boolean =
-              findRowsStub.firstCall.args[1];
+              sharesFindRowsStub.firstCall.firstArg;
             t.ok(predicate({ claimed_by: "user-id" }));
             t.notOk(predicate({ claimed_by: "not-user-id" }));
           }
@@ -1037,7 +1180,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
         t.test(
           "finds key rows in the users sheet that include both creating and claiming users",
           async (t) => {
-            findRowsStub.resolves({
+            sharesFindRowsStub.resolves({
               rows: [
                 { created_by: "user-id-1", claimed_by: "user-id" },
                 { created_by: "user-id-2", claimed_by: "user-id" },
@@ -1049,11 +1192,11 @@ test("data/data-providers/google-sheets/index", async (t) => {
               await provider.findSharesByClaimedUserId("user-id");
             } catch {}
 
-            t.ok(findKeyRowsStub.called);
-            t.equal(findKeyRowsStub.firstCall.args[0], USER_SHEET_NAME);
-            const selector: (r: any) => any = findKeyRowsStub.firstCall.args[1];
+            t.ok(usersFindKeyRowsStub.called);
+            const selector: (r: any) => any =
+              usersFindKeyRowsStub.firstCall.args[0];
             t.equal(selector({ id: "user-id" }), "user-id");
-            t.same(findKeyRowsStub.firstCall.args[2], [
+            t.same(usersFindKeyRowsStub.firstCall.args[1], [
               "user-id-1",
               "user-id",
               "user-id-2",
@@ -1079,14 +1222,14 @@ test("data/data-providers/google-sheets/index", async (t) => {
               created_by: "user-id-3",
               claimed_by: "user-id",
             };
-            findRowsStub.resolves({
+            sharesFindRowsStub.resolves({
               rows: [shareRow1, shareRow2, shareRow3],
             });
             const claimedByRow = {};
             const createdBy1Row = {};
             const createdBy2Row = {};
             const createdBy3Row = {};
-            findKeyRowsStub.resolves({
+            usersFindKeyRowsStub.resolves({
               rowsByKey: {
                 "user-id": claimedByRow,
                 "user-id-1": createdBy1Row,
@@ -1126,14 +1269,14 @@ test("data/data-providers/google-sheets/index", async (t) => {
             created_by: "user-id-3",
             claimed_by: "user-id",
           };
-          findRowsStub.resolves({
+          sharesFindRowsStub.resolves({
             rows: [shareRow1, shareRow2, shareRow3],
           });
           const claimedByRow = {};
           const createdBy1Row = {};
           const createdBy2Row = {};
           const createdBy3Row = {};
-          findKeyRowsStub.resolves({
+          usersFindKeyRowsStub.resolves({
             rowsByKey: {
               "user-id": claimedByRow,
               "user-id-1": createdBy1Row,
@@ -1166,10 +1309,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
               await provider.findSharesByCreatedUserId("user-id");
             } catch {}
 
-            t.ok(findRowsStub.called);
-            t.equal(findRowsStub.firstCall.args[0], SHARE_SHEET_NAME);
+            t.ok(sharesFindRowsStub.called);
             const predicate: (r: any) => boolean =
-              findRowsStub.firstCall.args[1];
+              sharesFindRowsStub.firstCall.firstArg;
             t.ok(predicate({ created_by: "user-id" }));
             t.notOk(predicate({ created_by: "not-user-id" }));
           }
@@ -1178,7 +1320,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
         t.test(
           "finds key rows in the users sheet that include both creating and claiming users",
           async (t) => {
-            findRowsStub.resolves({
+            sharesFindRowsStub.resolves({
               rows: [
                 { created_by: "user-id", claimed_by: "user-id-1" },
                 { created_by: "user-id" },
@@ -1190,11 +1332,11 @@ test("data/data-providers/google-sheets/index", async (t) => {
               await provider.findSharesByCreatedUserId("user-id");
             } catch {}
 
-            t.ok(findKeyRowsStub.called);
-            t.equal(findKeyRowsStub.firstCall.args[0], USER_SHEET_NAME);
-            const selector: (r: any) => any = findKeyRowsStub.firstCall.args[1];
+            t.ok(usersFindKeyRowsStub.called);
+            const selector: (r: any) => any =
+              usersFindKeyRowsStub.firstCall.args[0];
             t.equal(selector({ id: "user-id" }), "user-id");
-            t.same(findKeyRowsStub.firstCall.args[2], [
+            t.same(usersFindKeyRowsStub.firstCall.args[1], [
               "user-id",
               "user-id-1",
               "user-id",
@@ -1218,13 +1360,13 @@ test("data/data-providers/google-sheets/index", async (t) => {
               created_by: "user-id",
               claimed_by: "user-id-2",
             };
-            findRowsStub.resolves({
+            sharesFindRowsStub.resolves({
               rows: [shareRow1, shareRow2, shareRow3],
             });
             const createdByRow = {};
             const claimedBy1Row = {};
             const claimedBy2Row = {};
-            findKeyRowsStub.resolves({
+            usersFindKeyRowsStub.resolves({
               rowsByKey: {
                 "user-id": createdByRow,
                 "user-id-1": claimedBy1Row,
@@ -1262,13 +1404,13 @@ test("data/data-providers/google-sheets/index", async (t) => {
             created_by: "user-id",
             claimed_by: "user-id-2",
           };
-          findRowsStub.resolves({
+          sharesFindRowsStub.resolves({
             rows: [shareRow1, shareRow2, shareRow3],
           });
           const createdByRow = {};
           const claimedBy1Row = {};
           const claimedBy2Row = {};
-          findKeyRowsStub.resolves({
+          usersFindKeyRowsStub.resolves({
             rowsByKey: {
               "user-id": createdByRow,
               "user-id-1": claimedBy1Row,
@@ -1312,10 +1454,8 @@ test("data/data-providers/google-sheets/index", async (t) => {
             await provider.insertShare(share);
           } catch {}
 
-          t.ok(insertRowStub.called);
-          t.equal(insertRowStub.firstCall.args[0], SHARE_SHEET_NAME);
-          t.equal(insertRowStub.firstCall.args[1], shareRow);
-          t.equal(insertRowStub.firstCall.args[2], SHARE_CONSTRAINTS);
+          t.ok(sharesInsertRowStub.called);
+          t.equal(sharesInsertRowStub.firstCall.firstArg, shareRow);
         });
 
         t.test(
@@ -1325,7 +1465,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             const claimedByRow = {};
             shareToRowStub.returns({ createdByRow, claimedByRow });
             const insertedRow = {};
-            insertRowStub.resolves({ insertedRow });
+            sharesInsertRowStub.resolves({ insertedRow });
 
             try {
               await provider.insertShare(share);
@@ -1343,7 +1483,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
           const claimedByRow = {};
           shareToRowStub.returns({ createdByRow, claimedByRow });
           const insertedRow = {};
-          insertRowStub.resolves({ insertedRow });
+          sharesInsertRowStub.resolves({ insertedRow });
           const newShare = {};
           rowToShareStub.returns(newShare);
 
@@ -1362,13 +1502,12 @@ test("data/data-providers/google-sheets/index", async (t) => {
             async (t) => {
               await provider.updateShare(share);
 
-              t.ok(updateRowStub.called);
-              t.equal(updateRowStub.firstCall.args[0], SHARE_SHEET_NAME);
+              t.ok(sharesUpdateRowStub.called);
               const predicate: (r: any) => boolean =
-                updateRowStub.firstCall.args[1];
+                sharesUpdateRowStub.firstCall.args[0];
               t.ok(predicate({ id: "SHARE_1" }));
               t.notOk(predicate({ id: "not-SHARE_1" }));
-              t.same(updateRowStub.firstCall.args[2], {
+              t.same(sharesUpdateRowStub.firstCall.args[1], {
                 claimed_by: undefined,
                 claimed: undefined,
               });
@@ -1385,13 +1524,12 @@ test("data/data-providers/google-sheets/index", async (t) => {
             async (t) => {
               await provider.updateShare(share);
 
-              t.ok(updateRowStub.called);
-              t.equal(updateRowStub.firstCall.args[0], SHARE_SHEET_NAME);
+              t.ok(sharesUpdateRowStub.called);
               const predicate: (r: any) => boolean =
-                updateRowStub.firstCall.args[1];
+                sharesUpdateRowStub.firstCall.args[0];
               t.ok(predicate({ id: "SHARE_1" }));
               t.notOk(predicate({ id: "not-SHARE_1" }));
-              t.same(updateRowStub.firstCall.args[2], {
+              t.same(sharesUpdateRowStub.firstCall.args[1], {
                 claimed_by: "123abc",
                 claimed: "2023-01-02T00:00:00.000Z",
               });

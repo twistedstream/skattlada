@@ -1,7 +1,8 @@
 import { resolveMime } from "friendly-mimes";
+import { ColumnConstraints, RowData } from "google-sheets-table";
 import { DateTime, Duration } from "luxon";
+
 import { Share } from "../../../types/entity";
-import { ColumnConstraints, RowData } from "../../../types/table";
 import { rowToUser, userToRow } from "./user";
 
 export const SHARE_SHEET_NAME = "shares";

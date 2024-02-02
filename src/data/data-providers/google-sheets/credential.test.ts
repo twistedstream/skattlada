@@ -2,7 +2,7 @@ import { omit } from "lodash";
 import sinon from "sinon";
 import { test } from "tap";
 
-import { RowData } from "../../../types/table";
+import { RowData } from "google-sheets-table";
 import { testCredential2, testUser2 } from "../../../utils/testing/data";
 
 // test objects

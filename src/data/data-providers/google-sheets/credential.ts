@@ -1,6 +1,7 @@
+import { ColumnConstraints, RowData } from "google-sheets-table";
 import { DateTime } from "luxon";
+
 import { Authenticator, RegisteredAuthenticator } from "../../../types/entity";
-import { ColumnConstraints, RowData } from "../../../types/table";
 import { rowToUser } from "./user";
 
 export const CREDENTIAL_SHEET_NAME = "credentials";

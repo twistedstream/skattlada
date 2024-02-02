@@ -1,6 +1,7 @@
+import { ColumnConstraints, RowData } from "google-sheets-table";
 import { DateTime } from "luxon";
+
 import { Invite } from "../../../types/entity";
-import { ColumnConstraints, RowData } from "../../../types/table";
 import { rowToUser, userToRow } from "./user";
 
 // invite
