@@ -1,7 +1,7 @@
 import { test } from "tap";
 
+import { RowData } from "google-sheets-table";
 import sinon from "sinon";
-import { RowData } from "../../../types/table";
 import { testUser2 } from "../../../utils/testing/data";
 
 // test objects

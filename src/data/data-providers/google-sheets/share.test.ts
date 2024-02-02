@@ -2,9 +2,9 @@ import { omit } from "lodash";
 import sinon from "sinon";
 import { test } from "tap";
 
+import { RowData } from "google-sheets-table";
 import { Duration } from "luxon";
 import { FileInfo } from "../../../types/entity";
-import { RowData } from "../../../types/table";
 import { testShare1, testUser1, testUser2 } from "../../../utils/testing/data";
 
 // test objects

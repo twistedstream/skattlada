@@ -1,6 +1,7 @@
+import { ColumnConstraints, RowData } from "google-sheets-table";
 import { DateTime } from "luxon";
+
 import { User } from "../../../types/entity";
-import { ColumnConstraints, RowData } from "../../../types/table";
 
 export const USER_SHEET_NAME = "users";
 export const USER_CONSTRAINTS: ColumnConstraints = {
