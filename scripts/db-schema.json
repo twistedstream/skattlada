@@ -1,0 +1,56 @@
+{
+  "tables": [
+    {
+      "name": "users",
+      "columns": [
+        { "name": "id" },
+        { "name": "created" },
+        { "name": "username" },
+        { "name": "display_name" },
+        { "name": "is_admin" }
+      ]
+    },
+    {
+      "name": "credentials",
+      "columns": [
+        { "name": "id" },
+        { "name": "created" },
+        { "name": "public_key" },
+        { "name": "counter" },
+        { "name": "aaguid" },
+        { "name": "device_type" },
+        { "name": "is_backed_up" },
+        { "name": "transports" },
+        { "name": "user_id" }
+      ]
+    },
+    {
+      "name": "invites",
+      "columns": [
+        { "name": "id" },
+        { "name": "is_admin" },
+        { "name": "created" },
+        { "name": "created_by" },
+        { "name": "claimed_by" },
+        { "name": "claimed" }
+      ]
+    },
+    {
+      "name": "shares",
+      "columns": [
+        { "name": "id" },
+        { "name": "is_admin" },
+        { "name": "created" },
+        { "name": "created_by" },
+        { "name": "claimed_by" },
+        { "name": "claimed" },
+        { "name": "backing_url" },
+        { "name": "file_title" },
+        { "name": "file_type" },
+        { "name": "available_media_types" },
+        { "name": "to_username" },
+        { "name": "expire_duration" }
+      ]
+    }
+  ]
+}
