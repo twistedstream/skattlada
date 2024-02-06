@@ -1,3 +1,4 @@
+import { JWTInput } from "google-auth-library";
 import { GoogleSheetsTable } from "google-sheets-table";
 
 import { IDataProvider } from "../../../types/data";
@@ -40,6 +41,9 @@ import {
   userToRow,
 } from "./user";
 
+// common Google API credentials
+const credentials: JWTInput = { client_email, private_key };
+
 export class GoogleSheetsDataProvider implements IDataProvider {
   private _initialized: boolean = false;
 
@@ -78,7 +82,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
   // users
 
   private _usersTable = new GoogleSheetsTable({
-    credentials: { client_email, private_key },
+    credentials,
     spreadsheetId,
     sheetName: USER_SHEET_NAME,
     columnConstraints: USER_CONSTRAINTS,
@@ -119,7 +123,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
   // credentials
 
   private _credentialsTable = new GoogleSheetsTable({
-    credentials: { client_email, private_key },
+    credentials,
     spreadsheetId,
     sheetName: CREDENTIAL_SHEET_NAME,
     columnConstraints: CREDENTIAL_CONSTRAINTS,
@@ -197,7 +201,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
   // invites
 
   private _invitesTable = new GoogleSheetsTable({
-    credentials: { client_email, private_key },
+    credentials,
     spreadsheetId,
     sheetName: INVITE_SHEET_NAME,
     columnConstraints: INVITE_CONSTRAINTS,
@@ -246,7 +250,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
   // shares
 
   private _sharesTable = new GoogleSheetsTable({
-    credentials: { client_email, private_key },
+    credentials,
     spreadsheetId,
     sheetName: SHARE_SHEET_NAME,
     columnConstraints: SHARE_CONSTRAINTS,
