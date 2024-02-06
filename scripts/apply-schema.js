@@ -1,88 +1,60 @@
+const {
+  getSpreadsheetValues,
+  nextSheetId,
+  fetchSpreadsheet,
+  applySpreadsheetChanges,
+} = require("./utils");
 require("dotenv").config({ path: __dirname + "/../.env" });
-const { GoogleAuth } = require("google-auth-library");
-const { sheets } = require("@googleapis/sheets");
 
 const schema = require("./db-schema.json");
 
-const {
-  DATA_PROVIDER_NAME,
-  GOOGLE_AUTH_CLIENT_EMAIL: client_email,
-  GOOGLE_AUTH_PRIVATE_KEY: private_key,
-  GOOGLE_SPREADSHEET_ID: spreadsheetId,
-} = process.env;
-
 // provider helper functions
 
-async function applyGoogleSheetsSchema() {
-  const auth = new GoogleAuth({
-    credentials: {
-      client_email,
-      private_key,
-    },
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
-  const client = sheets({ version: "v4", auth });
+async function applyGoogleSheetsSchema(spreadsheetId, { dryRun }) {
+  const { existingSheets, sheetsByName } =
+    await fetchSpreadsheet(spreadsheetId);
 
-  console.log("Fetching existing spreadsheet...");
-  let spreadsheet = await client.spreadsheets.get({ spreadsheetId });
-  console.log(
-    `Found spreadsheet: ${spreadsheet.data.spreadsheetId}: "${spreadsheet.data.properties.title}"`
-  );
+  const requests = [];
 
-  let requests = [];
-
+  console.log();
   console.log("Discovering missing sheets (tables):");
   for (const table of schema.tables) {
     const message = `- ${table.name}: `;
-    const existingSheet = spreadsheet.data.sheets.find(
-      (s) => s.properties.title === table.name
-    );
+    const sheet = sheetsByName.get(table.name);
 
-    if (existingSheet) {
+    if (sheet) {
       console.log(`${message}✅ Exists`);
     } else {
       console.log(`${message}⛔️ Missing`);
-      requests.push({
-        addSheet: {
-          properties: {
-            title: table.name,
-            gridProperties: {
-              rowCount: 1,
-              columnCount: table.columns.length,
-            },
+
+      const newSheet = {
+        properties: {
+          sheetId: nextSheetId(sheetsByName.values()),
+          title: table.name,
+          gridProperties: {
+            rowCount: 1,
+            columnCount: table.columns.length,
           },
         },
-      });
+      };
+
+      requests.push({ addSheet: newSheet });
+      sheetsByName.set(table.name, newSheet);
     }
   }
 
-  if (requests.length === 0) {
-    console.log("No missing sheets to add");
-  } else {
-    console.log("Adding missing sheets...");
-
-    await client.spreadsheets.batchUpdate({
-      spreadsheetId,
-      requestBody: { requests },
-    });
-    console.log("  Done ✅");
-
-    // refetch the spreadsheet
-    console.log("Refetching spreadsheet...");
-    spreadsheet = await client.spreadsheets.get({ spreadsheetId });
-  }
-
-  requests = [];
-
+  console.log();
   console.log("Discovering missing columns:");
   for (const table of schema.tables) {
-    const getResult = await client.spreadsheets.values.get({
-      spreadsheetId,
-      range: `${table.name}!1:1`,
-      valueRenderOption: "UNFORMATTED_VALUE",
-      dateTimeRenderOption: "SERIAL_NUMBER",
-    });
-    const data = getResult.data.values ?? [[]];
+    let data = [[]];
+    if (existingSheets.some((s) => s.properties.title === table.name)) {
+      // get existing data
+      const getResult = await getSpreadsheetValues(
+        spreadsheetId,
+        `${table.name}!1:1`
+      );
+      data = getResult.data.values ?? data;
+    }
     const columns = data[0];
     const missingColumns = table.columns.filter(
       (c) => !columns.includes(c.name)
@@ -97,18 +69,13 @@ async function applyGoogleSheetsSchema() {
         `${message}⛔️ Missing columns: ${missingColumns.map((c) => c.name).join(", ")}`
       );
 
-      const existingSheet = spreadsheet.data.sheets.find(
-        (s) => s.properties.title === table.name
-      );
-      if (!existingSheet) {
-        throw new Error("Expected sheet not found:", table.name);
-      }
+      const sheet = sheetsByName.get(table.name);
       const {
         properties: {
           sheetId,
-          gridProperties: { columnCount, rowCount },
+          gridProperties: { columnCount },
         },
-      } = existingSheet;
+      } = sheet;
 
       const emptyEndColumns = columnCount - columns.length;
 
@@ -169,23 +136,22 @@ async function applyGoogleSheetsSchema() {
     }
   }
 
-  if (requests.length === 0) {
-    console.log("No missing columns to add");
-  } else {
-    console.log("Adding missing columns...");
-
-    await client.spreadsheets.batchUpdate({
-      spreadsheetId,
-      requestBody: { requests },
-    });
-    console.log("  Done ✅");
-  }
+  console.log();
+  await applySpreadsheetChanges(spreadsheetId, requests, dryRun);
 }
 
 (async () => {
+  console.log("Apply Schema script");
+  const args = process.argv.slice(2);
+  const dryRun = args.some((a) => ["-d", "--dry-run"].includes(a));
+  console.log("- dry run:", dryRun);
+
+  const { DATA_PROVIDER_NAME, GOOGLE_SPREADSHEET_ID: spreadsheetId } =
+    process.env;
+
   switch (DATA_PROVIDER_NAME) {
     case "google-sheets":
-      await applyGoogleSheetsSchema();
+      await applyGoogleSheetsSchema(spreadsheetId, { dryRun });
       break;
 
     default:

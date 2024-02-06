@@ -26,7 +26,10 @@
     "container:stop": "docker stop \"${npm_package_name}\"",
     "container:ssh": "docker exec -it \"${npm_package_name}\" /bin/sh",
     "container:remove": "docker rm -f \"${npm_package_name}\"",
-    "schema:apply": "node ./scripts/apply-schema.js"
+    "schema:apply": "node ./scripts/apply-schema.js",
+    "schema:apply:dry-run": "node ./scripts/apply-schema.js --dry-run",
+    "schema:drop": "node ./scripts/drop-schema.js",
+    "schema:drop:dry-run": "node ./scripts/drop-schema.js --dry-run"
   },
   "repository": {
     "type": "git",
