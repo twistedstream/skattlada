@@ -25,7 +25,11 @@
     "container:logs": "docker logs -f \"${npm_package_name}\" | pino-pretty",
     "container:stop": "docker stop \"${npm_package_name}\"",
     "container:ssh": "docker exec -it \"${npm_package_name}\" /bin/sh",
-    "container:remove": "docker rm -f \"${npm_package_name}\""
+    "container:remove": "docker rm -f \"${npm_package_name}\"",
+    "schema:apply": "node ./scripts/apply-schema.js",
+    "schema:apply:dry-run": "node ./scripts/apply-schema.js --dry-run",
+    "schema:drop": "node ./scripts/drop-schema.js",
+    "schema:drop:dry-run": "node ./scripts/drop-schema.js --dry-run"
   },
   "repository": {
     "type": "git",
@@ -59,6 +63,7 @@
     "short-unique-id": "^5.0.3"
   },
   "devDependencies": {
+    "@googleapis/sheets": "^5.0.5",
     "@tsconfig/node20": "^20.1.2",
     "@types/cookie-parser": "^1.4.6",
     "@types/cookie-session": "^2.0.48",
