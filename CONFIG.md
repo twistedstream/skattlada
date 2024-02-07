@@ -119,3 +119,25 @@ Alternative to setting `GOOGLE_AUTH_PRIVATE_KEY` if the environment doesn't supp
    ```
 
 1. Copy the resulting value into the environment variable
+
+### `METADATA_URL`
+
+The URL from which to download FIDO2 authenticator metadata.
+
+If not set, the server defaults to using the [`test-metadata.json`](./src/services/metadata/test-metadata.json) file. For a full set of metadata, set to:
+
+`https://raw.githubusercontent.com/passkeydeveloper/passkey-authenticator-aaguids/main/combined_aaguid.json`
+
+> The resulting file must carry the schema:
+>
+> ```json
+> {
+>   "{aaguid}":
+>     {
+>       "name": "{description}",
+>       "icon_dark": "data:image/svg+xml;base64,{icon-image-data}",
+>       "icon_light": "data:image/svg+xml;base64,{icon-image-data}"
+>    },
+>   ...
+> }
+> ```
