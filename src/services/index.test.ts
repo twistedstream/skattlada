@@ -12,6 +12,7 @@ const dataProvider = {
 const uniqueStub = sinon.stub();
 const nowFake = sinon.fake.returns(testNowDate);
 const newInviteStub = sinon.stub();
+const loadMetadataFake = sinon.fake();
 
 // helpers
 
@@ -21,6 +22,7 @@ function importModule(test: Tap.Test) {
     "../utils/time": { now: nowFake },
     "../utils/identifier": { unique: uniqueStub },
     "./invite": { newInvite: newInviteStub },
+    "./metadata": { loadMetadata: loadMetadataFake },
   };
 
   return test.mock("./index", dependencies);
@@ -39,6 +41,14 @@ test("services/index", async (t) => {
 
     t.beforeEach(async () => {
       initializeServices = importModule(t).initializeServices;
+    });
+
+    t.test("loads metadata", async (t) => {
+      try {
+        await initializeServices();
+      } catch {}
+
+      t.ok(loadMetadataFake.called);
     });
 
     t.test("gets the user count", async (t) => {

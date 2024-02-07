@@ -33,6 +33,7 @@ test("utils/config", async (t) => {
       { name: "packageName", value: "test-package" },
       { name: "packageDescription", value: "Test Package" },
       { name: "packageVersion", value: "42.0" },
+      { name: "metadataUrl", value: "https://example.com/metadata.json" },
     ].forEach((item) => {
       t.same(config[item.name], item.value, item.name);
     });

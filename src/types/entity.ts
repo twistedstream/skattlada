@@ -27,6 +27,12 @@ export interface RegisteredAuthenticator extends Authenticator {
   user: User;
 }
 
+export interface SimpleMetadataStatement {
+  aaguid: string;
+  description: string;
+  icon?: string;
+}
+
 export type FileType =
   | "document"
   | "spreadsheet"

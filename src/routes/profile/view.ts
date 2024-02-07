@@ -1,11 +1,12 @@
-import { CredentialDeviceType } from "@simplewebauthn/types";
-
+import { findMetadata } from "../../services/metadata";
 import { fetchCredentialsByUserId } from "../../services/user";
 import { Authenticator, User } from "../../types/entity";
 
 type PasskeyView = {
   id: string;
-  type: CredentialDeviceType;
+  description: string;
+  is_synced: boolean;
+  icon?: string;
   created: string | null;
 };
 
@@ -25,11 +26,23 @@ export async function buildViewData(
   };
 }> {
   const credentials = await fetchCredentialsByUserId(user.id);
-  const passkeys = [...credentials].map((c) => ({
-    id: c.credentialID,
-    type: c.credentialDeviceType,
-    created: c.created.toISO(),
-  }));
+  const passkeys = [...credentials].map((c) => {
+    const metadata = findMetadata(c.aaguid);
+
+    const { credentialID: id, credentialDeviceType: type } = c;
+    const created = c.created.toISO();
+    const is_synced = type === "multiDevice";
+    const description = metadata?.description ?? "(unknown)";
+    const icon = metadata?.icon;
+
+    return {
+      id,
+      description,
+      is_synced,
+      icon,
+      created,
+    };
+  });
 
   const viewPasskeys = {
     active: passkeys.find((p) => p.id === credential.credentialID),

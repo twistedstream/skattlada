@@ -28,6 +28,7 @@ export const googleAuthPrivateKey =
         "base64"
       ).toString("utf-8")
     : undefined);
+export const metadataUrl = <string>process.env.METADATA_URL;
 
 // Package configuration
 
