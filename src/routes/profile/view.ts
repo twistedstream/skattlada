@@ -1,4 +1,4 @@
-import { findMetadata } from "../../services/metadata";
+import { fetchMetadataById } from "../../services/metadata";
 import { fetchCredentialsByUserId } from "../../services/user";
 import { Authenticator, User } from "../../types/entity";
 
@@ -27,7 +27,7 @@ export async function buildViewData(
 }> {
   const credentials = await fetchCredentialsByUserId(user.id);
   const passkeys = [...credentials].map((c) => {
-    const metadata = findMetadata(c.aaguid);
+    const metadata = fetchMetadataById(c.aaguid);
 
     const { credentialID: id, credentialDeviceType: type } = c;
     const created = c.created.toISO();

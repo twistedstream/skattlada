@@ -5,8 +5,7 @@ import { unique } from "../utils/identifier";
 import { now } from "../utils/time";
 
 const provider = getDataProvider();
-const { getUserCount, insertUser, insertInvite, findInviteById, updateInvite } =
-  provider;
+const { findInviteById, updateInvite } = provider;
 
 // service
 

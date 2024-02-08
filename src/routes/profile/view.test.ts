@@ -10,7 +10,7 @@ import {
 // test objects
 
 const fetchCredentialsByUserIdStub = sinon.stub();
-const findMetadataStub = sinon.stub();
+const fetchMetadataByIdStub = sinon.stub();
 
 // helpers
 
@@ -20,7 +20,7 @@ function importModule(test: Tap.Test) {
       fetchCredentialsByUserId: fetchCredentialsByUserIdStub,
     },
     "../../services/metadata": {
-      findMetadata: findMetadataStub,
+      fetchMetadataById: fetchMetadataByIdStub,
     },
   });
 }
@@ -57,11 +57,11 @@ test("routes/profile/view", async (t) => {
         const credential2 = testCredential2();
         const csrf_token = "CSRF_TOKEN";
         fetchCredentialsByUserIdStub.resolves([credential1, credential2]);
-        findMetadataStub.withArgs(credential1.aaguid).returns({
+        fetchMetadataByIdStub.withArgs(credential1.aaguid).returns({
           description: "Authenticator 1",
           icon: "icon-data-1",
         });
-        findMetadataStub.withArgs(credential2.aaguid).returns(undefined);
+        fetchMetadataByIdStub.withArgs(credential2.aaguid).returns(undefined);
 
         const result = await buildViewData(user1, credential2, csrf_token);
 

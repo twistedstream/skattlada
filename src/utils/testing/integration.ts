@@ -28,8 +28,6 @@ export async function createIntegrationTestState(
 
   const dataProvider = new InMemoryDataProvider(dataProviderOptions);
   await dataProvider.initialize();
-  // const fileProvider = new LocalFileProvider();
-  // await fileProvider.initialize();
 
   const { default: app } = test.mock("../../app", {
     "../../data": {

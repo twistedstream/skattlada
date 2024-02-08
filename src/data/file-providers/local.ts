@@ -9,6 +9,7 @@ import { LocalFiles, getFileStream, loadFiles } from "./files";
 export class LocalFileProvider implements IFileProvider {
   constructor() {
     // bind method "this"'s to instance "this"
+    this.initialize = this.initialize.bind(this);
     this.getFileInfo = this.getFileInfo.bind(this);
     this.sendFile = this.sendFile.bind(this);
   }

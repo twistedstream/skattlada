@@ -29,7 +29,6 @@ async function registerUser(username, displayName) {
     username,
     displayName,
     authenticatorSelection: {
-      // TODO: understand if these changes matter for metadata
       requireResidentKey: true,
       residentKey: "required",
       authenticatorAttachment: "platform",

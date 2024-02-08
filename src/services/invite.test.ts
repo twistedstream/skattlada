@@ -4,6 +4,7 @@ import { test } from "tap";
 import { testNowDate } from "../utils/testing/data";
 
 // test objects
+
 const dataProvider = {
   insertUser: sinon.stub(),
   insertInvite: sinon.stub(),
