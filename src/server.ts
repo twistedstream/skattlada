@@ -10,7 +10,7 @@ import { Server } from "net";
 import path from "path";
 
 import app from "./app";
-import { getDataProvider, getFileProvider } from "./data";
+import { getDataProvider, getFileProvider, getMetadataProvider } from "./data";
 import { initializeServices } from "./services";
 import { logger } from "./utils/logger";
 
@@ -33,11 +33,14 @@ if (environment === "production") {
 
 const dataProvider = getDataProvider();
 const fileProvider = getFileProvider();
+const metadataProvider = getMetadataProvider();
 
 (async () => {
   // initialize providers and services before starting server
   await dataProvider.initialize();
   await fileProvider.initialize();
+  await metadataProvider.initialize();
+
   const firstInvite = await initializeServices();
   if (firstInvite) {
     logger.info(

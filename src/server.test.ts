@@ -27,6 +27,9 @@ const dataProvider = {
 const fileProvider = {
   initialize: sinon.stub(),
 };
+const metadataProvider = {
+  initialize: sinon.stub(),
+};
 
 const fs = {
   readFileSync: sinon.stub(),
@@ -65,6 +68,7 @@ function importModule(
     "./data": {
       getDataProvider: () => dataProvider,
       getFileProvider: () => fileProvider,
+      getMetadataProvider: () => metadataProvider,
     },
     "./services": {
       initializeServices: initializeServicesStub,
@@ -112,6 +116,13 @@ test("server", async (t) => {
       await waitForServerListening();
 
       t.ok(fileProvider.initialize.called);
+    });
+
+    t.test("Metadata provider has been initialized", async (t) => {
+      importServer();
+      await waitForServerListening();
+
+      t.ok(metadataProvider.initialize.called);
     });
 
     t.test("Services", async (t) => {

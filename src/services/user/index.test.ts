@@ -424,8 +424,6 @@ test("services/user", async (t) => {
     });
   });
 
-  //TODO: next to refactor:
-
   t.test("removeUserCredential", async (t) => {
     let removeUserCredential: any;
 

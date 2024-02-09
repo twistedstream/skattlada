@@ -23,36 +23,25 @@ import { USER_CONSTRAINTS, USER_SHEET_NAME } from "./user";
 
 // test objects
 
-// TODO: once all tests are passing, go through and see which of these are unused and can be removed
-
 const usersCountRowsStub = sinon.stub();
-const usersFindRowsStub = sinon.stub();
 const usersFindRowStub = sinon.stub();
 const usersFindKeyRowsStub = sinon.stub();
 const usersInsertRowStub = sinon.stub();
 const usersUpdateRowStub = sinon.stub();
-const usersDeleteRowStub = sinon.stub();
 
 const credentialsFindRowsStub = sinon.stub();
 const credentialsFindRowStub = sinon.stub();
-const credentialsFindKeyRowsStub = sinon.stub();
 const credentialsInsertRowStub = sinon.stub();
-const credentialsUpdateRowStub = sinon.stub();
 const credentialsDeleteRowStub = sinon.stub();
 
-const invitesFindRowsStub = sinon.stub();
 const invitesFindRowStub = sinon.stub();
-const invitesFindKeyRowsStub = sinon.stub();
 const invitesInsertRowStub = sinon.stub();
 const invitesUpdateRowStub = sinon.stub();
-const invitesDeleteRowStub = sinon.stub();
 
 const sharesFindRowsStub = sinon.stub();
 const sharesFindRowStub = sinon.stub();
-const sharesFindKeyRowsStub = sinon.stub();
 const sharesInsertRowStub = sinon.stub();
 const sharesUpdateRowStub = sinon.stub();
-const sharesDeleteRowStub = sinon.stub();
 
 class MockGoogleSheetsTable {
   readonly options: GoogleSheetsTableOptions;
@@ -229,47 +218,34 @@ test("data/data-providers/google-sheets/index", async (t) => {
         provider = new GoogleSheetsDataProvider();
 
         // wire up stubs for users GoogleSheetsTable instance
+
         const usersTable = (provider as any)._usersTable;
         usersTable.countRows = usersCountRowsStub.bind(usersTable);
-        usersTable.findRows = usersFindRowsStub.bind(usersTable);
         usersTable.findRow = usersFindRowStub.bind(usersTable);
         usersTable.findKeyRows = usersFindKeyRowsStub.bind(usersTable);
         usersTable.insertRow = usersInsertRowStub.bind(usersTable);
         usersTable.updateRow = usersUpdateRowStub.bind(usersTable);
-        usersTable.deleteRow = usersDeleteRowStub.bind(usersTable);
 
         const credentialsTable = (provider as any)._credentialsTable;
-        // unused: countRows
         credentialsTable.findRows =
           credentialsFindRowsStub.bind(credentialsTable);
         credentialsTable.findRow =
           credentialsFindRowStub.bind(credentialsTable);
-        credentialsTable.findKeyRows =
-          credentialsFindKeyRowsStub.bind(credentialsTable);
         credentialsTable.insertRow =
           credentialsInsertRowStub.bind(credentialsTable);
-        credentialsTable.updateRow =
-          credentialsUpdateRowStub.bind(credentialsTable);
         credentialsTable.deleteRow =
           credentialsDeleteRowStub.bind(credentialsTable);
 
         const invitesTable = (provider as any)._invitesTable;
-        // unused: countRows
-        invitesTable.findRows = invitesFindRowsStub.bind(invitesTable);
         invitesTable.findRow = invitesFindRowStub.bind(invitesTable);
-        invitesTable.findKeyRows = invitesFindKeyRowsStub.bind(invitesTable);
         invitesTable.insertRow = invitesInsertRowStub.bind(invitesTable);
         invitesTable.updateRow = invitesUpdateRowStub.bind(invitesTable);
-        invitesTable.deleteRow = invitesDeleteRowStub.bind(invitesTable);
 
         const sharesTable = (provider as any)._sharesTable;
-        // unused: countRows
         sharesTable.findRows = sharesFindRowsStub.bind(sharesTable);
         sharesTable.findRow = sharesFindRowStub.bind(sharesTable);
-        sharesTable.findKeyRows = sharesFindKeyRowsStub.bind(sharesTable);
         sharesTable.insertRow = sharesInsertRowStub.bind(sharesTable);
         sharesTable.updateRow = sharesUpdateRowStub.bind(sharesTable);
-        sharesTable.deleteRow = sharesDeleteRowStub.bind(sharesTable);
       });
 
       t.test("initialize", async (t) => {

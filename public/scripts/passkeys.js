@@ -29,10 +29,10 @@ async function registerUser(username, displayName) {
     username,
     displayName,
     authenticatorSelection: {
-      requireResidentKey: false,
-      residentKey: "preferred",
+      requireResidentKey: true,
+      residentKey: "required",
       authenticatorAttachment: "platform",
-      userVerification: "preferred",
+      userVerification: "required",
     },
     attestation: "direct",
   };

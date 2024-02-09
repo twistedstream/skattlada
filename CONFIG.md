@@ -92,6 +92,16 @@ The [`IFileProvider`](./src/types/data.ts) implementation to use with the server
 
 For local development, it's recommended to use `local` unless you want to test another provider.
 
+### `METADATA_PROVIDER_NAME`
+
+The [`IMetadataProvider`](./src/types/data.ts) implementation to use with the server. Possible values:
+
+- `passkey-authenticator-aaguids`: [`PasskeyProviderAaguidsMetadataProvider`](./src/data/metadata-providers/google-drive.ts): Sources FIDO metadata with data found in the [passkeydeveloper/passkey-authenticator-aaguids](https://github.com/passkeydeveloper/passkey-authenticator-aaguids) Github project, specifically from this file:  
+  <https://raw.githubusercontent.com/passkeydeveloper/passkey-authenticator-aaguids/main/combined_aaguid.json>
+- `local`: [`LocalMetadataProvider`](./src/data/metadata-providers/local.ts): Sources FIDO metadata with data found in the local [`test-metadata.json`](./src/data/metadata-providers/test-metadata.json) file
+
+  > The `local` metadata provider exposes a commonly used _subset_ of the data provided by the `passkey-authenticator-aaguids` metadata provider
+
 ## Google credential settings
 
 Some features require access to Google APIs. Perform these steps to obtain a Google Service Account which provides the necessary credentials.

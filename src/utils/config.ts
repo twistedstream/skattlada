@@ -17,6 +17,7 @@ export const maxInviteLifetime = Duration.fromISO(
 export const dataProviderName = <string>process.env.DATA_PROVIDER_NAME;
 export const googleSpreadsheetId = <string>process.env.GOOGLE_SPREADSHEET_ID;
 export const fileProviderName = <string>process.env.FILE_PROVIDER_NAME;
+export const metadataProviderName = <string>process.env.METADATA_PROVIDER_NAME;
 export const googleAuthClientEmail = <string>(
   process.env.GOOGLE_AUTH_CLIENT_EMAIL
 );

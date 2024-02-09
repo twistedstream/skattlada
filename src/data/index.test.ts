@@ -47,18 +47,43 @@ class MockGoogleDriveFileProvider {
   isMock: boolean;
 }
 
+const localMetadataProviderConstructorFake = sinon.fake();
+class MockLocalMetadataProvider {
+  constructor() {
+    localMetadataProviderConstructorFake();
+    this.isMock = true;
+  }
+
+  isMock: boolean;
+}
+
+const passkeyProviderAaguidsMetadataProviderConstructorFake = sinon.fake();
+class MockPasskeyProviderAaguidsMetadataProvider {
+  constructor() {
+    passkeyProviderAaguidsMetadataProviderConstructorFake();
+    this.isMock = true;
+  }
+
+  isMock: boolean;
+}
+
 // helpers
 
 type ImportModuleOptions = {
   dataProviderName?: string;
   fileProviderName?: string;
+  metadataProviderName?: string;
 };
 
 function importModule(test: Tap.Test, options: ImportModuleOptions = {}) {
-  const { dataProviderName, fileProviderName } = options;
+  const { dataProviderName, fileProviderName, metadataProviderName } = options;
 
   return test.mock("./index", {
-    "../utils/config": { dataProviderName, fileProviderName },
+    "../utils/config": {
+      dataProviderName,
+      fileProviderName,
+      metadataProviderName,
+    },
     "../utils/logger": { logger },
     "./data-providers/in-memory": {
       InMemoryDataProvider: MockInMemoryDataProvider,
@@ -71,6 +96,13 @@ function importModule(test: Tap.Test, options: ImportModuleOptions = {}) {
     },
     "./file-providers/google-drive": {
       GoogleDriveFileProvider: MockGoogleDriveFileProvider,
+    },
+    "./metadata-providers/local": {
+      LocalMetadataProvider: MockLocalMetadataProvider,
+    },
+    "./metadata-providers/passkey-authenticator-aaguids": {
+      PasskeyProviderAaguidsMetadataProvider:
+        MockPasskeyProviderAaguidsMetadataProvider,
     },
   });
 }
@@ -270,6 +302,102 @@ test("data/index", async (t) => {
       t.ok(result);
       t.ok(result.isMock);
       t.notOk(localFileProviderConstructorFake.called);
+    });
+  });
+
+  t.test("getMetadataProvider", async (t) => {
+    t.test("when provider hasn't been loaded yet", async (t) => {
+      t.test(
+        "if no provider is configured, throw expected exception",
+        async (t) => {
+          const { getMetadataProvider } = importModule(t);
+
+          t.throws(() => getMetadataProvider(), {
+            name: "AssertionError",
+            message: "Missing config: metadata provider name",
+          });
+        }
+      );
+
+      t.test("if 'local' provider configured, create it", async (t) => {
+        const { getMetadataProvider } = importModule(t, {
+          metadataProviderName: "local",
+        });
+
+        getMetadataProvider();
+
+        t.ok(localMetadataProviderConstructorFake.called);
+        t.equal(localMetadataProviderConstructorFake.firstCall.args.length, 0);
+      });
+
+      t.test(
+        "if 'passkey-authenticator-aaguids' provider configured, create it",
+        async (t) => {
+          const { getMetadataProvider } = importModule(t, {
+            metadataProviderName: "passkey-authenticator-aaguids",
+          });
+
+          getMetadataProvider();
+
+          t.ok(passkeyProviderAaguidsMetadataProviderConstructorFake.called);
+          t.equal(
+            passkeyProviderAaguidsMetadataProviderConstructorFake.firstCall.args
+              .length,
+            0
+          );
+        }
+      );
+
+      t.test(
+        "if configured provider is not supported, throw expected exception",
+        async (t) => {
+          const { getMetadataProvider } = importModule(t, {
+            metadataProviderName: "no-exist",
+          });
+
+          t.throws(() => getMetadataProvider(), {
+            name: "AssertionError",
+            message: "Unsupported metadata provider name: no-exist",
+          });
+        }
+      );
+
+      t.test("log loaded data provider name", async (t) => {
+        const { getMetadataProvider } = importModule(t, {
+          metadataProviderName: "local",
+        });
+
+        getMetadataProvider();
+
+        t.ok(logger.info.called);
+        t.match(logger.info.firstCall.firstArg, "local");
+      });
+
+      t.test("return loaded data provider", async (t) => {
+        const { getMetadataProvider } = importModule(t, {
+          metadataProviderName: "local",
+        });
+
+        const result = getMetadataProvider();
+
+        t.ok(result);
+        t.ok(result.isMock);
+      });
+    });
+
+    t.test("return cached provider", async (t) => {
+      const { getMetadataProvider } = importModule(t, {
+        metadataProviderName: "local",
+      });
+
+      getMetadataProvider();
+      sinon.resetHistory();
+
+      const result = getMetadataProvider();
+
+      t.ok(result);
+      t.ok(result.isMock);
+      t.notOk(localMetadataProviderConstructorFake.called);
     });
   });
 });

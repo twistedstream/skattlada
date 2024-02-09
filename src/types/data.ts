@@ -6,6 +6,7 @@ import {
   MediaType,
   RegisteredAuthenticator,
   Share,
+  SimpleMetadataStatement,
   User,
 } from "./entity";
 
@@ -68,4 +69,10 @@ export interface IFileProvider {
   getFileInfo(url: string): Promise<FileInfo | undefined>;
 
   sendFile(file: FileInfo, mediaType: MediaType, destination: Response): void;
+}
+
+export interface IMetadataProvider {
+  initialize(): Promise<void>;
+
+  getStatements(): Record<string, SimpleMetadataStatement>;
 }

@@ -10,6 +10,7 @@ import request, { Response as SupertestResponse } from "supertest";
 import path from "path";
 import { InMemoryDataProvider } from "../../data/data-providers/in-memory";
 import { LocalFileProvider } from "../../data/file-providers/local";
+import { LocalMetadataProvider } from "../../data/metadata-providers/local";
 import { Authenticator, FileInfo } from "../../types/entity";
 import {
   InMemoryDataProviderOptions,
@@ -28,13 +29,15 @@ export async function createIntegrationTestState(
 
   const dataProvider = new InMemoryDataProvider(dataProviderOptions);
   await dataProvider.initialize();
-  // const fileProvider = new LocalFileProvider();
-  // await fileProvider.initialize();
+
+  const metadataProvider = new LocalMetadataProvider();
+  await metadataProvider.initialize();
 
   const { default: app } = test.mock("../../app", {
     "../../data": {
       getDataProvider: () => dataProvider,
       getFileProvider: () => fileProvider,
+      getMetadataProvider: () => metadataProvider,
     },
     "@simplewebauthn/server": {
       ...simpleWebAuthnServerDefaults,

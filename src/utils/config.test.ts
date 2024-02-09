@@ -29,6 +29,7 @@ test("utils/config", async (t) => {
       { name: "dataProviderName", value: "in-memory" },
       { name: "googleSpreadsheetId", value: "google-provider-spreadsheet-id" },
       { name: "fileProviderName", value: "local" },
+      { name: "metadataProviderName", value: "local" },
       { name: "googleAuthClientEmail", value: "google-client@example.com" },
       { name: "packageName", value: "test-package" },
       { name: "packageDescription", value: "Test Package" },
