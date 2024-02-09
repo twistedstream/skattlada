@@ -18,11 +18,11 @@
         </div>
       </div>
 
-      <form id="manage_profile" method="post">
+      <div class="row mt-3">
+        <div class="col text-center">
+          <form method="post">
         {{> csrf_token_field}}
 
-        <div class="row mt-3">
-          <div class="col text-center">
             <div class="form-row justify-content-center">
               <div class="col-sm-auto">
                 <div class="input-group mb-2">
@@ -39,7 +39,8 @@
                 <button type="submit" class="btn btn-primary mb-2" name="action" value="update_profile">Update</button>
               </div>
             </div>
-          </div>
+          </form>
+        </div>
         </div>
 
         <div class="row mt-3">
@@ -100,8 +101,12 @@
                   </td>
                   <td class="align-middle">{{created}}</td>
                   <td class="align-middle">
+                  <form method="post" style="margin-block-end: 0em;">
+                    {{> csrf_token_field}}
+
                     <input type="hidden" name="cred_id" value="{{id}}">
                     <button type="submit" class="btn btn-danger btn-sm passkeys_supported" name="action" value="delete_cred" hidden>forget</button>
+                  </form>
                   </td>
                 </tr>
                 {{/each}}
@@ -115,7 +120,7 @@
             <button type="button" id="add_credential" class="btn btn-primary mb-2">Add Passkey</button>
           </div>
         </div>
-      </form>
+      
     </div>
   {{/inline}}
 
