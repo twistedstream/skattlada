@@ -82,7 +82,8 @@ jobs:
               FILE_PROVIDER_NAME: "${{ vars.FILE_PROVIDER_NAME_PROD }}",
               GOOGLE_SPREADSHEET_ID: "${{ vars.GOOGLE_SPREADSHEET_ID_PROD }}",
               GOOGLE_AUTH_CLIENT_EMAIL: "${{ vars.GOOGLE_AUTH_CLIENT_EMAIL_PROD }}",
-              GOOGLE_AUTH_PRIVATE_KEY_BASE64: "${{ secrets.GOOGLE_AUTH_PRIVATE_KEY_BASE64_PROD }}"
+              GOOGLE_AUTH_PRIVATE_KEY_BASE64: "${{ secrets.GOOGLE_AUTH_PRIVATE_KEY_BASE64_PROD }}",
+              METADATA_PROVIDER_NAME: "${{ vars.METADATA_PROVIDER_NAME }}"
             }
             const varsArray = Object.keys(vars).map((k) => ({ name: k, value: vars[k]}));
             return JSON.stringify(varsArray);
