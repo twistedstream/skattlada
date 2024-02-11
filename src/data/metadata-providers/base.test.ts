@@ -100,5 +100,18 @@ test("data/metadata-providers/base", async (t) => {
         t.equal(result, statements);
       });
     });
+
+    t.test("loadStatements", async (t) => {
+      t.test(
+        "throws expected error because method is implemented by an inheriting class",
+        async (t) => {
+          const target = createInstance();
+
+          t.rejects(() => target.loadStatements(), {
+            message: "Method not implemented",
+          });
+        }
+      );
+    });
   });
 });

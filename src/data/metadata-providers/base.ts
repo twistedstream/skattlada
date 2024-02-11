@@ -13,7 +13,7 @@ export abstract class BaseMetadataProvider implements IMetadataProvider {
   private statements: Record<string, SimpleMetadataStatement> | undefined;
 
   protected async loadStatements(): Promise<SimpleMetadataStatement[]> {
-    throw new Error("Method not implemented.");
+    throw new Error("Method not implemented");
   }
 
   // IMetadataProvider implementation
