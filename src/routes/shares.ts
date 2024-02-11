@@ -118,14 +118,16 @@ router.post(
         share = await newShare(user, backingUrl, toUsername, expireDuration);
       } catch (err: any) {
         if (err.type === "validation") {
+          const [, errorField] = err.context.split(".");
+
           const csrf_token = generateCsrfToken(req, res, false);
           return res.status(StatusCodes.BAD_REQUEST).render("new_share", {
             csrf_token,
             title: "New share",
             expirations: buildExpirations(expireDuration),
-            [`${err.field}_error`]: err.fieldMessage,
+            [`${errorField}_error`]: err.message,
             backingUrl,
-            backingUrl_valid: err.field !== "backingUrl",
+            backingUrl_valid: errorField !== "backingUrl",
             toUsername,
             expires,
           });

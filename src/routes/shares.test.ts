@@ -447,8 +447,8 @@ test("routes/shares", async (t) => {
         t.beforeEach(async () => {
           newShareStub.rejects({
             type: "validation",
-            field: "bar",
-            fieldMessage: "Bad bar!",
+            context: "Share.backingUrl",
+            message: "That's a bad URL",
           });
           buildExpirationsStub.returns(expirations);
         });
@@ -484,9 +484,9 @@ test("routes/shares", async (t) => {
           t.equal(viewName, "new_share");
           t.equal(options.title, "New share");
           t.equal(options.expirations, expirations);
-          t.equal(options.bar_error, "Bad bar!");
+          t.equal(options.backingUrl_error, "That's a bad URL");
           t.equal(options.backingUrl, "https://example.com/path");
-          t.equal(options.backingUrl_valid, true);
+          t.equal(options.backingUrl_valid, false);
           t.equal(options.toUsername, "foo");
           t.equal(options.expires, "P2D");
         });
