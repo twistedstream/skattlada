@@ -4,10 +4,13 @@ import { test } from "tap";
 // test objects
 
 const expressApp = {
+  disable: sinon.fake(),
   use: sinon.fake(),
   set: sinon.fake(),
   engine: sinon.fake(),
 };
+const helmetMiddleware = {};
+const helmetFake = sinon.fake.returns(helmetMiddleware);
 const expressPinoMiddleware = {};
 const pinoHttpFake = sinon.fake.returns(expressPinoMiddleware);
 const staticMiddleware = {};
@@ -25,6 +28,7 @@ const errorHandlerFake = sinon.fake();
 function importModule(test: Tap.Test) {
   const { default: app } = test.mock("./app", {
     express: expressFactoryFake,
+    helmet: helmetFake,
     "pino-http": pinoHttpFake,
     "express-handlebars": {
       engine: handlebarsEngineFake,
@@ -59,6 +63,22 @@ test("app", async (t) => {
     t.equal(app, expressApp);
   });
 
+  t.test("reduces server fingerprinting", async (t) => {
+    importModule(t);
+
+    t.ok(expressApp.disable.called);
+    t.equal(expressApp.disable.getCalls()[0].firstArg, "x-powered-by");
+  });
+
+  t.test("uses helmet middleware", async (t) => {
+    importModule(t);
+
+    t.ok(helmetFake.called);
+
+    t.ok(expressApp.use.called);
+    t.equal(expressApp.use.getCalls()[0].firstArg, helmetMiddleware);
+  });
+
   t.test("uses express-pino-logger middleware", async (t) => {
     importModule(t);
 
@@ -67,7 +87,7 @@ test("app", async (t) => {
     t.equal(pinoHttpFake.firstCall.firstArg.logger, logger);
 
     t.ok(expressApp.use.called);
-    t.equal(expressApp.use.getCalls()[0].firstArg, expressPinoMiddleware);
+    t.equal(expressApp.use.getCalls()[1].firstArg, expressPinoMiddleware);
   });
 
   t.test("uses static middleware", async (t) => {
@@ -77,7 +97,7 @@ test("app", async (t) => {
     t.equal(expressStaticFactoryFake.firstCall.firstArg, "public");
 
     t.ok(expressApp.use.called);
-    t.equal(expressApp.use.getCalls()[1].firstArg, staticMiddleware);
+    t.equal(expressApp.use.getCalls()[2].firstArg, staticMiddleware);
   });
 
   t.test("configures the handlebars view engine", async (t) => {
@@ -111,7 +131,7 @@ test("app", async (t) => {
     importModule(t);
 
     t.ok(expressApp.use.called);
-    t.equal(expressApp.use.getCalls()[2].firstArg, website);
+    t.equal(expressApp.use.getCalls()[3].firstArg, website);
   });
 
   t.test("configures error handling", async (t) => {

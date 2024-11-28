@@ -55,6 +55,7 @@
     "friendly-mimes": "^2.0.0",
     "google-auth-library": "^9.5.0",
     "google-sheets-table": "^0.8.1",
+    "helmet": "^8.0.0",
     "http-status-codes": "^2.3.0",
     "lodash": "^4.17.21",
     "luxon": "^3.4.4",
