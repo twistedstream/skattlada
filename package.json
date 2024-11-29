@@ -64,7 +64,7 @@
     "short-unique-id": "^5.2.0"
   },
   "devDependencies": {
-    "@googleapis/sheets": "^5.0.5",
+    "@googleapis/sheets": "^9.3.1",
     "@tsconfig/node22": "^22.0.0",
     "@types/cookie-parser": "^1.4.8",
     "@types/cookie-session": "^2.0.49",
