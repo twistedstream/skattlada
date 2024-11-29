@@ -57,7 +57,7 @@ test("services/share", async (t) => {
       t.ok(dataProvider.findSharesByClaimedUserId.called);
       t.equal(
         dataProvider.findSharesByClaimedUserId.firstCall.firstArg,
-        "user-id"
+        "user-id",
       );
     });
 
@@ -87,7 +87,7 @@ test("services/share", async (t) => {
       t.ok(dataProvider.findSharesByCreatedUserId.called);
       t.equal(
         dataProvider.findSharesByCreatedUserId.firstCall.firstArg,
-        "user-id"
+        "user-id",
       );
     });
 
@@ -144,7 +144,7 @@ test("services/share", async (t) => {
       t.ok(fileProvider.getFileInfo.called);
       t.equal(
         fileProvider.getFileInfo.firstCall.firstArg,
-        "https://example.com/doc1"
+        "https://example.com/doc1",
       );
     });
 
@@ -194,7 +194,7 @@ test("services/share", async (t) => {
               type: "validation",
               entity: "Share",
               field: "toUsername",
-            }
+            },
           );
         });
 
@@ -208,7 +208,7 @@ test("services/share", async (t) => {
             by,
             "https://example.com/doc1",
             "user-name",
-            expireDuration
+            expireDuration,
           );
 
           t.ok(result);

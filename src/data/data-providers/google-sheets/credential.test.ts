@@ -67,7 +67,7 @@ test("data/data-providers/google-sheets/credential", async (t) => {
 
         t.same(
           omit(result, "user", "transports"),
-          omit(credential, "transports")
+          omit(credential, "transports"),
         );
         t.equal(result.transports, undefined);
       });

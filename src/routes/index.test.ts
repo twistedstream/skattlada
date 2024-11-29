@@ -34,7 +34,7 @@ function importModule(
     mockExpress = false,
     mockChildRoutes = false,
     mockModules = false,
-  }: MockOptions = {}
+  }: MockOptions = {},
 ) {
   const { default: router } = test.mock("./index", {
     ...(mockExpress && {
@@ -104,7 +104,7 @@ test("routes/index", async (t) => {
 
     t.same(
       expressRouter.get.getCalls().map((c) => c.firstArg),
-      ["/", "/register", "/login", "/logout"]
+      ["/", "/register", "/login", "/logout"],
     );
   });
 
@@ -177,9 +177,9 @@ test("routes/index", async (t) => {
         t.equal(options.title, "Error");
         t.match(
           options.message,
-          "Registration not allowed without an invitation"
+          "Registration not allowed without an invitation",
         );
-      }
+      },
     );
 
     t.test("renders HTML with expected view state", async (t) => {

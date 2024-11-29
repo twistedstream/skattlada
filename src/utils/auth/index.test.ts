@@ -177,7 +177,7 @@ test("utils/auth", async (t) => {
 
         t.ok(fixUserFake.called);
         t.equal(fixUserFake.firstCall.firstArg, authenticatingUser);
-      }
+      },
     );
 
     t.test("if it doesn't exist, returns nothing", async (t) => {
@@ -213,7 +213,7 @@ test("utils/auth", async (t) => {
 
         t.ok(fixUserFake.called);
         t.equal(fixUserFake.firstCall.firstArg, registeringUser);
-      }
+      },
     );
 
     t.test("if it doesn't exist, returns nothing", async (t) => {
@@ -249,7 +249,7 @@ test("utils/auth", async (t) => {
 
         t.ok(fixRegisterableSourceFake.called);
         t.equal(fixRegisterableSourceFake.firstCall.firstArg, source);
-      }
+      },
     );
 
     t.test("if it doesn't exist, returns nothing", async (t) => {
@@ -297,7 +297,7 @@ test("utils/auth", async (t) => {
 
         t.ok(redirectFake.called);
         t.equal(redirectFake.firstCall.firstArg, "/register?return_to=%2Ffoo");
-      }
+      },
     );
 
     t.test("includes hide_sign_in query param if specified", async (t) => {
@@ -307,7 +307,7 @@ test("utils/auth", async (t) => {
       t.ok(redirectFake.called);
       t.equal(
         redirectFake.firstCall.firstArg,
-        "/register?return_to=%2Ffoo&hide_sign_in=true"
+        "/register?return_to=%2Ffoo&hide_sign_in=true",
       );
     });
   });
@@ -325,7 +325,7 @@ test("utils/auth", async (t) => {
 
         t.ok(redirectFake.called);
         t.equal(redirectFake.firstCall.firstArg, "/login?return_to=%2Ffoo");
-      }
+      },
     );
   });
 
@@ -368,9 +368,9 @@ test("utils/auth", async (t) => {
           t.ok(fixRegisteredAuthenticatorFake.called);
           t.equal(
             fixRegisteredAuthenticatorFake.firstCall.firstArg,
-            credential
+            credential,
           );
-        }
+        },
       );
     });
 
@@ -387,7 +387,7 @@ test("utils/auth", async (t) => {
 
         t.same(req, {});
         t.ok(nextFake.called);
-      }
+      },
     );
   });
 
@@ -410,7 +410,7 @@ test("utils/auth", async (t) => {
           message: "Unauthorized",
           statusCode: StatusCodes.UNAUTHORIZED,
         });
-      }
+      },
     );
 
     t.test("if user is authenticated, does not redirect", async (t) => {
@@ -446,7 +446,7 @@ test("utils/auth", async (t) => {
           message: "Forbidden: Requires admin role",
           statusCode: StatusCodes.FORBIDDEN,
         });
-      }
+      },
     );
 
     t.test("if user is not an admin, returns expected error", async (t) => {

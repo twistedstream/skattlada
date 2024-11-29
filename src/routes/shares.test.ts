@@ -71,7 +71,7 @@ const validateCsrfTokenStub = sinon.stub();
 
 function importModule(
   test: Tap.Test,
-  { mockExpress = false, mockModules = false }: MockOptions = {}
+  { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
   const { default: router } = test.mock("./shares", {
     ...(mockExpress && {
@@ -122,7 +122,7 @@ function createSharesTestExpressApp(
     activeUser,
     originalUrl,
     suppressErrorOutput,
-  }: SharesTestExpressAppOptions = {}
+  }: SharesTestExpressAppOptions = {},
 ) {
   const router = importModule(test, { mockModules: true });
 
@@ -162,16 +162,16 @@ function performPostNewShareRequest(app: Express): SuperTest {
 function performGetShareRequest(
   app: Express,
   shareId: string,
-  mediaType?: string
+  mediaType?: string,
 ): SuperTest {
   return request(app).get(
-    `/${shareId}${mediaType ? "?media_type=" + mediaType : ""}`
+    `/${shareId}${mediaType ? "?media_type=" + mediaType : ""}`,
   );
 }
 
 function performPostExistingShareRequest(
   app: Express,
-  shareId: string
+  shareId: string,
 ): SuperTest {
   return request(app)
     .post(`/${shareId}`)
@@ -194,7 +194,7 @@ test("routes/shares", async (t) => {
       stub.callsFake(
         () => (_req: Request, _res: Response, next: NextFunction) => {
           next();
-        }
+        },
       );
     }
   });
@@ -212,11 +212,11 @@ test("routes/shares", async (t) => {
 
     t.same(
       expressRouter.get.getCalls().map((c) => c.firstArg),
-      ["/", "/new", "/:share_id"]
+      ["/", "/new", "/:share_id"],
     );
     t.same(
       expressRouter.post.getCalls().map((c) => c.firstArg),
-      ["/new", "/:share_id"]
+      ["/new", "/:share_id"],
     );
   });
 
@@ -421,7 +421,7 @@ test("routes/shares", async (t) => {
         t.ok(newShareStub.called);
         t.same(
           newShareStub.firstCall.args[3],
-          Duration.fromObject({ days: 2 })
+          Duration.fromObject({ days: 2 }),
         );
       });
 
@@ -438,7 +438,7 @@ test("routes/shares", async (t) => {
 
           t.ok(newShareStub.called);
           t.equal(newShareStub.firstCall.args[3], undefined);
-        }
+        },
       );
 
       t.test("if a validation error occurs", async (t) => {
@@ -517,9 +517,9 @@ test("routes/shares", async (t) => {
             renderArgs,
             StatusCodes.INTERNAL_SERVER_ERROR,
             "Error",
-            "Something unexpected happened"
+            "Something unexpected happened",
           );
-        }
+        },
       );
     }
 
@@ -631,9 +631,9 @@ test("routes/shares", async (t) => {
           renderArgs,
           StatusCodes.BAD_REQUEST,
           "Error",
-          "Unsupported new share action"
+          "Unsupported new share action",
         );
-      }
+      },
     );
   });
 
@@ -672,7 +672,7 @@ test("routes/shares", async (t) => {
         renderSharedFileStub.callsFake(
           (_req: Request, res: Response, _share: Share, _mediaType: string) => {
             res.send("ignored");
-          }
+          },
         );
 
         await performGetShareRequest(app, share.id, "some/media-type");
@@ -707,7 +707,7 @@ test("routes/shares", async (t) => {
           renderSharedFileStub.callsFake(
             (_req: Request, res: Response, _share: Share) => {
               res.send("ignored");
-            }
+            },
           );
         });
 
@@ -774,7 +774,7 @@ test("routes/shares", async (t) => {
           t.equal(options.title, "Accept this shared file?");
           t.equal(options.share, testShare);
           t.same(options.fileTypeStyle, "doc_style");
-        }
+        },
       );
     });
 
@@ -807,7 +807,7 @@ test("routes/shares", async (t) => {
           const response = await performGetShareRequest(app, share.id);
 
           verifyAuthenticationRequiredResponse(t, response, `/${testShare.id}`);
-        }
+        },
       );
 
       t.test("if share can be rendered", async (t) => {
@@ -884,9 +884,9 @@ test("routes/shares", async (t) => {
           renderArgs,
           StatusCodes.FORBIDDEN,
           "Error",
-          "This endpoint does not support an already claimed share"
+          "This endpoint does not support an already claimed share",
         );
-      }
+      },
     );
 
     t.test("when action is 'accept'", async (t) => {
@@ -942,7 +942,7 @@ test("routes/shares", async (t) => {
           t.equal(logger.info.firstCall.args[0], claimedShare);
           t.equal(
             logger.info.firstCall.args[1],
-            "Existing user has claimed share"
+            "Existing user has claimed share",
           );
         });
 
@@ -952,7 +952,7 @@ test("routes/shares", async (t) => {
 
           const response = await performPostExistingShareRequest(
             app,
-            testShare.id
+            testShare.id,
           ).send({
             action,
           });
@@ -1012,7 +1012,7 @@ test("routes/shares", async (t) => {
 
         const response = await performPostExistingShareRequest(
           app,
-          testShare.id
+          testShare.id,
         ).send({
           action: "foo",
         });
@@ -1023,9 +1023,9 @@ test("routes/shares", async (t) => {
           renderArgs,
           StatusCodes.BAD_REQUEST,
           "Error",
-          "Unsupported share response operation"
+          "Unsupported share response operation",
         );
-      }
+      },
     );
   });
 });

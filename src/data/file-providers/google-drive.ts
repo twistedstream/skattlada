@@ -59,7 +59,7 @@ export class GoogleDriveFileProvider implements IFileProvider {
     const mediaType = mediaTypeFromMimeType(assertValue(data.mimeType));
     if (!mediaType) {
       throw new Error(
-        `Google Drive file (${fileId}) has an unknown media type: ${data.mimeType}`
+        `Google Drive file (${fileId}) has an unknown media type: ${data.mimeType}`,
       );
     }
 
@@ -91,7 +91,7 @@ export class GoogleDriveFileProvider implements IFileProvider {
 
     const res = await drive.files.export(
       { fileId, mimeType },
-      { responseType: "stream" }
+      { responseType: "stream" },
     );
 
     const fileName = `${file.title}.${mediaType.extension}`;

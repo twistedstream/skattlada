@@ -66,7 +66,7 @@ test("Manage profile", async (t) => {
       state,
       testUser1().username,
       "Bob User 2",
-      []
+      [],
     );
   });
 });

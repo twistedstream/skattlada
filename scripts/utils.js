@@ -66,7 +66,7 @@ async function fetchSpreadsheet(spreadsheetId) {
   console.log(`- sheets: ${existingSheets.length}`);
 
   const sheetsByName = new Map(
-    existingSheets.map((s) => [s.properties.title, s])
+    existingSheets.map((s) => [s.properties.title, s]),
   );
 
   return {
@@ -88,7 +88,7 @@ async function applySpreadsheetChanges(spreadsheetId, requests, dryRun) {
             showHidden: false,
             depth: null,
             colors: true,
-          })
+          }),
         );
       });
     } else {

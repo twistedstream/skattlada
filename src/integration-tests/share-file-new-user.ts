@@ -127,7 +127,7 @@ test("Share a file to any user, new user accepts, registers, and accesses share"
     assertRedirectResponse(
       t,
       response,
-      `/register?return_to=%2Fshares%2F${share.id}`
+      `/register?return_to=%2Fshares%2F${share.id}`,
     );
   });
 
@@ -166,11 +166,11 @@ test("Share a file to any user, new user accepts, registers, and accesses share"
       downloadLink1 = downloadLinks[0].attrs["href"];
       t.equal(
         `/shares/${share.id}?media_type=${encodeURIComponent(
-          file1.availableMediaTypes[0].name
+          file1.availableMediaTypes[0].name,
         )}`,
-        downloadLink1
+        downloadLink1,
       );
-    }
+    },
   );
 
   t.test(
@@ -182,8 +182,8 @@ test("Share a file to any user, new user accepts, registers, and accesses share"
         t,
         response,
         file1.availableMediaTypes[0].name,
-        file1
+        file1,
       );
-    }
+    },
   );
 });

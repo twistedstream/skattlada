@@ -72,7 +72,7 @@ test("data/data-providers/in-memory", async (t) => {
 
     t.test("instance methods", async (t) => {
       function createInstance(
-        options: InMemoryDataProviderOptions = {}
+        options: InMemoryDataProviderOptions = {},
       ): InMemoryDataProvider {
         const { InMemoryDataProvider } = importModule(t);
 
@@ -251,7 +251,7 @@ test("data/data-providers/in-memory", async (t) => {
 
           const result = await provider.findUserCredential(
             cred1.user.id,
-            cred1.credentialID
+            cred1.credentialID,
           );
 
           t.not(result, cred1);
@@ -267,11 +267,11 @@ test("data/data-providers/in-memory", async (t) => {
 
             const result = await provider.findUserCredential(
               "unknown-id",
-              cred1.credentialID
+              cred1.credentialID,
             );
 
             t.equal(result, undefined);
-          }
+          },
         );
 
         t.test(
@@ -283,11 +283,11 @@ test("data/data-providers/in-memory", async (t) => {
 
             const result = await provider.findUserCredential(
               cred1.user.id,
-              "unknown-id"
+              "unknown-id",
             );
 
             t.equal(result, undefined);
-          }
+          },
         );
 
         t.test(
@@ -299,11 +299,11 @@ test("data/data-providers/in-memory", async (t) => {
 
             const result = await provider.findUserCredential(
               "unknown-id",
-              "unknown-id"
+              "unknown-id",
             );
 
             t.equal(result, undefined);
-          }
+          },
         );
       });
 
@@ -321,7 +321,7 @@ test("data/data-providers/in-memory", async (t) => {
             t.equal(result.length, 1);
             t.not(result[0], cred1);
             t.same(result[0], cred1);
-          }
+          },
         );
 
         t.test("if user doesn't exist, returns an empty array", async (t) => {
@@ -351,7 +351,7 @@ test("data/data-providers/in-memory", async (t) => {
             t.equal(credentials.length, 1);
             t.not(credentials[0], cred1);
             t.same(credentials[0], { ...cred1, user: testUser1() });
-          }
+          },
         );
 
         t.test(
@@ -367,7 +367,7 @@ test("data/data-providers/in-memory", async (t) => {
             t.rejects(() => provider.insertCredential(user2.id, cred1), {
               message: "User does not exist",
             });
-          }
+          },
         );
       });
 
@@ -480,7 +480,7 @@ test("data/data-providers/in-memory", async (t) => {
 
             // only the specific fields were altered
             t.same(invite1, { ...before, claimed: now, claimedBy: user1 });
-          }
+          },
         );
 
         t.test("if invite doesn't exist, does nothing", async (t) => {
@@ -645,7 +645,7 @@ test("data/data-providers/in-memory", async (t) => {
 
             // only the specific fields were altered
             t.same(share1, { ...before, claimed: now, claimedBy: user1 });
-          }
+          },
         );
 
         t.test("if share doesn't exist, does nothing", async (t) => {

@@ -32,7 +32,7 @@ async function dropGoogleSheetsSchema(spreadsheetId, { dryRun }) {
   if (sheetsByName.size === 0) {
     console.log();
     console.log(
-      "An empty sheet will be added since all other sheets will be removed"
+      "An empty sheet will be added since all other sheets will be removed",
     );
     requests.unshift({ addSheet: {} });
   }

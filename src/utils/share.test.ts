@@ -73,7 +73,7 @@ test("utils/share", async (t) => {
 
         t.ok(result);
         t.same(result, allExpirations());
-      }
+      },
     );
 
     t.test(
@@ -87,7 +87,7 @@ test("utils/share", async (t) => {
 
         t.ok(result);
         t.same(result, expected);
-      }
+      },
     );
   });
 
@@ -194,8 +194,8 @@ test("utils/share", async (t) => {
           nowStub.returns(
             share.created.plus(
               // now = after share expiration
-              Duration.fromObject({ days: 3 })
-            )
+              Duration.fromObject({ days: 3 }),
+            ),
           );
         });
 
@@ -219,7 +219,7 @@ test("utils/share", async (t) => {
               message: "This share has expired",
               statusCode: StatusCodes.FORBIDDEN,
             });
-          }
+          },
         );
 
         t.test(
@@ -231,7 +231,7 @@ test("utils/share", async (t) => {
               message: "Not Found",
               statusCode: StatusCodes.NOT_FOUND,
             });
-          }
+          },
         );
 
         t.test("otherwise, throws expected more generic error", async (t) => {
@@ -266,7 +266,7 @@ test("utils/share", async (t) => {
             t.equal(logger.warn.firstCall.args[0], share);
             t.equal(
               logger.warn.firstCall.args[1],
-              "Share was already claimed by a different user"
+              "Share was already claimed by a different user",
             );
           });
 
@@ -279,7 +279,7 @@ test("utils/share", async (t) => {
                 message: "This share was already claimed by @other_user",
                 statusCode: StatusCodes.FORBIDDEN,
               });
-            }
+            },
           );
 
           t.test("otherwise, throws expected more generic error", async (t) => {
@@ -298,7 +298,7 @@ test("utils/share", async (t) => {
             const result = await ensureShare(req);
 
             t.equal(result, share);
-          }
+          },
         );
 
         t.test("if share has not been claimed", async (t) => {
@@ -316,7 +316,7 @@ test("utils/share", async (t) => {
               t.equal(logger.warn.firstCall.args[0], share);
               t.equal(
                 logger.warn.firstCall.args[1],
-                "Share was intended for a different user"
+                "Share was intended for a different user",
               );
             });
 
@@ -329,7 +329,7 @@ test("utils/share", async (t) => {
                   message: "This share was intended for user @other_user",
                   statusCode: StatusCodes.FORBIDDEN,
                 });
-              }
+              },
             );
 
             t.test(
@@ -339,7 +339,7 @@ test("utils/share", async (t) => {
                   message: "Not Found",
                   statusCode: StatusCodes.NOT_FOUND,
                 });
-              }
+              },
             );
           });
 
@@ -349,7 +349,7 @@ test("utils/share", async (t) => {
               const result = await ensureShare(req);
 
               t.equal(result, share);
-            }
+            },
           );
         });
       });
@@ -435,7 +435,7 @@ test("utils/share", async (t) => {
               },
             ],
           });
-        }
+        },
       );
 
       t.test("when a media type is specified", async (t) => {
@@ -445,7 +445,7 @@ test("utils/share", async (t) => {
             t.rejects(() => renderSharedFile(req, res, share, "foo"), {
               message: "Unsupported media type for this file: foo",
             });
-          }
+          },
         );
 
         t.test("sends the file contents to the server response", async (t) => {
@@ -466,7 +466,7 @@ test("utils/share", async (t) => {
           t.equal(logger.info.firstCall.args[0].mediaType, "some/media-type");
           t.equal(
             logger.info.firstCall.args[1],
-            "Shared file downloaded by user 'bob'"
+            "Shared file downloaded by user 'bob'",
           );
         });
       });

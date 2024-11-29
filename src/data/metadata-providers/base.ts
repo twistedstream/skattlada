@@ -26,11 +26,11 @@ export abstract class BaseMetadataProvider implements IMetadataProvider {
         p[c.aaguid] = c;
         return p;
       },
-      <Record<string, SimpleMetadataStatement>>{}
+      <Record<string, SimpleMetadataStatement>>{},
     );
 
     logger.info(
-      `Metadata provider loaded ${statementsList.length} statement(s)`
+      `Metadata provider loaded ${statementsList.length} statement(s)`,
     );
   }
 

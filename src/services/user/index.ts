@@ -28,14 +28,14 @@ export async function fetchUserById(userID: string): Promise<User | undefined> {
 }
 
 export async function fetchUserByName(
-  username: string
+  username: string,
 ): Promise<User | undefined> {
   return findUserByName(username);
 }
 
 export async function newUser(
   username: string,
-  displayName: string
+  displayName: string,
 ): Promise<User> {
   const user: User = {
     id: unique(),
@@ -52,7 +52,7 @@ export async function newUser(
 
 export async function registerUser(
   registeringUser: User,
-  firstCredential: Authenticator
+  firstCredential: Authenticator,
 ): Promise<User> {
   validateUser(registeringUser);
 
@@ -76,19 +76,19 @@ export async function modifyUser(user: User): Promise<void> {
 }
 
 export async function fetchCredentialById(
-  credentialID: string
+  credentialID: string,
 ): Promise<RegisteredAuthenticator | undefined> {
   return findCredentialById(credentialID);
 }
 
 export async function fetchCredentialsByUserId(
-  userID: string
+  userID: string,
 ): Promise<RegisteredAuthenticator[]> {
   return findCredentialsByUser(userID);
 }
 
 export async function fetchCredentialsByUsername(
-  username: string
+  username: string,
 ): Promise<RegisteredAuthenticator[]> {
   const user = await findUserByName(username);
 
@@ -100,11 +100,11 @@ export async function fetchCredentialsByUsername(
 
 export async function addUserCredential(
   existingUserId: string,
-  newCredential: Authenticator
+  newCredential: Authenticator,
 ) {
   if (await findUserCredential(existingUserId, newCredential.credentialID)) {
     throw new Error(
-      `Credential with ID '${newCredential.credentialID}' already exists`
+      `Credential with ID '${newCredential.credentialID}' already exists`,
     );
   }
   if (!(await findUserById(existingUserId))) {
@@ -116,16 +116,16 @@ export async function addUserCredential(
 
 export async function removeUserCredential(
   existingUserId: string,
-  existingCredentialId: string
+  existingCredentialId: string,
 ) {
   if (!(await findUserCredential(existingUserId, existingCredentialId))) {
     throw new Error(
-      `Credential with ID '${existingCredentialId}' not associated with user with ID '${existingUserId}'`
+      `Credential with ID '${existingCredentialId}' not associated with user with ID '${existingUserId}'`,
     );
   }
   if ((await findCredentialsByUser(existingUserId)).length === 1) {
     throw new Error(
-      `Cannot remove the last credential with ID '${existingCredentialId}' associated with user with ID '${existingUserId}'`
+      `Cannot remove the last credential with ID '${existingCredentialId}' associated with user with ID '${existingUserId}'`,
     );
   }
 

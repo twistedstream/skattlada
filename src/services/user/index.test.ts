@@ -333,7 +333,7 @@ test("services/user", async (t) => {
         t.ok(dataProvider.findCredentialsByUser.called);
         t.equal(
           dataProvider.findCredentialsByUser.firstCall.firstArg,
-          "user-id"
+          "user-id",
         );
       });
 
@@ -382,7 +382,7 @@ test("services/user", async (t) => {
         () => addUserCredential("user-id", { credentialID: "cred-id" }),
         {
           message: "Credential with ID 'cred-id' already exists",
-        }
+        },
       );
     });
 
@@ -407,7 +407,7 @@ test("services/user", async (t) => {
           () => addUserCredential("user-id", { credentialID: "cred-id" }),
           {
             message: "User with ID 'user-id' not found",
-          }
+          },
         );
       });
 
@@ -463,7 +463,7 @@ test("services/user", async (t) => {
         t.ok(dataProvider.findCredentialsByUser.called);
         t.equal(
           dataProvider.findCredentialsByUser.firstCall.firstArg,
-          "user-id"
+          "user-id",
         );
       });
 
@@ -472,20 +472,20 @@ test("services/user", async (t) => {
         async (t) => {
           dataProvider.findCredentialsByUser.resolves(
             // only one
-            [{}]
+            [{}],
           );
 
           t.rejects(() => removeUserCredential("user-id", "cred-id"), {
             message:
               "Cannot remove the last credential with ID 'cred-id' associated with user with ID 'user-id'",
           });
-        }
+        },
       );
 
       t.test("deletes credential", async (t) => {
         dataProvider.findCredentialsByUser.resolves(
           // more than one
-          [{}, {}]
+          [{}, {}],
         );
 
         await removeUserCredential("user-id", "cred-id");

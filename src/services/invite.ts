@@ -22,7 +22,7 @@ export async function newInvite(by: User, isAdmin: boolean): Promise<Invite> {
 }
 
 export async function fetchInviteById(
-  inviteId: string
+  inviteId: string,
 ): Promise<Invite | undefined> {
   return findInviteById(inviteId);
 }

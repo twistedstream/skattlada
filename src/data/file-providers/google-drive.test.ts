@@ -95,7 +95,7 @@ test("data/file-providers/google-drive", async (t) => {
             t.ok(fileIdFromUrlStub.called);
             t.equal(
               fileIdFromUrlStub.firstCall.firstArg,
-              "https://example.com/FILE_ID"
+              "https://example.com/FILE_ID",
             );
           });
 
@@ -103,7 +103,7 @@ test("data/file-providers/google-drive", async (t) => {
             fileIdFromUrlStub.returns(undefined);
 
             const result = await provider.getFileInfo(
-              "https://example.com/FILE_ID"
+              "https://example.com/FILE_ID",
             );
 
             t.equal(result, undefined);
@@ -134,11 +134,11 @@ test("data/file-providers/google-drive", async (t) => {
                 getFileStub.rejects(error);
 
                 const result = await provider.getFileInfo(
-                  "https://example.com/FILE_ID"
+                  "https://example.com/FILE_ID",
                 );
 
                 t.equal(result, undefined);
-              }
+              },
             );
 
             t.test(
@@ -149,9 +149,9 @@ test("data/file-providers/google-drive", async (t) => {
 
                 t.rejects(
                   () => provider.getFileInfo("https://example.com/FILE_ID"),
-                  error
+                  error,
                 );
-              }
+              },
             );
 
             t.test("when file metadata is fetched", async (t) => {
@@ -176,9 +176,9 @@ test("data/file-providers/google-drive", async (t) => {
                   t.ok(mediaTypeFromMimeTypeStub.called);
                   t.equal(
                     mediaTypeFromMimeTypeStub.firstCall.firstArg,
-                    "mime-type"
+                    "mime-type",
                   );
-                }
+                },
               );
 
               t.test(
@@ -191,9 +191,9 @@ test("data/file-providers/google-drive", async (t) => {
                     {
                       message:
                         "Google Drive file (FILE_ID) has an unknown media type: mime-type",
-                    }
+                    },
                   );
-                }
+                },
               );
 
               t.test("when the MIME type is recognized", async (t) => {
@@ -211,7 +211,7 @@ test("data/file-providers/google-drive", async (t) => {
                   t.ok(fileTypeFromMediaTypeStub.called);
                   t.equal(
                     fileTypeFromMediaTypeStub.firstCall.firstArg,
-                    fileMediaType
+                    fileMediaType,
                   );
                 });
 
@@ -224,14 +224,14 @@ test("data/file-providers/google-drive", async (t) => {
                     "returns a file info with expected id, title, and type",
                     async (t) => {
                       const result = await provider.getFileInfo(
-                        "https://example.com/FILE_ID"
+                        "https://example.com/FILE_ID",
                       );
 
                       t.ok(result);
                       t.equal(result.id, "FILE_ID");
                       t.equal(result.title, "Some file");
                       t.equal(result.type, "document");
-                    }
+                    },
                   );
 
                   t.test("when the Google file has export links", async (t) => {
@@ -248,7 +248,7 @@ test("data/file-providers/google-drive", async (t) => {
                       async (t) => {
                         try {
                           await provider.getFileInfo(
-                            "https://example.com/FILE_ID"
+                            "https://example.com/FILE_ID",
                           );
                         } catch {}
 
@@ -257,7 +257,7 @@ test("data/file-providers/google-drive", async (t) => {
                         t.equal(calls[1].firstArg, "mime-type-1");
                         t.equal(calls[2].firstArg, "mime-type-2");
                         t.equal(calls[3].firstArg, "mime-type-3");
-                      }
+                      },
                     );
 
                     t.test(
@@ -277,24 +277,24 @@ test("data/file-providers/google-drive", async (t) => {
                           .returns(exportMediaType3);
 
                         const result = await provider.getFileInfo(
-                          "https://example.com/FILE_ID"
+                          "https://example.com/FILE_ID",
                         );
 
                         t.ok(result.availableMediaTypes);
                         t.equal(result.availableMediaTypes.length, 3);
                         t.equal(
                           result.availableMediaTypes[0],
-                          exportMediaType1
+                          exportMediaType1,
                         );
                         t.equal(
                           result.availableMediaTypes[1],
-                          exportMediaType2
+                          exportMediaType2,
                         );
                         t.equal(
                           result.availableMediaTypes[2],
-                          exportMediaType3
+                          exportMediaType3,
                         );
-                      }
+                      },
                     );
                   });
 
@@ -302,13 +302,13 @@ test("data/file-providers/google-drive", async (t) => {
                     "if the Google file has no export links, returns a file info the Google file's own media type",
                     async (t) => {
                       const result = await provider.getFileInfo(
-                        "https://example.com/FILE_ID"
+                        "https://example.com/FILE_ID",
                       );
 
                       t.ok(result.availableMediaTypes);
                       t.equal(result.availableMediaTypes.length, 1);
                       t.equal(result.availableMediaTypes[0], fileMediaType);
-                    }
+                    },
                   );
                 });
               });
@@ -375,9 +375,9 @@ test("data/file-providers/google-drive", async (t) => {
                 t.ok(destination.attachment.called);
                 t.equal(
                   destination.attachment.firstCall.firstArg,
-                  "Example Doc.doc"
+                  "Example Doc.doc",
                 );
-              }
+              },
             );
 
             t.test("handles the 'error' event", async (t) => {
@@ -402,9 +402,9 @@ test("data/file-providers/google-drive", async (t) => {
                 t.ok(mockGoogleDriveStream.pipe.called);
                 t.equal(
                   mockGoogleDriveStream.pipe.firstCall.firstArg,
-                  destination
+                  destination,
                 );
-              }
+              },
             );
           });
         });

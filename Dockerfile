@@ -1,6 +1,6 @@
 ARG NPM_VERSION="9.6.7"
 
-FROM node:20-alpine AS build_stage
+FROM node:22-alpine AS build_stage
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN npm ci
 COPY ./ /app/
 RUN npm run build
 
-FROM node:20-alpine AS final_stage
+FROM node:22-alpine AS final_stage
 
 WORKDIR /app
 COPY --from=build_stage /app/package.json /app/

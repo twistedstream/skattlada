@@ -28,12 +28,12 @@ export interface IDataProvider {
   // credentials
 
   findCredentialById(
-    credentialID: string
+    credentialID: string,
   ): Promise<RegisteredAuthenticator | undefined>;
 
   findUserCredential(
     userID: string,
-    credentialID: string
+    credentialID: string,
   ): Promise<RegisteredAuthenticator | undefined>;
 
   findCredentialsByUser(userID: string): Promise<RegisteredAuthenticator[]>;

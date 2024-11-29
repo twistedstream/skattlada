@@ -9,7 +9,7 @@ export const CREDENTIAL_CONSTRAINTS: ColumnConstraints = { uniques: ["id"] };
 
 export function rowToCredential(
   credentialRow: RowData,
-  userRow: RowData
+  userRow: RowData,
 ): RegisteredAuthenticator {
   return {
     credentialID: credentialRow.id,
@@ -28,7 +28,7 @@ export function rowToCredential(
 
 export function credentialToRow(
   credential: Authenticator,
-  userId: string
+  userId: string,
 ): RowData {
   return {
     id: credential.credentialID,

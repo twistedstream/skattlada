@@ -101,10 +101,10 @@ export class InMemoryDataProvider implements IDataProvider {
   // credentials
 
   async findCredentialById(
-    credentialID: string
+    credentialID: string,
   ): Promise<RegisteredAuthenticator | undefined> {
     const credential = this._credentials.find(
-      (p) => p.credentialID === credentialID
+      (p) => p.credentialID === credentialID,
     );
     if (credential) {
       return cloneDeep(credential);
@@ -113,10 +113,10 @@ export class InMemoryDataProvider implements IDataProvider {
 
   async findUserCredential(
     userID: string,
-    credentialID: string
+    credentialID: string,
   ): Promise<RegisteredAuthenticator | undefined> {
     const credential = this._credentials.find(
-      (p) => p.user.id === userID && p.credentialID === credentialID
+      (p) => p.user.id === userID && p.credentialID === credentialID,
     );
     if (credential) {
       return cloneDeep(credential);
@@ -124,7 +124,7 @@ export class InMemoryDataProvider implements IDataProvider {
   }
 
   async findCredentialsByUser(
-    userID: string
+    userID: string,
   ): Promise<RegisteredAuthenticator[]> {
     const credentials = this._credentials.filter((p) => p.user.id === userID);
     return cloneDeep(credentials);
@@ -132,11 +132,11 @@ export class InMemoryDataProvider implements IDataProvider {
 
   async insertCredential(
     userID: string,
-    credential: Authenticator
+    credential: Authenticator,
   ): Promise<void> {
     const user = assertValue(
       await this.findUserById(userID),
-      "User does not exist"
+      "User does not exist",
     );
     const registeredCredential: RegisteredAuthenticator = {
       ...cloneDeep(credential),
@@ -148,7 +148,7 @@ export class InMemoryDataProvider implements IDataProvider {
 
   async deleteCredential(credentialID: string): Promise<void> {
     const indexToDelete = this._credentials.findIndex(
-      (c) => c.credentialID === credentialID
+      (c) => c.credentialID === credentialID,
     );
     if (indexToDelete >= 0) {
       this._credentials.splice(indexToDelete, 1);

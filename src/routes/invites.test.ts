@@ -54,7 +54,7 @@ const validateCsrfTokenStub = sinon.stub();
 
 function importModule(
   test: Tap.Test,
-  { mockExpress = false, mockModules = false }: MockOptions = {}
+  { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
   const { default: router } = test.mock("./invites", {
     ...(mockExpress && {
@@ -88,7 +88,7 @@ function importModule(
 
 function createInvitesTestExpressApp(
   test: Tap.Test,
-  { withAuth, suppressErrorOutput }: InvitesTestExpressAppOptions = {}
+  { withAuth, suppressErrorOutput }: InvitesTestExpressAppOptions = {},
 ) {
   const router = importModule(test, { mockModules: true });
 
@@ -131,7 +131,7 @@ test("routes/invites", async (t) => {
     validateCsrfTokenStub.callsFake(
       () => (_req: Request, _res: Response, next: NextFunction) => {
         next();
-      }
+      },
     );
   });
 
@@ -148,11 +148,11 @@ test("routes/invites", async (t) => {
 
     t.same(
       expressRouter.get.getCalls().map((c) => c.firstArg),
-      ["/:invite_id"]
+      ["/:invite_id"],
     );
     t.same(
       expressRouter.post.getCalls().map((c) => c.firstArg),
-      ["/:invite_id"]
+      ["/:invite_id"],
     );
   });
 
@@ -200,9 +200,9 @@ test("routes/invites", async (t) => {
             renderArgs,
             StatusCodes.FORBIDDEN,
             "Error",
-            "You can't accept an invite to register when you're already signed in"
+            "You can't accept an invite to register when you're already signed in",
           );
-        }
+        },
       );
 
       t.test("when registerable state exists", async (t) => {
@@ -323,7 +323,7 @@ test("routes/invites", async (t) => {
           renderArgs,
           StatusCodes.FORBIDDEN,
           "Error",
-          "This endpoint does not support an existing user session"
+          "This endpoint does not support an existing user session",
         );
       });
     });
@@ -386,7 +386,7 @@ test("routes/invites", async (t) => {
           renderArgs,
           StatusCodes.BAD_REQUEST,
           "Error",
-          "Unsupported invite response operation"
+          "Unsupported invite response operation",
         );
       });
     });

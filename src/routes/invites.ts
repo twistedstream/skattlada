@@ -30,7 +30,7 @@ router.get("/:invite_id", async (req: AuthenticatedRequest, res: Response) => {
     const registerable = getRegisterable(req);
     if (!registerable) {
       throw ForbiddenError(
-        "You can't accept an invite to register when you're already signed in"
+        "You can't accept an invite to register when you're already signed in",
       );
     }
 
@@ -58,12 +58,12 @@ router.post(
   validateCsrfToken(),
   async (
     req: AuthenticatedRequestWithTypedBody<{ action: "accept" | "reject" }>,
-    res: Response
+    res: Response,
   ) => {
     const invite = await ensureInvite(req);
     if (req.user) {
       throw ForbiddenError(
-        "This endpoint does not support an existing user session"
+        "This endpoint does not support an existing user session",
       );
     }
 
@@ -76,7 +76,7 @@ router.post(
     }
 
     throw BadRequestError("Unsupported invite response operation");
-  }
+  },
 );
 
 export default router;

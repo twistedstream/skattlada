@@ -39,7 +39,7 @@ test("utils/auth/deserialize/registeredAuthenticator", async (t) => {
         fixRegisteredAuthenticator(target);
 
         t.notOk(fixCreatedFake.called);
-      }
+      },
     );
 
     t.test(
@@ -53,7 +53,7 @@ test("utils/auth/deserialize/registeredAuthenticator", async (t) => {
 
         t.ok(fixCreatedFake.called);
         t.equal(fixCreatedFake.firstCall.firstArg, user);
-      }
+      },
     );
   });
 });

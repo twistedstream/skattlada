@@ -51,13 +51,13 @@ async function applyGoogleSheetsSchema(spreadsheetId, { dryRun }) {
       // get existing data
       const getResult = await getSpreadsheetValues(
         spreadsheetId,
-        `${table.name}!1:1`
+        `${table.name}!1:1`,
       );
       data = getResult.data.values ?? data;
     }
     const columns = data[0];
     const missingColumns = table.columns.filter(
-      (c) => !columns.includes(c.name)
+      (c) => !columns.includes(c.name),
     );
 
     const message = `- ${table.name}: `;
@@ -66,7 +66,7 @@ async function applyGoogleSheetsSchema(spreadsheetId, { dryRun }) {
       console.log(`${message}✅ No missing columns`);
     } else {
       console.log(
-        `${message}⛔️ Missing columns: ${missingColumns.map((c) => c.name).join(", ")}`
+        `${message}⛔️ Missing columns: ${missingColumns.map((c) => c.name).join(", ")}`,
       );
 
       const sheet = sheetsByName.get(table.name);

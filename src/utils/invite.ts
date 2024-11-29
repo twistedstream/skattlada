@@ -34,7 +34,7 @@ export async function ensureInvite(req: AuthenticatedRequest): Promise<Invite> {
       const claimedBy = assertValue(invite.claimedBy);
 
       throw ForbiddenError(
-        `This invite was already claimed by @${claimedBy.username}`
+        `This invite was already claimed by @${claimedBy.username}`,
       );
     }
 

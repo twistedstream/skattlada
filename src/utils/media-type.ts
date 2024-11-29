@@ -4,13 +4,14 @@ import { FileType, MediaType } from "../types/entity";
 import { logger } from "./logger";
 
 export function fileTypeFromMediaType(
-  mediaType: MediaType
+  mediaType: MediaType,
 ): FileType | undefined {
   switch (mediaType.name) {
     case "application/vnd.google-apps.document":
     case "application/msword":
     case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
     case "application/vnd.oasis.opendocument.text":
+    case "application/x-vnd.oasis.opendocument.text":
     case "application/rtf":
     case "text/plain":
       return "document";
@@ -27,6 +28,7 @@ export function fileTypeFromMediaType(
     case "application/vnd.ms-powerpoint":
     case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
     case "application/vnd.oasis.opendocument.presentation":
+    case "application/x-vnd.oasis.opendocument.presentation":
       return "presentation";
 
     case "application/pdf":

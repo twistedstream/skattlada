@@ -48,7 +48,7 @@ function importModule(
   test: Tap.Test,
   environment: "production" | "development",
   port: number,
-  scheme: "http" | "https"
+  scheme: "http" | "https",
 ) {
   const { default: server } = test.mock("./server", {
     http,
@@ -218,7 +218,7 @@ test("server", async (t) => {
         });
         t.equal(https.createServer.firstCall.args[1], app);
         t.equal(server, httpsServer);
-      }
+      },
     );
 
     t.test("listens on expected port", async (t) => {
