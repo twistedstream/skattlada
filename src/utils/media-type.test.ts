@@ -36,6 +36,7 @@ test("utils/media-type", async (t) => {
           "application/msword",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           "application/vnd.oasis.opendocument.text",
+          "application/x-vnd.oasis.opendocument.text",
           "application/rtf",
           "text/plain",
         ].forEach((name) => {
@@ -71,6 +72,7 @@ test("utils/media-type", async (t) => {
         "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "application/vnd.oasis.opendocument.presentation",
+        "application/x-vnd.oasis.opendocument.presentation",
       ].forEach((name) => {
         const result = fileTypeFromMediaType({
           name,
