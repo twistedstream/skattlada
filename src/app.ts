@@ -14,7 +14,20 @@ const app: Express = express();
 app.disable("x-powered-by");
 
 // App-level middleware
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        "script-src": [
+          "'unsafe-inline'",
+          "'self'",
+          "cdn.jsdelivr.net",
+          "unpkg.com",
+        ],
+      },
+    },
+  })
+);
 app.use(pinoHttp({ logger }));
 
 app.use(express.static("public"));
