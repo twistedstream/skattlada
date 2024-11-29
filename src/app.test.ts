@@ -70,14 +70,29 @@ test("app", async (t) => {
     t.equal(expressApp.disable.getCalls()[0].firstArg, "x-powered-by");
   });
 
-  t.test("uses helmet middleware", async (t) => {
-    importModule(t);
+  t.test(
+    "uses helmet middleware and configures a compatible content security policy",
+    async (t) => {
+      importModule(t);
 
-    t.ok(helmetFake.called);
+      t.ok(helmetFake.called);
+      t.same(helmetFake.firstCall.firstArg, {
+        contentSecurityPolicy: {
+          directives: {
+            "script-src": [
+              "'unsafe-inline'",
+              "'self'",
+              "cdn.jsdelivr.net",
+              "unpkg.com",
+            ],
+          },
+        },
+      });
 
-    t.ok(expressApp.use.called);
-    t.equal(expressApp.use.getCalls()[0].firstArg, helmetMiddleware);
-  });
+      t.ok(expressApp.use.called);
+      t.equal(expressApp.use.getCalls()[0].firstArg, helmetMiddleware);
+    }
+  );
 
   t.test("uses express-pino-logger middleware", async (t) => {
     importModule(t);
