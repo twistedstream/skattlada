@@ -61,7 +61,7 @@
     "luxon": "^3.5.0",
     "pino": "^9.5.0",
     "pino-http": "^10.3.0",
-    "short-unique-id": "^5.0.3"
+    "short-unique-id": "^5.2.0"
   },
   "devDependencies": {
     "@googleapis/sheets": "^5.0.5",
