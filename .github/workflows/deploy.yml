@@ -90,11 +90,13 @@ jobs:
           result-encoding: string
 
       - name: Deploy Docker image to Portainer
-        uses: datntdev0/action-deploy-to-portainer@v0.1.1
+        uses: datntdev0/actions-deploy-portainer@v0.1.0
         with:
-          portainerHost: ${{ vars.PORTAINER_HOST }}
-          portainerApiKey: ${{ secrets.PORTAINER_API_KEY }}
-          portainerEnvId: ${{ vars.PORTAINER_ENV_ID }}
-          portainerStackName: ${{ vars.PORTAINER_STACK_NAME_PROD }}
-          portainerFilePath: "./docker-compose.yml"
-          portainerEnvVars: "${{ steps.build_portainer_env_vars.outputs.result }}"
+          base-url: ${{ vars.PORTAINER_HOST }}
+          access-token: ${{ secrets.PORTAINER_API_KEY }}
+          endpoint-id: ${{ vars.PORTAINER_ENV_ID }}
+          stack-name: ${{ vars.PORTAINER_STACK_NAME_PROD }}
+          repository-url: https://github.com/${{ github.repository }}.git
+          repository-ref: ${{ github.ref }}
+          compose-file: "./docker-compose.yml"
+          env-json: "${{ steps.build_portainer_env_vars.outputs.result }}"
