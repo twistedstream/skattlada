@@ -75,7 +75,7 @@
     "@types/set-cookie-parser": "^2.4.10",
     "@types/sinon": "^17.0.3",
     "@types/supertest": "^6.0.2",
-    "@types/tap": "^15.0.7",
+    "@types/tap": "^15.0.12",
     "cookie": "^1.0.2",
     "node-html-parser": "^6.1.12",
     "nodemon": "^3.1.7",
