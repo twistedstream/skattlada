@@ -23,7 +23,7 @@ jobs:
           result-encoding: string
 
       - name: Install Node.js ${{ steps.get_node_version.outputs.result }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.get_node_version.outputs.result }}
           cache: "npm"
