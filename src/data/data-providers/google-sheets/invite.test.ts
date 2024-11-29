@@ -68,7 +68,7 @@ test("data/data-providers/google-sheets/invite", async (t) => {
 
         t.same(
           omit(result, "createdBy", "claimed", "claimedBy"),
-          omit(unclaimedInvite, "createdBy", "claimed", "claimedBy")
+          omit(unclaimedInvite, "createdBy", "claimed", "claimedBy"),
         );
         t.equal(result.createdBy, unclaimedInvite.createdBy);
         t.equal(result.claimed, undefined);
@@ -92,7 +92,7 @@ test("data/data-providers/google-sheets/invite", async (t) => {
           t.equal(calls.length, 2);
           t.equal(calls[0].firstArg, createdByRow);
           t.equal(calls[1].firstArg, claimedByRow);
-        }
+        },
       );
 
       t.test("returns expected invite", async (t) => {
@@ -102,12 +102,12 @@ test("data/data-providers/google-sheets/invite", async (t) => {
         const result = rowToInvite(
           claimedInviteRow,
           createdByRow,
-          claimedByRow
+          claimedByRow,
         );
 
         t.same(
           omit(result, "createdBy", "claimedBy"),
-          omit(claimedInvite, "createdBy", "claimedBy")
+          omit(claimedInvite, "createdBy", "claimedBy"),
         );
         t.equal(result.createdBy, claimedInvite.createdBy);
         t.equal(result.claimedBy, claimedInvite.claimedBy);
@@ -139,7 +139,7 @@ test("data/data-providers/google-sheets/invite", async (t) => {
 
         t.same(
           omit(result.inviteRow, "claimed", "claimed_by"),
-          unclaimedInviteRow
+          unclaimedInviteRow,
         );
         t.same(result.createdByRow, createdByRow);
         t.same(result.claimedByRow, undefined);
@@ -159,7 +159,7 @@ test("data/data-providers/google-sheets/invite", async (t) => {
           t.equal(calls.length, 2);
           t.equal(calls[0].firstArg, createdByUser);
           t.equal(calls[1].firstArg, claimedByUser);
-        }
+        },
       );
 
       t.test("returns expected rows", async (t) => {

@@ -4,7 +4,7 @@ import { FileType, MediaType } from "../types/entity";
 import { logger } from "./logger";
 
 export function fileTypeFromMediaType(
-  mediaType: MediaType
+  mediaType: MediaType,
 ): FileType | undefined {
   switch (mediaType.name) {
     case "application/vnd.google-apps.document":

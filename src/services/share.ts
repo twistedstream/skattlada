@@ -23,19 +23,19 @@ const { getFileInfo } = fileProvider;
 // service
 
 export async function fetchSharesByClaimedUserId(
-  userID: string
+  userID: string,
 ): Promise<Share[]> {
   return findSharesByClaimedUserId(userID);
 }
 
 export async function fetchSharesByCreatedUserId(
-  userID: string
+  userID: string,
 ): Promise<Share[]> {
   return findSharesByCreatedUserId(userID);
 }
 
 export async function fetchShareById(
-  shareId: string
+  shareId: string,
 ): Promise<Share | undefined> {
   return findShareById(shareId);
 }
@@ -44,7 +44,7 @@ export async function newShare(
   by: User,
   backingUrl: string,
   toUsername?: string,
-  expireDuration?: Duration
+  expireDuration?: Duration,
 ): Promise<Share> {
   // get file info and make sure it exists
   const fileInfo = await getFileInfo(backingUrl);
@@ -52,7 +52,7 @@ export async function newShare(
     throw new ValidationError(
       "Share",
       "backingUrl",
-      "File not found or invalid URL"
+      "File not found or invalid URL",
     );
   }
 

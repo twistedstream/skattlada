@@ -126,7 +126,7 @@ test("data/index", async (t) => {
             name: "AssertionError",
             message: "Missing config: data provider name",
           });
-        }
+        },
       );
 
       t.test("if 'in-memory' provider configured, create it", async (t) => {
@@ -156,7 +156,7 @@ test("data/index", async (t) => {
         // constructor called with no args
         t.equal(
           googleSheetsDataProviderConstructorFake.firstCall.firstArg,
-          undefined
+          undefined,
         );
       });
 
@@ -171,7 +171,7 @@ test("data/index", async (t) => {
             name: "AssertionError",
             message: "Unsupported data provider name: no-exist",
           });
-        }
+        },
       );
 
       t.test("log loaded data provider name", async (t) => {
@@ -224,7 +224,7 @@ test("data/index", async (t) => {
             name: "AssertionError",
             message: "Missing config: file provider name",
           });
-        }
+        },
       );
 
       t.test("if 'local' provider configured, create it", async (t) => {
@@ -248,7 +248,7 @@ test("data/index", async (t) => {
         t.ok(googleDriveFileProviderConstructorFake.called);
         t.equal(
           googleDriveFileProviderConstructorFake.firstCall.args.length,
-          0
+          0,
         );
       });
 
@@ -263,7 +263,7 @@ test("data/index", async (t) => {
             name: "AssertionError",
             message: "Unsupported file provider name: no-exist",
           });
-        }
+        },
       );
 
       t.test("log loaded data provider name", async (t) => {
@@ -316,7 +316,7 @@ test("data/index", async (t) => {
             name: "AssertionError",
             message: "Missing config: metadata provider name",
           });
-        }
+        },
       );
 
       t.test("if 'local' provider configured, create it", async (t) => {
@@ -343,9 +343,9 @@ test("data/index", async (t) => {
           t.equal(
             passkeyProviderAaguidsMetadataProviderConstructorFake.firstCall.args
               .length,
-            0
+            0,
           );
-        }
+        },
       );
 
       t.test(
@@ -359,7 +359,7 @@ test("data/index", async (t) => {
             name: "AssertionError",
             message: "Unsupported metadata provider name: no-exist",
           });
-        }
+        },
       );
 
       t.test("log loaded data provider name", async (t) => {

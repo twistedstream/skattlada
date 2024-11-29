@@ -26,7 +26,7 @@ app.use(
         ],
       },
     },
-  })
+  }),
 );
 app.use(pinoHttp({ logger }));
 
@@ -41,7 +41,7 @@ app.engine(
       product: () => packageDescription,
       version: () => packageVersion,
     },
-  })
+  }),
 );
 
 // Configure website

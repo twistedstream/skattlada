@@ -65,7 +65,7 @@ test("routes/fido2: error handler", async (t) => {
 
         t.ok(buildErrorHandlerDataStub.called);
         t.equal(buildErrorHandlerDataStub.firstCall.firstArg.statusCode, 404);
-      }
+      },
     );
 
     t.test("renders JSON with the expected data", async (t) => {
@@ -83,7 +83,7 @@ test("routes/fido2: error handler", async (t) => {
         t,
         response,
         StatusCodes.NOT_FOUND,
-        "Can't find it"
+        "Can't find it",
       );
     });
 
@@ -120,7 +120,7 @@ test("routes/fido2: error handler", async (t) => {
         response,
         StatusCodes.BAD_REQUEST,
         "Really bad request",
-        "malarkey"
+        "malarkey",
       );
     });
 
@@ -158,7 +158,7 @@ test("routes/fido2: error handler", async (t) => {
       verifyServerErrorFido2ServerResponse(
         t,
         response,
-        StatusCodes.INTERNAL_SERVER_ERROR
+        StatusCodes.INTERNAL_SERVER_ERROR,
       );
     });
 

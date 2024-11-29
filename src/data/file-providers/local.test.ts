@@ -96,7 +96,7 @@ test("data/file-providers/local", async (t) => {
 
           t.test("if file exists, returns copy", async (t) => {
             const result = await provider.getFileInfo(
-              "https://example.com/foo"
+              "https://example.com/foo",
             );
 
             t.ok(result);
@@ -105,7 +105,7 @@ test("data/file-providers/local", async (t) => {
 
           t.test("if file doesn't exist, returns nothing", async (t) => {
             const result = await provider.getFileInfo(
-              "https://example.com/bar"
+              "https://example.com/bar",
             );
 
             t.equal(result, undefined);
@@ -122,11 +122,11 @@ test("data/file-providers/local", async (t) => {
               provider.sendFile(
                 "https://example.com/foo",
                 "application/msword",
-                destination
+                destination,
               ),
             {
               message: "Provider not initialized",
-            }
+            },
           );
         });
 
@@ -158,7 +158,7 @@ test("data/file-providers/local", async (t) => {
             t.ok(destination.attachment.called);
             t.equal(
               destination.attachment.firstCall.firstArg,
-              "Example Doc.doc"
+              "Example Doc.doc",
             );
           });
 
@@ -197,7 +197,7 @@ test("data/file-providers/local", async (t) => {
 
                 t.ok(mockFileStream.pipe.called);
                 t.equal(mockFileStream.pipe.firstCall.firstArg, destination);
-              }
+              },
             );
           });
         });

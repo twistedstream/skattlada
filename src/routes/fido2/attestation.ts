@@ -62,14 +62,14 @@ router.post(
       if (excludeCredentials.length === 0) {
         // NOTE: this shouldn't happen unless there's a data integrity issue
         throw new Error(
-          `Existing user ${registeringUser.id} is missing credentials.`
+          `Existing user ${registeringUser.id} is missing credentials.`,
         );
       }
     } else {
       // retrieve invitation state from session
       if (!getRegisterable(req)) {
         throw ForbiddenError(
-          "Cannot register a new user without a registerable session"
+          "Cannot register a new user without a registerable session",
         );
       }
 
@@ -89,7 +89,7 @@ router.post(
       if (existingUser) {
         throw BadRequestError(
           `A user with username '${username}' already exists`,
-          "User.username"
+          "User.username",
         );
       }
     }
@@ -121,7 +121,7 @@ router.post(
     beginSignup(req, optionsResponse.challenge, registeringUser);
 
     res.json(optionsResponse);
-  }
+  },
 );
 
 router.post(
@@ -145,7 +145,7 @@ router.post(
     }
     logger.debug(
       registration,
-      "/attestation/result: Registration state retrieved from session"
+      "/attestation/result: Registration state retrieved from session",
     );
 
     //verify registration
@@ -160,7 +160,7 @@ router.post(
     } catch (err: any) {
       logger.warn(
         err,
-        `Registration error with user with ID ${registration.registeringUser.id} and credential ${id}`
+        `Registration error with user with ID ${registration.registeringUser.id} and credential ${id}`,
       );
 
       throw BadRequestError(`Registration failed: ${err.message}`);
@@ -189,7 +189,7 @@ router.post(
     };
     logger.debug(
       validatedCredential,
-      "/attestation/result: Validated credential"
+      "/attestation/result: Validated credential",
     );
 
     let { user } = req;
@@ -205,7 +205,7 @@ router.post(
       }
       logger.debug(
         registerable,
-        "/attestation/result: Registerable state retrieved from session"
+        "/attestation/result: Registerable state retrieved from session",
       );
 
       // create new user in rp with initial credential
@@ -215,7 +215,7 @@ router.post(
 
       // fetch registered credential
       const credential = assertValue(
-        await fetchCredentialById(validatedCredential.credentialID)
+        await fetchCredentialById(validatedCredential.credentialID),
       );
 
       // complete authentication
@@ -230,7 +230,7 @@ router.post(
     };
 
     res.json(resultResponse);
-  }
+  },
 );
 
 export default router;

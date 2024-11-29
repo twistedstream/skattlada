@@ -18,7 +18,7 @@ const errorHandler = (router: IRouter) => {
       err: any,
       req: AuthenticatedRequest,
       res: Response,
-      _next: NextFunction
+      _next: NextFunction,
     ) => {
       const { message, context, statusCode, correlation_id } =
         buildErrorHandlerData(err);
@@ -48,7 +48,7 @@ const errorHandler = (router: IRouter) => {
         error_status: statusCode,
         correlation_id,
       });
-    }
+    },
   );
 };
 

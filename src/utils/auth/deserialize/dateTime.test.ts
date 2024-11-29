@@ -46,7 +46,7 @@ test("utils/auth/deserialize/dateTime", async (t) => {
         fixDateTime(target, "foo");
 
         t.same(target, { foo: dt.toUTC() });
-      }
+      },
     );
   });
 });

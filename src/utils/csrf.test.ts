@@ -49,7 +49,7 @@ test("utils/csrf", async (t) => {
       "is a function that is the generateToken utility function",
       async (t) => {
         t.equal(generateCsrfToken, generateToken);
-      }
+      },
     );
   });
 
@@ -61,7 +61,7 @@ test("utils/csrf", async (t) => {
       async (t) => {
         const result = validateCsrfToken();
         t.equal(result, doubleCsrfProtection);
-      }
+      },
     );
   });
 });

@@ -19,12 +19,12 @@ function assertCsrfErrorResponse(test: Tap.Test, response: SupertestResponse) {
   test.equal(
     response.status,
     StatusCodes.FORBIDDEN,
-    "expected forbidden http status"
+    "expected forbidden http status",
   );
   test.match(
     response.headers["content-type"],
     "text/html",
-    "expected html content"
+    "expected html content",
   );
   test.match(response.text, "csrf", "expected CSRF error content");
 }

@@ -80,7 +80,7 @@ export function getMetadataProvider(): IMetadataProvider {
 
     assert(
       metadataProvider,
-      `Unsupported metadata provider name: ${metadataProviderName}`
+      `Unsupported metadata provider name: ${metadataProviderName}`,
     );
 
     logger.info(`Metadata provider: ${metadataProviderName}`);

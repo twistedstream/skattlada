@@ -48,7 +48,7 @@ async function registerUser(username, displayName) {
         Accept: "application/json",
       },
       body: JSON.stringify(attestationOptionsRequest),
-    }
+    },
   );
   const attestationOptionsResponse =
     await attestationOptionsFetchResponse.json();
@@ -63,7 +63,7 @@ async function registerUser(username, displayName) {
   let attestationResultRequest;
   try {
     attestationResultRequest = await startRegistration(
-      attestationOptionsResponse
+      attestationOptionsResponse,
     );
   } catch (err) {
     if (err.name === "NotAllowedError") {
@@ -72,7 +72,7 @@ async function registerUser(username, displayName) {
     if (err.name === "InvalidStateError") {
       console.warn("Already registered this credential:", err);
       throw new Error(
-        "Hmm, looks like you already registered with this credential"
+        "Hmm, looks like you already registered with this credential",
       );
     }
     console.error("Credential creation error:", err);
@@ -89,7 +89,7 @@ async function registerUser(username, displayName) {
         Accept: "application/json",
       },
       body: JSON.stringify(attestationResultRequest),
-    }
+    },
   );
   const attestationResultResponse = await attestationResultFetchResponse.json();
   console.log("attestationResultResponse:", attestationResultResponse);
@@ -118,7 +118,7 @@ async function authenticateUser(username) {
         Accept: "application/json",
       },
       body: JSON.stringify(assertionOptionsRequest),
-    }
+    },
   );
   const assertionOptionsResponse = await assertionOptionsFetchResponse.json();
   console.log("assertionOptionsResponse:", assertionOptionsResponse);
@@ -131,7 +131,7 @@ async function authenticateUser(username) {
   try {
     assertionResultRequest = await startAuthentication(
       assertionOptionsResponse,
-      useBrowserAutofill
+      useBrowserAutofill,
     );
   } catch (err) {
     if (err.name === "NotAllowedError") {

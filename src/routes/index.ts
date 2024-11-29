@@ -19,7 +19,7 @@ router.get(
   "/register",
   (
     req: RequestWithTypedQuery<{ return_to: string; hide_sign_in: string }>,
-    res: Response
+    res: Response,
   ) => {
     capturePreAuthState(req);
 
@@ -32,7 +32,7 @@ router.get(
       return_to: req.query.return_to,
       show_sign_in: !req.query.hide_sign_in,
     });
-  }
+  },
 );
 
 router.get(
@@ -44,7 +44,7 @@ router.get(
       title: "Sign in",
       return_to: req.query.return_to,
     });
-  }
+  },
 );
 
 router.get("/logout", (req: Request, res: Response) => {

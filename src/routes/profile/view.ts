@@ -13,7 +13,7 @@ type PasskeyView = {
 export async function buildViewData(
   user: User,
   credential: Authenticator,
-  csrf_token: string
+  csrf_token: string,
 ): Promise<{
   csrf_token: string;
   username: string;

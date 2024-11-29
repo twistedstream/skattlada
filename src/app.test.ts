@@ -91,7 +91,7 @@ test("app", async (t) => {
 
       t.ok(expressApp.use.called);
       t.equal(expressApp.use.getCalls()[0].firstArg, helmetMiddleware);
-    }
+    },
   );
 
   t.test("uses express-pino-logger middleware", async (t) => {

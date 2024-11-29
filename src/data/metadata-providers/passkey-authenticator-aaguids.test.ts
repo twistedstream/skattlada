@@ -53,12 +53,12 @@ test("data/metadata-providers/remote", async (t) => {
           t.ok(fetchFake.called);
           t.equal(
             fetchFake.firstCall.args[0],
-            "https://raw.githubusercontent.com/passkeydeveloper/passkey-authenticator-aaguids/main/combined_aaguid.json"
+            "https://raw.githubusercontent.com/passkeydeveloper/passkey-authenticator-aaguids/main/combined_aaguid.json",
           );
           t.same(fetchFake.firstCall.args[1], { method: "GET" });
           t.ok(jsonStub.called);
           t.equal(jsonStub.firstCall.args.length, 0);
-        }
+        },
       );
 
       t.test(
@@ -99,7 +99,7 @@ test("data/metadata-providers/remote", async (t) => {
               icon: "icon-data-3",
             },
           ]);
-        }
+        },
       );
     });
   });

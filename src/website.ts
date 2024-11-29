@@ -15,7 +15,7 @@ router.use(
     name: "ts-session",
     secret: cookieSecret,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  })
+  }),
 );
 router.use(auth());
 

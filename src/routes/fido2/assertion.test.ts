@@ -52,7 +52,7 @@ const signInStub = sinon.stub();
 
 function importModule(
   test: Tap.Test,
-  { mockExpress = false, mockModules = false }: MockOptions = {}
+  { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
   const { default: router } = test.mock("./assertion", {
     ...(mockExpress && {
@@ -89,7 +89,7 @@ function importModule(
 
 function createAssertionTestExpressApp(
   test: Tap.Test,
-  { withAuth, suppressErrorOutput }: AssertionTestExpressAppOptions = {}
+  { withAuth, suppressErrorOutput }: AssertionTestExpressAppOptions = {},
 ) {
   const router = importModule(test, { mockModules: true });
 
@@ -114,13 +114,13 @@ function createAssertionTestExpressApp(
 
 function verifyFailedAuthenticationFido2ErrorResponse(
   test: Tap.Test,
-  response: SupertestResponse
+  response: SupertestResponse,
 ) {
   verifyUserErrorFido2ServerResponse(
     test,
     response,
     StatusCodes.BAD_REQUEST,
-    "We couldn't sign you in"
+    "We couldn't sign you in",
   );
 }
 
@@ -159,7 +159,7 @@ test("routes/fido2/assertion", async (t) => {
 
     t.same(
       expressRouter.post.getCalls().map((c) => c.firstArg),
-      ["/options", "/result"]
+      ["/options", "/result"],
     );
   });
 
@@ -193,9 +193,9 @@ test("routes/fido2/assertion", async (t) => {
           t.ok(logger.warn.called);
           t.match(
             logger.warn.firstCall.firstArg,
-            "No such user with name 'bob'"
+            "No such user with name 'bob'",
           );
-        }
+        },
       );
 
       t.test("fetches user's credentials with trimmed username", async (t) => {
@@ -227,9 +227,9 @@ test("routes/fido2/assertion", async (t) => {
           verifyServerErrorFido2ServerResponse(
             t,
             response,
-            StatusCodes.INTERNAL_SERVER_ERROR
+            StatusCodes.INTERNAL_SERVER_ERROR,
           );
-        }
+        },
       );
     });
 
@@ -272,7 +272,7 @@ test("routes/fido2/assertion", async (t) => {
               type: "public-key",
               transports: cred1.transports ? [...cred1.transports] : [],
             },
-          ]
+          ],
         );
       });
 
@@ -293,9 +293,9 @@ test("routes/fido2/assertion", async (t) => {
           t.equal(
             generateAuthenticationOptionsStub.firstCall.args[0]
               .userVerification,
-            "required"
+            "required",
           );
-        }
+        },
       );
 
       t.test("with expected default user verification", async (t) => {
@@ -311,7 +311,7 @@ test("routes/fido2/assertion", async (t) => {
         t.ok(generateAuthenticationOptionsStub.called);
         t.equal(
           generateAuthenticationOptionsStub.firstCall.args[0].userVerification,
-          "preferred"
+          "preferred",
         );
       });
     });
@@ -339,7 +339,7 @@ test("routes/fido2/assertion", async (t) => {
           });
           t.equal(beginSignInFake.firstCall.args[1], "CHALLENGE!");
           t.equal(beginSignInFake.firstCall.args[2], existingUser);
-        }
+        },
       );
 
       t.test(
@@ -359,7 +359,7 @@ test("routes/fido2/assertion", async (t) => {
 
           t.ok(beginSignInFake.called);
           t.equal(beginSignInFake.firstCall.args[3], "required");
-        }
+        },
       );
 
       t.test("with expected default user verification", async (t) => {
@@ -397,7 +397,7 @@ test("routes/fido2/assertion", async (t) => {
           verifyFido2SuccessResponse(t, response, {
             challenge: "CHALLENGE!",
           });
-        }
+        },
       );
 
       t.test(
@@ -417,7 +417,7 @@ test("routes/fido2/assertion", async (t) => {
           verifyFido2SuccessResponse(t, response, {
             challenge: "CHALLENGE!",
           });
-        }
+        },
       );
     });
   });
@@ -435,9 +435,9 @@ test("routes/fido2/assertion", async (t) => {
           t,
           response,
           StatusCodes.BAD_REQUEST,
-          "Missing: credential ID"
+          "Missing: credential ID",
         );
-      }
+      },
     );
 
     t.test("gets the authentication state", async (t) => {
@@ -476,9 +476,9 @@ test("routes/fido2/assertion", async (t) => {
           t,
           response,
           StatusCodes.BAD_REQUEST,
-          "No active authentication"
+          "No active authentication",
         );
-      }
+      },
     );
 
     t.test("fetches active credential by ID", async (t) => {
@@ -516,9 +516,9 @@ test("routes/fido2/assertion", async (t) => {
         t.ok(logger.warn.called);
         t.match(
           logger.warn.firstCall.firstArg,
-          "No credential found with ID " + cred1.credentialID
+          "No credential found with ID " + cred1.credentialID,
         );
-      }
+      },
     );
 
     t.test(
@@ -545,9 +545,9 @@ test("routes/fido2/assertion", async (t) => {
           logger.warn.firstCall.firstArg,
           "Presented credential (id = " +
             cred1.credentialID +
-            ") is not associated with specified user (id = 321cba)"
+            ") is not associated with specified user (id = 321cba)",
         );
-      }
+      },
     );
 
     t.test("fetches matching existing user", async (t) => {
@@ -590,9 +590,9 @@ test("routes/fido2/assertion", async (t) => {
         verifyServerErrorFido2ServerResponse(
           t,
           response,
-          StatusCodes.INTERNAL_SERVER_ERROR
+          StatusCodes.INTERNAL_SERVER_ERROR,
         );
-      }
+      },
     );
 
     t.test("verifies authentication response", async (t) => {
@@ -658,9 +658,9 @@ test("routes/fido2/assertion", async (t) => {
             user1.id +
             ") and credential (id = " +
             cred1.credentialID +
-            ")"
+            ")",
         );
-      }
+      },
     );
 
     t.test("performs sign in", async (t) => {
@@ -704,7 +704,7 @@ test("routes/fido2/assertion", async (t) => {
         verifyFido2SuccessResponse(t, response, {
           return_to: "/foo",
         });
-      }
+      },
     );
   });
 });

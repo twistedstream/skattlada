@@ -11,7 +11,7 @@ export const SHARE_CONSTRAINTS: ColumnConstraints = { uniques: ["id"] };
 export function rowToShare(
   shareRow: RowData,
   createdByRow: RowData,
-  claimedByRow?: RowData
+  claimedByRow?: RowData,
 ): Share {
   return {
     id: shareRow.id,

@@ -49,7 +49,7 @@ const buildViewDataStub = sinon.stub();
 
 function importModule(
   test: Tap.Test,
-  { mockExpress = false, mockModules = false }: MockOptions = {}
+  { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
   const { default: router } = test.mock("./index", {
     ...(mockExpress && {
@@ -85,7 +85,7 @@ function createProfileTestExpressApp(
     suppressErrorOutput,
     activeUser = testUser1(),
     activeCredential = testCredential1(),
-  }: ProfileTestExpressAppOptions = {}
+  }: ProfileTestExpressAppOptions = {},
 ) {
   const router = importModule(test, { mockModules: true });
 
@@ -130,7 +130,7 @@ test("routes/profile/index", async (t) => {
       stub.callsFake(
         () => (_req: Request, _res: Response, next: NextFunction) => {
           next();
-        }
+        },
       );
     }
   });
@@ -148,11 +148,11 @@ test("routes/profile/index", async (t) => {
 
     t.same(
       expressRouter.get.getCalls().map((c) => c.firstArg),
-      ["/"]
+      ["/"],
     );
     t.same(
       expressRouter.post.getCalls().map((c) => c.firstArg),
-      ["/"]
+      ["/"],
     );
   });
 
@@ -232,7 +232,7 @@ test("routes/profile/index", async (t) => {
           const viewData = { other_data: { foo: 42 } };
           buildViewDataStub.resolves(viewData);
           modifyUserStub.rejects(
-            new ValidationError("User", "displayName", "Sorry, can't do it")
+            new ValidationError("User", "displayName", "Sorry, can't do it"),
           );
 
           const { app, renderArgs } = createProfileTestExpressApp(t, {
@@ -259,7 +259,7 @@ test("routes/profile/index", async (t) => {
           t.same(options.title, "Profile error");
           t.same(options.display_name_error, "Sorry, can't do it");
           t.same(options.other_data, viewData.other_data);
-        }
+        },
       );
 
       t.test(
@@ -268,7 +268,7 @@ test("routes/profile/index", async (t) => {
           const viewData = { other_data: { foo: 42 } };
           buildViewDataStub.resolves(viewData);
           modifyUserStub.rejects(
-            new ValidationError("User", "otherField", "Um, nope.")
+            new ValidationError("User", "otherField", "Um, nope."),
           );
 
           const { app, renderArgs } = createProfileTestExpressApp(t, {
@@ -294,9 +294,9 @@ test("routes/profile/index", async (t) => {
             renderArgs,
             StatusCodes.BAD_REQUEST,
             "Error",
-            "Um, nope"
+            "Um, nope",
           );
-        }
+        },
       );
 
       t.test(
@@ -328,9 +328,9 @@ test("routes/profile/index", async (t) => {
             renderArgs,
             StatusCodes.INTERNAL_SERVER_ERROR,
             "Error",
-            "Something unexpected happened"
+            "Something unexpected happened",
           );
-        }
+        },
       );
 
       t.test(
@@ -354,7 +354,7 @@ test("routes/profile/index", async (t) => {
             isAdmin: false,
           });
           verifyRedirectResponse(t, response, "/");
-        }
+        },
       );
     });
 
@@ -378,9 +378,9 @@ test("routes/profile/index", async (t) => {
             renderArgs,
             StatusCodes.BAD_REQUEST,
             "Error",
-            "Cannot delete credential that was used to sign into the current session"
+            "Cannot delete credential that was used to sign into the current session",
           );
-        }
+        },
       );
 
       t.test(
@@ -401,10 +401,10 @@ test("routes/profile/index", async (t) => {
           t.equal(removeUserCredentialStub.firstCall.args[0], user1.id);
           t.equal(
             removeUserCredentialStub.firstCall.args[1],
-            cred2.credentialID
+            cred2.credentialID,
           );
           verifyRedirectResponse(t, response, "/");
-        }
+        },
       );
     });
 
@@ -425,9 +425,9 @@ test("routes/profile/index", async (t) => {
           renderArgs,
           StatusCodes.BAD_REQUEST,
           "Error",
-          "Unsupported profile action"
+          "Unsupported profile action",
         );
-      }
+      },
     );
   });
 });

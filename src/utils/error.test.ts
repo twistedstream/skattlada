@@ -101,7 +101,7 @@ test("utils/error", async (t) => {
     t.test("status code", async (t) => {
       t.test("is extracted from the error", async (t) => {
         const result = buildErrorHandlerData(
-          new HttpError(StatusCodes.NOT_ACCEPTABLE)
+          new HttpError(StatusCodes.NOT_ACCEPTABLE),
         );
 
         t.equal(result.statusCode, StatusCodes.NOT_ACCEPTABLE);
@@ -117,7 +117,7 @@ test("utils/error", async (t) => {
     t.test("server errors", async (t) => {
       t.test("generates expected message", async (t) => {
         const result = buildErrorHandlerData(
-          new HttpError(StatusCodes.INTERNAL_SERVER_ERROR)
+          new HttpError(StatusCodes.INTERNAL_SERVER_ERROR),
         );
 
         t.equal(result.message, "Something unexpected happened");
@@ -125,7 +125,7 @@ test("utils/error", async (t) => {
 
       t.test("generates a correlation ID with expected format", async (t) => {
         const result = buildErrorHandlerData(
-          new HttpError(StatusCodes.INTERNAL_SERVER_ERROR)
+          new HttpError(StatusCodes.INTERNAL_SERVER_ERROR),
         );
 
         t.equal(result.correlation_id?.length, 25);
@@ -133,10 +133,10 @@ test("utils/error", async (t) => {
 
       t.test("generates unique correlation IDs", async (t) => {
         const result1 = buildErrorHandlerData(
-          new HttpError(StatusCodes.INTERNAL_SERVER_ERROR)
+          new HttpError(StatusCodes.INTERNAL_SERVER_ERROR),
         );
         const result2 = buildErrorHandlerData(
-          new HttpError(StatusCodes.INTERNAL_SERVER_ERROR)
+          new HttpError(StatusCodes.INTERNAL_SERVER_ERROR),
         );
 
         t.not(result1, result2);
@@ -146,7 +146,7 @@ test("utils/error", async (t) => {
     t.test("other errors", async (t) => {
       t.test("generates expected message", async (t) => {
         const result = buildErrorHandlerData(
-          new HttpError(StatusCodes.NOT_ACCEPTABLE, "This is a no go.")
+          new HttpError(StatusCodes.NOT_ACCEPTABLE, "This is a no go."),
         );
 
         t.match(result.message, "This is a no go.");
@@ -154,7 +154,7 @@ test("utils/error", async (t) => {
 
       t.test("does not generate a correlation ID", async (t) => {
         const result = buildErrorHandlerData(
-          new HttpError(StatusCodes.NOT_ACCEPTABLE)
+          new HttpError(StatusCodes.NOT_ACCEPTABLE),
         );
 
         t.notOk(result.correlation_id);

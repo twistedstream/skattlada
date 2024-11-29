@@ -75,7 +75,7 @@ test("data/metadata-providers/local", async (t) => {
               icon: "icon-data-3",
             },
           ]);
-        }
+        },
       );
     });
   });

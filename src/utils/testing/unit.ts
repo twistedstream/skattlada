@@ -62,7 +62,7 @@ export function createTestExpressApp({
         req.credential = authSetup.activeCredential;
 
         next();
-      }
+      },
     );
   }
 
@@ -84,7 +84,7 @@ export function createTestExpressApp({
       errorHandlerSetup.modulePath,
       {
         "../../utils/logger": { logger },
-      }
+      },
     );
     errorHandler(app);
   }
@@ -98,7 +98,7 @@ export function createTestExpressApp({
 export function verifyRequest(
   test: Tap.Test,
   req: Request,
-  expectations: ExpressRequestExpectations
+  expectations: ExpressRequestExpectations,
 ) {
   test.ok(req, "req exists");
   test.equal(req.url, expectations.url, "expected req.url");
@@ -124,12 +124,12 @@ export function verifyResponse(test: Tap.Test, res: Response) {
 export function verifyRedirectResponse(
   test: Tap.Test,
   response: SupertestResponse,
-  url: string
+  url: string,
 ) {
   test.equal(
     response.status,
     StatusCodes.MOVED_TEMPORARILY,
-    "expected HTTP status"
+    "expected HTTP status",
   );
   test.equal(response.headers.location, url, "expected HTTP location");
 }
@@ -141,12 +141,12 @@ export function verifyRedirectResponse(
 export function verifyAuthenticationRequiredResponse(
   test: Tap.Test,
   response: SupertestResponse,
-  return_to: string = "/"
+  return_to: string = "/",
 ) {
   verifyRedirectResponse(
     test,
     response,
-    "/login?" + querystring.encode({ return_to })
+    "/login?" + querystring.encode({ return_to }),
   );
 }
 
@@ -156,7 +156,7 @@ export function verifyHtmlErrorResponse(
   renderArgs: ViewRenderArgs,
   statusCode: StatusCodes,
   title: string,
-  errorMessage: string | RegExp
+  errorMessage: string | RegExp,
 ) {
   const { viewName, options } = renderArgs;
 
@@ -164,7 +164,7 @@ export function verifyHtmlErrorResponse(
   test.match(
     response.headers["content-type"],
     "text/html",
-    "expected HTTP content type"
+    "expected HTTP content type",
   );
   test.equal(viewName, "error", "expected view name");
   test.equal(options.title, title, "expected title");
@@ -176,13 +176,13 @@ export function verifyFido2ErrorResponse(
   response: SupertestResponse,
   statusCode: StatusCodes,
   errorMessage: string | RegExp,
-  errorContext?: string
+  errorContext?: string,
 ) {
   test.equal(response.statusCode, statusCode, "expected HTTP status");
   test.match(
     response.headers["content-type"],
     "application/json",
-    "expected HTTP content type"
+    "expected HTTP content type",
   );
   const json = JSON.parse(response.text);
   test.equal(json.status, "failed", "expected FIDO status");
@@ -201,7 +201,7 @@ export function verifyUserErrorFido2ServerResponse(
   response: SupertestResponse,
   statusCode: StatusCodes,
   errorMessage: string | RegExp,
-  errorContext?: string
+  errorContext?: string,
 ) {
   test.ok(statusCode >= 400 && statusCode < 500, "HTTP status is user error");
 
@@ -210,21 +210,21 @@ export function verifyUserErrorFido2ServerResponse(
     response,
     statusCode,
     errorMessage,
-    errorContext
+    errorContext,
   );
 
   // assert no correlation ID
   test.equal(
     json.correlation_id,
     undefined,
-    "expected undefined correlation_id"
+    "expected undefined correlation_id",
   );
 }
 
 export function verifyServerErrorFido2ServerResponse(
   test: Tap.Test,
   response: SupertestResponse,
-  statusCode: StatusCodes
+  statusCode: StatusCodes,
 ) {
   test.ok(statusCode >= 500, "HTTP status is server error");
 
@@ -232,7 +232,7 @@ export function verifyServerErrorFido2ServerResponse(
     test,
     response,
     statusCode,
-    "Something unexpected happened"
+    "Something unexpected happened",
   );
 
   // assert correlation ID
@@ -243,13 +243,13 @@ export function verifyServerErrorFido2ServerResponse(
 export function verifyFido2SuccessResponse(
   test: Tap.Test,
   response: SupertestResponse,
-  expectedData: any
+  expectedData: any,
 ) {
   test.equal(response.statusCode, StatusCodes.OK, "expected HTTP status");
   test.match(
     response.headers["content-type"],
     "application/json",
-    "expected HTTP content type"
+    "expected HTTP content type",
   );
   const json = JSON.parse(response.text);
   test.equal(json.status, "ok", "expected FIDO status");

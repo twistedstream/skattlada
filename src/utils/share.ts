@@ -96,7 +96,7 @@ export async function ensureShare(req: AuthenticatedRequest): Promise<Share> {
 
         if (share.createdBy.id === user.id) {
           throw ForbiddenError(
-            `This share was already claimed by @${share.claimedBy.username}`
+            `This share was already claimed by @${share.claimedBy.username}`,
           );
         }
 
@@ -111,7 +111,7 @@ export async function ensureShare(req: AuthenticatedRequest): Promise<Share> {
 
         if (share.createdBy.id === user.id) {
           throw ForbiddenError(
-            `This share was intended for user @${share.toUsername}`
+            `This share was intended for user @${share.toUsername}`,
           );
         }
 
@@ -128,7 +128,7 @@ export async function renderSharedFile(
   req: AuthenticatedRequest,
   res: Response,
   share: Share,
-  mediaType?: string
+  mediaType?: string,
 ) {
   const file = await getFileInfo(share.backingUrl);
   if (!file) {
@@ -154,7 +154,7 @@ export async function renderSharedFile(
   }
 
   const selectedMediaType = file.availableMediaTypes.find(
-    (t) => t.name === mediaType
+    (t) => t.name === mediaType,
   );
   if (!selectedMediaType) {
     throw BadRequestError(`Unsupported media type for this file: ${mediaType}`);
@@ -163,6 +163,6 @@ export async function renderSharedFile(
   await sendFile(file, selectedMediaType, res);
   logger.info(
     { share, file, mediaType },
-    `Shared file downloaded by user '${assertValue(req.user).username}'`
+    `Shared file downloaded by user '${assertValue(req.user).username}'`,
   );
 }

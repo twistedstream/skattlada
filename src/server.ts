@@ -47,7 +47,7 @@ const metadataProvider = getMetadataProvider();
       {
         url: `${baseUrl}/invites/${firstInvite.id}`,
       },
-      "Root invite"
+      "Root invite",
     );
   }
 
@@ -58,7 +58,7 @@ const metadataProvider = getMetadataProvider();
         rpID,
         baseUrl,
       },
-      `${serverName} server started`
+      `${serverName} server started`,
     );
   });
 })();

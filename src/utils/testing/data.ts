@@ -26,7 +26,7 @@ export const testNowDate = DateTime.fromObject(
     month: 6,
     day: 1,
   },
-  { zone: "utc" }
+  { zone: "utc" },
 );
 
 export const testUser1Identifier: string = "123abc";
@@ -40,7 +40,7 @@ export function testUser1(): User {
         month: 1,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     username: "bob",
     displayName: "Bob User",
@@ -59,7 +59,7 @@ export function testUser2(): User {
         month: 4,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     username: "jim",
     displayName: "Jim User",
@@ -68,10 +68,10 @@ export function testUser2(): User {
 }
 
 const testCredential1Identifier = isoBase64URL.fromBuffer(
-  crypto.randomBytes(8)
+  crypto.randomBytes(8),
 );
 const testCredential1PublicKey = isoBase64URL.fromBuffer(
-  crypto.randomBytes(42)
+  crypto.randomBytes(42),
 );
 
 export function testCredential1(): Authenticator {
@@ -82,7 +82,7 @@ export function testCredential1(): Authenticator {
         month: 2,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     credentialID: testCredential1Identifier,
     credentialPublicKey: testCredential1PublicKey,
@@ -95,10 +95,10 @@ export function testCredential1(): Authenticator {
 }
 
 const testCredential2Identifier = isoBase64URL.fromBuffer(
-  crypto.randomBytes(8)
+  crypto.randomBytes(8),
 );
 const testCredential2PublicKey = isoBase64URL.fromBuffer(
-  crypto.randomBytes(42)
+  crypto.randomBytes(42),
 );
 
 export function testCredential2(): Authenticator {
@@ -109,7 +109,7 @@ export function testCredential2(): Authenticator {
         month: 3,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     credentialID: testCredential2Identifier,
     credentialPublicKey: testCredential2PublicKey,
@@ -132,7 +132,7 @@ export function testInvite1(createdBy: User, claimedBy?: User): Invite {
         month: 1,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     createdBy,
     ...(claimedBy && {
@@ -142,7 +142,7 @@ export function testInvite1(createdBy: User, claimedBy?: User): Invite {
           month: 1,
           day: 2,
         },
-        { zone: "utc" }
+        { zone: "utc" },
       ),
       claimedBy,
     }),
@@ -151,7 +151,7 @@ export function testInvite1(createdBy: User, claimedBy?: User): Invite {
 
 export function testShare1(
   createdBy: User,
-  options: TestShareOptions = {}
+  options: TestShareOptions = {},
 ): Share {
   const { claimedBy } = options;
   const file = options.file || testFile1();
@@ -166,7 +166,7 @@ export function testShare1(
         month: 1,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     createdBy,
     ...(claimedBy && {
@@ -176,7 +176,7 @@ export function testShare1(
           month: 1,
           day: 2,
         },
-        { zone: "utc" }
+        { zone: "utc" },
       ),
       claimedBy,
     }),
@@ -189,7 +189,7 @@ export function testShare1(
 
 export function testShare2(
   createdBy: User,
-  options: TestShareOptions = {}
+  options: TestShareOptions = {},
 ): Share {
   const { claimedBy } = options;
   const file = options.file || testFile2();
@@ -204,7 +204,7 @@ export function testShare2(
         month: 2,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     createdBy,
     ...(claimedBy && {
@@ -214,7 +214,7 @@ export function testShare2(
           month: 2,
           day: 2,
         },
-        { zone: "utc" }
+        { zone: "utc" },
       ),
       claimedBy,
     }),
@@ -227,7 +227,7 @@ export function testShare2(
 
 export function testShare3(
   createdBy: User,
-  options: TestShareOptions = {}
+  options: TestShareOptions = {},
 ): Share {
   const { claimedBy } = options;
   const file = options.file || testFile3();
@@ -242,7 +242,7 @@ export function testShare3(
         month: 3,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     createdBy,
     ...(claimedBy && {
@@ -252,7 +252,7 @@ export function testShare3(
           month: 3,
           day: 2,
         },
-        { zone: "utc" }
+        { zone: "utc" },
       ),
       claimedBy,
     }),
@@ -265,7 +265,7 @@ export function testShare3(
 
 export function testShare4(
   createdBy: User,
-  options: TestShareOptions = {}
+  options: TestShareOptions = {},
 ): Share {
   const { claimedBy } = options;
   const file = options.file || testFile4();
@@ -280,7 +280,7 @@ export function testShare4(
         month: 4,
         day: 1,
       },
-      { zone: "utc" }
+      { zone: "utc" },
     ),
     createdBy,
     ...(claimedBy && {
@@ -290,7 +290,7 @@ export function testShare4(
           month: 4,
           day: 2,
         },
-        { zone: "utc" }
+        { zone: "utc" },
       ),
       claimedBy,
     }),

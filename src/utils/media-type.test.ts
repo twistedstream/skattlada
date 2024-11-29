@@ -46,7 +46,7 @@ test("utils/media-type", async (t) => {
 
           t.equal(result, "document", name);
         });
-      }
+      },
     );
 
     t.test("returns an expected 'spreadsheet' type", async (t) => {
@@ -142,10 +142,10 @@ test("utils/media-type", async (t) => {
         t.equal(logger.warn.firstCall.args[0], error);
         t.match(
           logger.warn.firstCall.args[1],
-          "Unable to resolve mime data from mime type"
+          "Unable to resolve mime data from mime type",
         );
         t.equal(result, undefined);
-      }
+      },
     );
 
     t.test(
@@ -164,7 +164,7 @@ test("utils/media-type", async (t) => {
           description: "Some cool mime",
           extension: "foo",
         });
-      }
+      },
     );
   });
 });

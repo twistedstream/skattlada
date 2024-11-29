@@ -52,7 +52,7 @@ router.post(
       if (existingCredentials.length === 0) {
         // NOTE: this shouldn't happen unless there's a data integrity issue
         throw new Error(
-          `Existing user ${existingUser.id} is missing credentials.`
+          `Existing user ${existingUser.id} is missing credentials.`,
         );
       }
     }
@@ -92,11 +92,11 @@ router.post(
       req,
       challengeResponse.challenge,
       existingUser,
-      userVerification
+      userVerification,
     );
 
     res.json(challengeResponse);
-  }
+  },
 );
 
 router.post("/result", json(), async (req: Request, res: Response) => {
@@ -114,7 +114,7 @@ router.post("/result", json(), async (req: Request, res: Response) => {
   }
   logger.debug(
     authentication,
-    "/assertion/result: Authentication state retrieved from session"
+    "/assertion/result: Authentication state retrieved from session",
   );
 
   // find user credential
@@ -129,7 +129,7 @@ router.post("/result", json(), async (req: Request, res: Response) => {
     activeCredential.user.id !== authentication.authenticatingUser.id
   ) {
     logger.warn(
-      `/assertion/result: Presented credential (id = ${activeCredential.credentialID}) is not associated with specified user (id = ${authentication.authenticatingUser.id})`
+      `/assertion/result: Presented credential (id = ${activeCredential.credentialID}) is not associated with specified user (id = ${authentication.authenticatingUser.id})`,
     );
 
     throw FailedAuthenticationError();
@@ -140,7 +140,7 @@ router.post("/result", json(), async (req: Request, res: Response) => {
   if (!existingUser) {
     // NOTE: this shouldn't happen unless there's a data integrity issue
     throw new Error(
-      `Cannot find user (id = ${activeCredential.user.id}) associated with active credential (id =${activeCredential.credentialID})`
+      `Cannot find user (id = ${activeCredential.user.id}) associated with active credential (id =${activeCredential.credentialID})`,
     );
   }
 
@@ -156,14 +156,14 @@ router.post("/result", json(), async (req: Request, res: Response) => {
         ...activeCredential,
         credentialID: isoBase64URL.toBuffer(activeCredential.credentialID),
         credentialPublicKey: isoBase64URL.toBuffer(
-          activeCredential.credentialPublicKey
+          activeCredential.credentialPublicKey,
         ),
       },
     });
   } catch (err) {
     logger.warn(
       err,
-      `Authentication error with user (id = ${existingUser.id}) and credential (id = ${activeCredential.credentialID})`
+      `Authentication error with user (id = ${existingUser.id}) and credential (id = ${activeCredential.credentialID})`,
     );
 
     throw FailedAuthenticationError();

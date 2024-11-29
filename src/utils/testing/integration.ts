@@ -22,7 +22,7 @@ import {
 export async function createIntegrationTestState(
   test: Tap.Test,
   fileProvider: LocalFileProvider,
-  dataProviderOptions: InMemoryDataProviderOptions
+  dataProviderOptions: InMemoryDataProviderOptions,
 ): Promise<IntegrationTestState> {
   const verifyRegistrationResponseStub = sinon.stub();
   const verifyAuthenticationResponseStub = sinon.stub();
@@ -69,7 +69,7 @@ export async function createIntegrationTestState(
 
 function updateStateAfterRequest(
   state: IntegrationTestState,
-  response: SupertestResponse
+  response: SupertestResponse,
 ) {
   // read set-cookie response header from server and update "browser" cookies
   const setCookieRaw = response.headers["set-cookie"];
@@ -114,7 +114,7 @@ function buildCookieRequestHeader(state: IntegrationTestState): string {
 
   return cookies.reduce(
     (acc, cv) => `${acc}${acc ? "; " : ""}${cv.name}=${cv.value}`,
-    ""
+    "",
   );
 }
 
@@ -122,7 +122,7 @@ function buildCookieRequestHeader(state: IntegrationTestState): string {
 
 export async function navigatePage(
   state: IntegrationTestState,
-  path: string
+  path: string,
 ): Promise<SupertestResponse> {
   const { app } = state;
 
@@ -138,7 +138,7 @@ export async function navigatePage(
 export async function postJson(
   state: IntegrationTestState,
   path: string,
-  body: any
+  body: any,
 ): Promise<SupertestResponse> {
   const { app } = state;
 
@@ -156,7 +156,7 @@ export async function postJson(
 export async function postForm(
   state: IntegrationTestState,
   path: string,
-  body: any
+  body: any,
 ): Promise<SupertestResponse> {
   const { app } = state;
 
@@ -175,26 +175,26 @@ export async function postForm(
 
 export function assertHtmlResponse(
   test: Tap.Test,
-  response: SupertestResponse
+  response: SupertestResponse,
 ) {
   test.equal(response.status, StatusCodes.OK, "expected OK http status");
   test.match(
     response.headers["content-type"],
     "text/html",
-    "expected html content"
+    "expected html content",
   );
 }
 
 export function assertJsonResponse(
   test: Tap.Test,
   response: SupertestResponse,
-  schemaTest: (json: any) => void
+  schemaTest: (json: any) => void,
 ) {
   test.equal(response.status, StatusCodes.OK, "expected OK http status");
   test.match(
     response.headers["content-type"],
     "application/json",
-    "expected JSON content"
+    "expected JSON content",
   );
   const json = JSON.parse(response.text);
   schemaTest(json);
@@ -203,18 +203,18 @@ export function assertJsonResponse(
 export function assertRedirectResponse(
   test: Tap.Test,
   response: SupertestResponse,
-  expectedLocation: string
+  expectedLocation: string,
 ) {
   test.equal(
     response.status,
     StatusCodes.MOVED_TEMPORARILY,
-    "expected 302 http status"
+    "expected 302 http status",
   );
   test.ok(response.headers.location, "http location exists");
   test.equal(
     response.headers.location,
     expectedLocation,
-    "expected http location"
+    "expected http location",
   );
 }
 
@@ -222,23 +222,23 @@ export async function assertDownloadResponse(
   test: Tap.Test,
   response: SupertestResponse,
   expectedContentType: string,
-  expectedContentFile: FileInfo
+  expectedContentFile: FileInfo,
 ) {
   test.equal(response.status, StatusCodes.OK, "expected OK http status");
   test.match(
     response.headers["content-type"],
     expectedContentType,
-    "expected html content"
+    "expected html content",
   );
 
   // string compare the response content with the expected test file
   const mediaType = expectedContentFile.availableMediaTypes.find(
-    (t) => t.name === expectedContentType
+    (t) => t.name === expectedContentType,
   );
   const fileName = `${expectedContentFile.title}.${mediaType?.extension}`;
   const fileData = await fs.readFile(
     path.join(__dirname, `../../data/file-providers/files/${fileName}`),
-    { encoding: "utf-8" }
+    { encoding: "utf-8" },
   );
   test.equal(response.text, fileData);
 
@@ -247,7 +247,7 @@ export async function assertDownloadResponse(
 
 export function assertNoUsersOrCredentials(
   test: Tap.Test,
-  state: IntegrationTestState
+  state: IntegrationTestState,
 ) {
   test.equal(state.users.length, 0, "expected no users");
   test.equal(state.credentials.length, 0, "expected no credentials");
@@ -258,10 +258,10 @@ export function assertUserAndAssociatedCredentials(
   state: IntegrationTestState,
   username: string,
   displayName: string,
-  associatedCredentials: Authenticator[]
+  associatedCredentials: Authenticator[],
 ) {
   const foundUser = state.users.find(
-    (u) => u.username === username && u.displayName === displayName
+    (u) => u.username === username && u.displayName === displayName,
   );
   test.ok(foundUser, "expected user");
 
@@ -269,7 +269,7 @@ export function assertUserAndAssociatedCredentials(
     const foundCredential = state.credentials.find(
       (c) =>
         c.credentialID === credential.credentialID &&
-        c.user.id === foundUser?.id
+        c.user.id === foundUser?.id,
     );
     test.ok(foundCredential, "expected credential");
   }
@@ -283,7 +283,7 @@ export async function doRegistration(
   username: string,
   displayName: string,
   newCredential: Authenticator,
-  isNewUser: boolean
+  isNewUser: boolean,
 ): Promise<void> {
   const optionsResponse = await postJson(state, "/fido2/attestation/options", {
     username: isNewUser ? username : "",
@@ -320,7 +320,7 @@ export async function doRegistration(
           userVerification: "preferred",
         },
       },
-      "expected FIDO json response"
+      "expected FIDO json response",
     );
   });
 
@@ -328,7 +328,7 @@ export async function doRegistration(
     ...newCredential,
     credentialID: isoBase64URL.toBuffer(newCredential.credentialID),
     credentialPublicKey: isoBase64URL.toBuffer(
-      newCredential.credentialPublicKey
+      newCredential.credentialPublicKey,
     ),
   };
 
@@ -350,7 +350,7 @@ export async function doRegistration(
       {
         return_to: "/",
       },
-      "expected return_to in json"
+      "expected return_to in json",
     );
   });
 
@@ -361,7 +361,7 @@ export async function doSignIn(
   test: Tap.Test,
   state: IntegrationTestState,
   username: string,
-  expectedCredential: Authenticator
+  expectedCredential: Authenticator,
 ): Promise<void> {
   const optionsResponse = await postJson(state, "/fido2/assertion/options", {
     username,
@@ -399,13 +399,13 @@ export async function doSignIn(
       {
         return_to: "/",
       },
-      "expected return_to in json"
+      "expected return_to in json",
     );
   });
 
   test.ok(
     state.verifyAuthenticationResponseStub.called,
-    "expected called: verifyAuthenticationResponse"
+    "expected called: verifyAuthenticationResponse",
   );
 }
 

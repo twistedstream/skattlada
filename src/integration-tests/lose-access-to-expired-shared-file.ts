@@ -68,7 +68,7 @@ test("Recipient loses access to claimed share when it expires", async (t) => {
     assertRedirectResponse(
       t,
       response,
-      `/login?return_to=%2Fshares%2F${share.id}`
+      `/login?return_to=%2Fshares%2F${share.id}`,
     );
   });
 
@@ -91,7 +91,7 @@ test("Recipient loses access to claimed share when it expires", async (t) => {
       t.same(share.claimedBy, user1);
 
       assertHtmlResponse(t, response);
-    }
+    },
   );
 
   t.test(
@@ -105,8 +105,8 @@ test("Recipient loses access to claimed share when it expires", async (t) => {
       t.equal(
         response.status,
         StatusCodes.FORBIDDEN,
-        "expected forbidden http status"
+        "expected forbidden http status",
       );
-    }
+    },
   );
 });

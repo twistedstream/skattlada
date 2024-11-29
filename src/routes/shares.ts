@@ -55,7 +55,7 @@ router.get(
         created: s.created.toISO(),
         from: s.createdBy.username,
         claimed: assertValue(s.claimed).toISO(),
-      })
+      }),
     );
     const sharesByMe = (await fetchSharesByCreatedUserId(user.id)).map((s) => ({
       title: s.fileTitle,
@@ -73,7 +73,7 @@ router.get(
       sharesWithMe,
       sharesByMe,
     });
-  }
+  },
 );
 
 router.get(
@@ -87,7 +87,7 @@ router.get(
       title: "New share",
       expirations: buildExpirations(),
     });
-  }
+  },
 );
 
 router.post(
@@ -103,7 +103,7 @@ router.post(
       toUsername?: string;
       expires?: string;
     }>,
-    res: Response
+    res: Response,
   ) => {
     const user = assertValue(req.user);
     const { action, backingUrl, toUsername, expires } = req.body;
@@ -160,14 +160,14 @@ router.post(
     }
 
     throw BadRequestError("Unsupported new share action");
-  }
+  },
 );
 
 router.get(
   "/:share_id",
   async (
     req: AuthenticatedRequestWithTypedQuery<{ media_type?: string }>,
-    res: Response
+    res: Response,
   ) => {
     const share = await ensureShare(req);
     const { user } = req;
@@ -208,7 +208,7 @@ router.get(
       share,
       fileTypeStyle: getFileTypeStyle(share.fileType),
     });
-  }
+  },
 );
 
 router.post(
@@ -217,14 +217,14 @@ router.post(
   validateCsrfToken(),
   async (
     req: AuthenticatedRequest<{ action: "accept" | "reject" }>,
-    res: Response
+    res: Response,
   ) => {
     const share = await ensureShare(req);
     const { action } = req.body;
 
     if (share.claimed) {
       throw ForbiddenError(
-        "This endpoint does not support an already claimed share"
+        "This endpoint does not support an already claimed share",
       );
     }
 
@@ -247,7 +247,7 @@ router.post(
     }
 
     throw BadRequestError("Unsupported share response operation");
-  }
+  },
 );
 
 export default router;

@@ -98,7 +98,7 @@ test("utils/invite", async (t) => {
           t.equal(logger.warn.firstCall.args[0], invite);
           t.equal(
             logger.warn.firstCall.args[1],
-            "Invite was accessed after it was already claimed"
+            "Invite was accessed after it was already claimed",
           );
         });
 
@@ -111,7 +111,7 @@ test("utils/invite", async (t) => {
               message: "This invite was already claimed by @foo",
               statusCode: 403,
             });
-          }
+          },
         );
 
         t.test(
@@ -123,7 +123,7 @@ test("utils/invite", async (t) => {
               message: "Not Found",
               statusCode: 404,
             });
-          }
+          },
         );
 
         t.test(
@@ -136,7 +136,7 @@ test("utils/invite", async (t) => {
               message: "Not Found",
               statusCode: 404,
             });
-          }
+          },
         );
       });
 
@@ -145,8 +145,8 @@ test("utils/invite", async (t) => {
           nowStub.returns(
             invite.created.plus(
               // now = after invite expiration
-              Duration.fromObject({ days: 3 })
-            )
+              Duration.fromObject({ days: 3 }),
+            ),
           );
         });
 
@@ -169,7 +169,7 @@ test("utils/invite", async (t) => {
               message: "This invite has expired",
               statusCode: 403,
             });
-          }
+          },
         );
 
         t.test(
@@ -181,7 +181,7 @@ test("utils/invite", async (t) => {
               message: "Not Found",
               statusCode: 404,
             });
-          }
+          },
         );
 
         t.test(
@@ -194,7 +194,7 @@ test("utils/invite", async (t) => {
               message: "Not Found",
               statusCode: 404,
             });
-          }
+          },
         );
       });
 
@@ -202,8 +202,8 @@ test("utils/invite", async (t) => {
         nowStub.returns(
           invite.created.plus(
             // now = before invite expiration
-            Duration.fromObject({ days: 1 })
-          )
+            Duration.fromObject({ days: 1 }),
+          ),
         );
 
         const result = await ensureInvite(req);

@@ -71,7 +71,7 @@ const getRegistrationStub = sinon.stub();
 
 function importModule(
   test: Tap.Test,
-  { mockExpress = false, mockModules = false }: MockOptions = {}
+  { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
   const { default: router } = test.mock("./attestation", {
     ...(mockExpress && {
@@ -114,7 +114,7 @@ function importModule(
 
 function createAttestationTestExpressApp(
   test: Tap.Test,
-  { withAuth, suppressErrorOutput }: AttestationTestExpressAppOptions = {}
+  { withAuth, suppressErrorOutput }: AttestationTestExpressAppOptions = {},
 ) {
   const router = importModule(test, { mockModules: true });
 
@@ -172,7 +172,7 @@ test("routes/fido2/attestation", async (t) => {
 
     t.same(
       expressRouter.post.getCalls().map((c) => c.firstArg),
-      ["/options", "/result"]
+      ["/options", "/result"],
     );
   });
 
@@ -207,9 +207,9 @@ test("routes/fido2/attestation", async (t) => {
             t,
             response,
             StatusCodes.BAD_REQUEST,
-            "User with ID 123abc no longer exists"
+            "User with ID 123abc no longer exists",
           );
-        }
+        },
       );
 
       t.test("fetches user's existing credentials", async (t) => {
@@ -242,9 +242,9 @@ test("routes/fido2/attestation", async (t) => {
           verifyServerErrorFido2ServerResponse(
             t,
             response,
-            StatusCodes.INTERNAL_SERVER_ERROR
+            StatusCodes.INTERNAL_SERVER_ERROR,
           );
-        }
+        },
       );
     });
 
@@ -278,9 +278,9 @@ test("routes/fido2/attestation", async (t) => {
             t,
             response,
             StatusCodes.FORBIDDEN,
-            "Cannot register a new user without a registerable session"
+            "Cannot register a new user without a registerable session",
           );
-        }
+        },
       );
 
       t.test("instantiates a new user", async (t) => {
@@ -303,7 +303,7 @@ test("routes/fido2/attestation", async (t) => {
         async (t) => {
           getRegisterableStub.returns({});
           newUserStub.rejects(
-            new ValidationError("User", "username", "Sorry, can't do it")
+            new ValidationError("User", "username", "Sorry, can't do it"),
           );
 
           const { app } = createAttestationTestExpressApp(t);
@@ -314,9 +314,9 @@ test("routes/fido2/attestation", async (t) => {
             response,
             StatusCodes.BAD_REQUEST,
             "Sorry, can't do it",
-            "User.username"
+            "User.username",
           );
-        }
+        },
       );
 
       t.test(
@@ -333,9 +333,9 @@ test("routes/fido2/attestation", async (t) => {
           verifyServerErrorFido2ServerResponse(
             t,
             response,
-            StatusCodes.INTERNAL_SERVER_ERROR
+            StatusCodes.INTERNAL_SERVER_ERROR,
           );
-        }
+        },
       );
 
       t.test("fetches exiting user by specified username", async (t) => {
@@ -369,9 +369,9 @@ test("routes/fido2/attestation", async (t) => {
             response,
             StatusCodes.BAD_REQUEST,
             "A user with username 'bob' already exists",
-            "User.username"
+            "User.username",
           );
-        }
+        },
       );
     });
 
@@ -446,7 +446,7 @@ test("routes/fido2/attestation", async (t) => {
         verifyFido2SuccessResponse(t, response, {
           challenge: "CHALLENGE!",
         });
-      }
+      },
     );
   });
 
@@ -463,9 +463,9 @@ test("routes/fido2/attestation", async (t) => {
           t,
           response,
           StatusCodes.BAD_REQUEST,
-          "Missing: credential ID"
+          "Missing: credential ID",
         );
-      }
+      },
     );
 
     t.test(
@@ -481,9 +481,9 @@ test("routes/fido2/attestation", async (t) => {
           t,
           response,
           StatusCodes.BAD_REQUEST,
-          "Missing: authentication response"
+          "Missing: authentication response",
         );
-      }
+      },
     );
 
     t.test("gets the registration state", async (t) => {
@@ -527,9 +527,9 @@ test("routes/fido2/attestation", async (t) => {
           t,
           response,
           StatusCodes.BAD_REQUEST,
-          "No active registration"
+          "No active registration",
         );
-      }
+      },
     );
 
     t.test("verifies registration response", async (t) => {
@@ -584,13 +584,13 @@ test("routes/fido2/attestation", async (t) => {
           t,
           response,
           StatusCodes.BAD_REQUEST,
-          "Registration failed: BOOM!"
+          "Registration failed: BOOM!",
         );
         // test for warning log message
         t.ok(logger.warn.called);
         t.equal(logger.warn.firstCall.args[0], err);
         t.match(logger.warn.firstCall.args[1], "Registration error");
-      }
+      },
     );
 
     t.test("if active user session", async (t) => {
@@ -668,9 +668,9 @@ test("routes/fido2/attestation", async (t) => {
             t,
             response,
             StatusCodes.BAD_REQUEST,
-            "No active registerable session"
+            "No active registerable session",
           );
-        }
+        },
       );
 
       t.test(
@@ -712,7 +712,7 @@ test("routes/fido2/attestation", async (t) => {
             ...cred1,
             created: testNowDate,
           });
-        }
+        },
       );
 
       t.test("fetches registered credential", async (t) => {
@@ -802,7 +802,7 @@ test("routes/fido2/attestation", async (t) => {
         verifyFido2SuccessResponse(t, response, {
           return_to: "/foo",
         });
-      }
+      },
     );
   });
 });

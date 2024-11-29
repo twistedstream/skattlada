@@ -62,7 +62,7 @@ class MockGoogleSheetsTable {
   }
   async findKeyRows<T extends keyof any>(
     _selector: KeyColumnSelector<T>,
-    _keys: T[]
+    _keys: T[],
   ): Promise<{ rowsByKey: Record<T, Row> }> {
     throw this._missingStubBindingError;
   }
@@ -71,7 +71,7 @@ class MockGoogleSheetsTable {
   }
   async updateRow(
     _predicate: SearchPredicate,
-    _rowUpdates: RowData
+    _rowUpdates: RowData,
   ): Promise<{ updatedRow: Row }> {
     throw this._missingStubBindingError;
   }
@@ -331,7 +331,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             const result = await provider.findUserById("user-id");
 
             t.equal(result, undefined);
-          }
+          },
         );
       });
 
@@ -485,7 +485,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 usersFindRowStub.firstCall.firstArg;
               t.ok(predicate({ id: "user-id" }));
               t.notOk(predicate({ id: "not-user-id" }));
-            }
+            },
           );
 
           t.test(
@@ -497,7 +497,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 message:
                   "Data integrity error: user 'user-id' no longer exists for credential 'cred-id'",
               });
-            }
+            },
           );
 
           t.test("when the user row does exist", async (t) => {
@@ -536,7 +536,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             const result = await provider.findCredentialById("cred-id");
 
             t.equal(result, undefined);
-          }
+          },
         );
       });
 
@@ -558,12 +558,12 @@ test("data/data-providers/google-sheets/index", async (t) => {
               credentialsFindRowStub.firstCall.firstArg;
             t.ok(credentialPredicate({ id: "cred-id", user_id: "user-id" }));
             t.notOk(
-              credentialPredicate({ id: "not-cred-id", user_id: "user-id" })
+              credentialPredicate({ id: "not-cred-id", user_id: "user-id" }),
             );
             t.notOk(
-              credentialPredicate({ id: "cred-id", user_id: "not-user-id" })
+              credentialPredicate({ id: "cred-id", user_id: "not-user-id" }),
             );
-          }
+          },
         );
 
         t.test("when both the user row and credential row exist", async (t) => {
@@ -591,7 +591,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
 
             const result = await provider.findUserCredential(
               "user-id",
-              "cred-id"
+              "cred-id",
             );
 
             t.equal(result, credential);
@@ -604,7 +604,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
 
           const result = await provider.findUserCredential(
             "user-id",
-            "cred-id"
+            "cred-id",
           );
 
           t.equal(result, undefined);
@@ -630,7 +630,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
               credentialsFindRowsStub.firstCall.firstArg;
             t.ok(credentialPredicate({ user_id: "user-id" }));
             t.notOk(credentialPredicate({ user_id: "not-user-id" }));
-          }
+          },
         );
 
         t.test("when a user row and credential rows exist", async (t) => {
@@ -662,7 +662,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
               t.equal(calls[1].args[1], userRow);
               t.equal(calls[2].args[0], credentialRow3);
               t.equal(calls[2].args[1], userRow);
-            }
+            },
           );
 
           t.test(
@@ -681,7 +681,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
               t.equal(result[0], credential1);
               t.equal(result[1], credential2);
               t.equal(result[2], credential3);
-            }
+            },
           );
         });
 
@@ -720,7 +720,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             t.rejects(() => provider.insertCredential("user-id", credential), {
               message: "User does not exist",
             });
-          }
+          },
         );
 
         t.test("when the user row exists", async (t) => {
@@ -751,9 +751,9 @@ test("data/data-providers/google-sheets/index", async (t) => {
               t.ok(credentialsInsertRowStub.called);
               t.equal(
                 credentialsInsertRowStub.firstCall.firstArg,
-                credentialRow
+                credentialRow,
               );
-            }
+            },
           );
         });
       });
@@ -771,7 +771,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
               credentialsDeleteRowStub.firstCall.firstArg;
             t.ok(predicate({ id: "cred-id" }));
             t.notOk(predicate({ id: "not-cred-id" }));
-          }
+          },
         );
       });
 
@@ -814,7 +814,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 t.same(usersFindKeyRowsStub.firstCall.args[1], [
                   "created-by-user-id",
                 ]);
-              }
+              },
             );
 
             t.test("converts the two rows to an invite object", async (t) => {
@@ -855,7 +855,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                   "created-by-user-id",
                   "claimed-by-user-id",
                 ]);
-              }
+              },
             );
 
             t.test("converts the three rows to an invite object", async (t) => {
@@ -900,7 +900,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             const result = await provider.findInviteById("invite-id");
 
             t.equal(result, undefined);
-          }
+          },
         );
       });
 
@@ -945,7 +945,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             t.equal(rowToInviteStub.firstCall.args[0], insertedRow);
             t.equal(rowToInviteStub.firstCall.args[1], createdByRow);
             t.equal(rowToInviteStub.firstCall.args[2], claimedByRow);
-          }
+          },
         );
 
         t.test("returns the new invite", async (t) => {
@@ -981,7 +981,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 claimed_by: undefined,
                 claimed: undefined,
               });
-            }
+            },
           );
         });
 
@@ -1003,7 +1003,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 claimed_by: "123abc",
                 claimed: "2023-01-02T00:00:00.000Z",
               });
-            }
+            },
           );
         });
       });
@@ -1047,7 +1047,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 t.same(usersFindKeyRowsStub.firstCall.args[1], [
                   "created-by-user-id",
                 ]);
-              }
+              },
             );
 
             t.test("converts the two rows to an share object", async (t) => {
@@ -1088,7 +1088,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                   "created-by-user-id",
                   "claimed-by-user-id",
                 ]);
-              }
+              },
             );
 
             t.test("converts the three rows to an share object", async (t) => {
@@ -1133,7 +1133,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             const result = await provider.findShareById("share-id");
 
             t.equal(result, undefined);
-          }
+          },
         );
       });
 
@@ -1150,7 +1150,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
               sharesFindRowsStub.firstCall.firstArg;
             t.ok(predicate({ claimed_by: "user-id" }));
             t.notOk(predicate({ claimed_by: "not-user-id" }));
-          }
+          },
         );
 
         t.test(
@@ -1180,7 +1180,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
               "user-id-3",
               "user-id",
             ]);
-          }
+          },
         );
 
         t.test(
@@ -1229,7 +1229,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             t.equal(calls[2].args[0], shareRow3);
             t.equal(calls[2].args[1], createdBy3Row);
             t.equal(calls[2].args[2], claimedByRow);
-          }
+          },
         );
 
         t.test("returns the array of share objects", async (t) => {
@@ -1290,7 +1290,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
               sharesFindRowsStub.firstCall.firstArg;
             t.ok(predicate({ created_by: "user-id" }));
             t.notOk(predicate({ created_by: "not-user-id" }));
-          }
+          },
         );
 
         t.test(
@@ -1319,7 +1319,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
               "user-id",
               "user-id-2",
             ]);
-          }
+          },
         );
 
         t.test(
@@ -1365,7 +1365,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             t.equal(calls[2].args[0], shareRow3);
             t.equal(calls[2].args[1], createdByRow);
             t.equal(calls[2].args[2], claimedBy2Row);
-          }
+          },
         );
 
         t.test("returns the array of share objects", async (t) => {
@@ -1451,7 +1451,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
             t.equal(rowToShareStub.firstCall.args[0], insertedRow);
             t.equal(rowToShareStub.firstCall.args[1], createdByRow);
             t.equal(rowToShareStub.firstCall.args[2], claimedByRow);
-          }
+          },
         );
 
         t.test("returns the new share", async (t) => {
@@ -1487,7 +1487,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 claimed_by: undefined,
                 claimed: undefined,
               });
-            }
+            },
           );
         });
 
@@ -1509,7 +1509,7 @@ test("data/data-providers/google-sheets/index", async (t) => {
                 claimed_by: "123abc",
                 claimed: "2023-01-02T00:00:00.000Z",
               });
-            }
+            },
           );
         });
       });

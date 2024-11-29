@@ -119,7 +119,7 @@ test("Share a file to an existing user, that user accepts", async (t) => {
     assertRedirectResponse(
       t,
       response,
-      `/login?return_to=%2Fshares%2F${share.id}`
+      `/login?return_to=%2Fshares%2F${share.id}`,
     );
   });
 
@@ -137,7 +137,7 @@ test("Share a file to an existing user, that user accepts", async (t) => {
     async (t) => {
       const response = await navigatePage(state, state.redirectUrl);
       assertHtmlResponse(t, response);
-    }
+    },
   );
 
   t.test("Accept share", async (t) => {
@@ -169,11 +169,11 @@ test("Share a file to an existing user, that user accepts", async (t) => {
       downloadLink1 = downloadLinks[0].attrs["href"];
       t.equal(
         `/shares/${share.id}?media_type=${encodeURIComponent(
-          file1.availableMediaTypes[0].name
+          file1.availableMediaTypes[0].name,
         )}`,
-        downloadLink1
+        downloadLink1,
       );
-    }
+    },
   );
 
   t.test(
@@ -185,8 +185,8 @@ test("Share a file to an existing user, that user accepts", async (t) => {
         t,
         response,
         file1.availableMediaTypes[0].name,
-        file1
+        file1,
       );
-    }
+    },
   );
 });

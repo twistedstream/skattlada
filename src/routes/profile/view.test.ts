@@ -90,7 +90,7 @@ test("routes/profile/view", async (t) => {
             ],
           },
         });
-      }
+      },
     );
   });
 });

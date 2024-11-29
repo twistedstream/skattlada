@@ -45,7 +45,7 @@ export const ForbiddenError = (message: string) =>
 
 export function assertValue<T>(
   value: T | undefined | null,
-  message?: string
+  message?: string,
 ): T {
   if (value === undefined) {
     throw new Error(message || "Unexpected undefined value");

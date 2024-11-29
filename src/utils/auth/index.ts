@@ -28,7 +28,7 @@ import {
 // auth helpers
 
 export function capturePreAuthState(
-  req: RequestWithTypedQuery<{ return_to: string }>
+  req: RequestWithTypedQuery<{ return_to: string }>,
 ) {
   req.session = req.session || {};
   const { return_to } = req.query;
@@ -37,7 +37,7 @@ export function capturePreAuthState(
 
 export function authorizeRegistration(
   req: Request,
-  source: RegisterableSource
+  source: RegisterableSource,
 ) {
   req.session = req.session || {};
 
@@ -49,7 +49,7 @@ export function authorizeRegistration(
 export function beginSignup(
   req: Request,
   challenge: string,
-  registeringUser: User
+  registeringUser: User,
 ) {
   req.session = req.session || {};
 
@@ -63,7 +63,7 @@ export function beginSignIn(
   req: Request,
   challenge: string,
   existingUser?: User,
-  userVerification?: UserVerificationRequirement
+  userVerification?: UserVerificationRequirement,
 ) {
   req.session = req.session || {};
 
@@ -76,7 +76,7 @@ export function beginSignIn(
 
 export function signIn(
   req: Request,
-  credential: RegisteredAuthenticator
+  credential: RegisteredAuthenticator,
 ): string {
   req.session = req.session || {};
 
@@ -101,7 +101,7 @@ export function signOut(req: Request) {
 }
 
 export function getAuthentication(
-  req: Request
+  req: Request,
 ): AuthenticatingSession | undefined {
   const authentication: AuthenticatingSession = req.session?.authentication;
   if (authentication) {
@@ -144,14 +144,14 @@ export function clearRegisterable(req: Request) {
 export function redirectToRegister(
   req: Request,
   res: Response,
-  hideSignInLink: boolean
+  hideSignInLink: boolean,
 ) {
   const return_to = req.originalUrl;
   res.redirect(
     `/register?${querystring.stringify({
       return_to,
       ...(hideSignInLink && { hide_sign_in: true }),
-    })}`
+    })}`,
   );
 }
 

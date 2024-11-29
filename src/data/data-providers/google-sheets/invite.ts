@@ -11,7 +11,7 @@ export const INVITE_CONSTRAINTS: ColumnConstraints = { uniques: ["id"] };
 export function rowToInvite(
   inviteRow: RowData,
   createdByRow: RowData,
-  claimedByRow?: RowData
+  claimedByRow?: RowData,
 ): Invite {
   return {
     id: inviteRow.id,

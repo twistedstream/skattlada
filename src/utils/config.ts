@@ -12,7 +12,7 @@ export const baseUrl = <string>process.env.BASE_URL;
 export const cookieSecret = <string>process.env.COOKIE_SECRET;
 export const csrfSecret = <string>process.env.CSRF_SECRET;
 export const maxInviteLifetime = Duration.fromISO(
-  <string>process.env.MAX_INVITE_LIFETIME
+  <string>process.env.MAX_INVITE_LIFETIME,
 );
 export const dataProviderName = <string>process.env.DATA_PROVIDER_NAME;
 export const googleSpreadsheetId = <string>process.env.GOOGLE_SPREADSHEET_ID;
@@ -26,7 +26,7 @@ export const googleAuthPrivateKey =
   (process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64
     ? Buffer.from(
         <string>process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64,
-        "base64"
+        "base64",
       ).toString("utf-8")
     : undefined);
 

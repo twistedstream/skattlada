@@ -44,7 +44,7 @@ test("utils/auth/deserialize/registerableSource", async (t) => {
         t.ok(fixCreatedFake.called);
         t.equal(fixCreatedFake.getCall(0).firstArg, target);
         t.equal(fixCreatedFake.getCall(1).firstArg, createdBy);
-      }
+      },
     );
 
     t.test(
@@ -56,7 +56,7 @@ test("utils/auth/deserialize/registerableSource", async (t) => {
         fixRegisterableSource(target);
 
         t.notOk(fixDateTimeFake.called);
-      }
+      },
     );
 
     t.test(
@@ -70,7 +70,7 @@ test("utils/auth/deserialize/registerableSource", async (t) => {
         t.ok(fixDateTimeFake.called);
         t.equal(fixDateTimeFake.firstCall.args[0], target);
         t.equal(fixDateTimeFake.firstCall.args[1], "claimed");
-      }
+      },
     );
 
     t.test(
@@ -82,7 +82,7 @@ test("utils/auth/deserialize/registerableSource", async (t) => {
         fixRegisterableSource(target);
 
         t.equal(fixCreatedFake.getCalls().length, 2);
-      }
+      },
     );
 
     t.test(
@@ -97,7 +97,7 @@ test("utils/auth/deserialize/registerableSource", async (t) => {
         t.ok(fixCreatedFake.called);
         t.equal(fixCreatedFake.getCalls().length, 3);
         t.equal(fixCreatedFake.getCall(2).firstArg, claimedBy);
-      }
+      },
     );
   });
 });

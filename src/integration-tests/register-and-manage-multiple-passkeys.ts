@@ -65,7 +65,7 @@ test("Register and manage multiple authenticators", async (t) => {
       user1.username,
       user1.displayName,
       cred2,
-      false
+      false,
     );
 
     // we should now have a second cred registered to the existing user
@@ -76,7 +76,7 @@ test("Register and manage multiple authenticators", async (t) => {
       state,
       user1.username,
       user1.displayName,
-      [cred1, cred2]
+      [cred1, cred2],
     );
   });
 
@@ -105,7 +105,7 @@ test("Register and manage multiple authenticators", async (t) => {
       state,
       user1.username,
       user1.displayName,
-      [cred2]
+      [cred2],
     );
   });
 });

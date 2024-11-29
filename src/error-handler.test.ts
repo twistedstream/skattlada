@@ -95,7 +95,7 @@ test("(root): error handler", async (t) => {
 
         t.ok(buildErrorHandlerDataStub.called);
         t.equal(buildErrorHandlerDataStub.firstCall.firstArg.statusCode, 404);
-      }
+      },
     );
 
     t.test("renders HTML with the expected view state", async (t) => {

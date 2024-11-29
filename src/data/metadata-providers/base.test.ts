@@ -73,7 +73,7 @@ test("data/metadata-providers/base", async (t) => {
         t.ok(logger.info.called);
         t.equal(
           logger.info.firstCall.firstArg,
-          "Metadata provider loaded 3 statement(s)"
+          "Metadata provider loaded 3 statement(s)",
         );
       });
     });
@@ -87,7 +87,7 @@ test("data/metadata-providers/base", async (t) => {
           t.throws(() => target.getStatements(), {
             message: "Provider not initialized",
           });
-        }
+        },
       );
 
       t.test("returns expected statements dictionary", async (t) => {
@@ -110,7 +110,7 @@ test("data/metadata-providers/base", async (t) => {
           t.rejects(() => target.loadStatements(), {
             message: "Method not implemented",
           });
-        }
+        },
       );
     });
   });

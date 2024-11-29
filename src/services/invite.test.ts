@@ -63,7 +63,7 @@ test("services/invite", async (t) => {
         const result = await newInvite(by, true);
 
         t.ok(result.isAdmin);
-      }
+      },
     );
 
     t.test(
@@ -74,7 +74,7 @@ test("services/invite", async (t) => {
         const result = await newInvite(by, false);
 
         t.notOk(result.isAdmin);
-      }
+      },
     );
   });
 
@@ -140,7 +140,7 @@ test("services/invite", async (t) => {
         t.rejects(async () => await claimInvite("invite-id", {}), {
           message: "Invite with ID 'invite-id' has already been claimed",
         });
-      }
+      },
     );
 
     t.test("when unclaimed invite", async (t) => {

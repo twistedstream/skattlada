@@ -101,7 +101,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
 
   async findUserByName(username: string): Promise<User | undefined> {
     const { row } = await this._usersTable.findRow(
-      (r) => r.username === username
+      (r) => r.username === username,
     );
     if (row) {
       return rowToUser(row);
@@ -130,18 +130,18 @@ export class GoogleSheetsDataProvider implements IDataProvider {
   });
 
   async findCredentialById(
-    credentialID: string
+    credentialID: string,
   ): Promise<RegisteredAuthenticator | undefined> {
     const { row: credentialRow } = await this._credentialsTable.findRow(
-      (r) => r.id === credentialID
+      (r) => r.id === credentialID,
     );
     if (credentialRow) {
       const { row: userRow } = await this._usersTable.findRow(
-        (r) => r.id === credentialRow.user_id
+        (r) => r.id === credentialRow.user_id,
       );
       if (!userRow) {
         throw new Error(
-          `Data integrity error: user '${credentialRow.user_id}' no longer exists for credential '${credentialRow.id}'`
+          `Data integrity error: user '${credentialRow.user_id}' no longer exists for credential '${credentialRow.id}'`,
         );
       }
 
@@ -151,12 +151,12 @@ export class GoogleSheetsDataProvider implements IDataProvider {
 
   async findUserCredential(
     userID: string,
-    credentialID: string
+    credentialID: string,
   ): Promise<RegisteredAuthenticator | undefined> {
     const [{ row: userRow }, { row: credentialRow }] = await Promise.all([
       this._usersTable.findRow((r) => r.id === userID),
       this._credentialsTable.findRow(
-        (r) => r.user_id === userID && r.id === credentialID
+        (r) => r.user_id === userID && r.id === credentialID,
       ),
     ]);
     if (userRow && credentialRow) {
@@ -165,7 +165,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
   }
 
   async findCredentialsByUser(
-    userID: string
+    userID: string,
   ): Promise<RegisteredAuthenticator[]> {
     const [{ row: userRow }, { rows: credentialRows }] = await Promise.all([
       this._usersTable.findRow((r) => r.id === userID),
@@ -174,7 +174,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
 
     if (userRow && credentialRows.length > 0) {
       return credentialRows.map((credentialRow) =>
-        rowToCredential(credentialRow, userRow)
+        rowToCredential(credentialRow, userRow),
       );
     }
     return [];
@@ -182,10 +182,10 @@ export class GoogleSheetsDataProvider implements IDataProvider {
 
   async insertCredential(
     userID: string,
-    credential: Authenticator
+    credential: Authenticator,
   ): Promise<void> {
     const { row: userRow } = await this._usersTable.findRow(
-      (r) => r.id === userID
+      (r) => r.id === userID,
     );
     assertValue(userRow, "User does not exist");
 
@@ -209,7 +209,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
 
   async findInviteById(inviteId: string): Promise<Invite | undefined> {
     const { row: inviteRow } = await this._invitesTable.findRow(
-      (r) => r.id === inviteId
+      (r) => r.id === inviteId,
     );
     if (inviteRow) {
       const relatedUserIds = [
@@ -218,13 +218,13 @@ export class GoogleSheetsDataProvider implements IDataProvider {
       ];
       const { rowsByKey: userRowsById } = await this._usersTable.findKeyRows(
         (r) => r.id,
-        relatedUserIds
+        relatedUserIds,
       );
 
       return rowToInvite(
         inviteRow,
         userRowsById[inviteRow.created_by],
-        userRowsById[inviteRow.claimed_by]
+        userRowsById[inviteRow.claimed_by],
       );
     }
   }
@@ -258,7 +258,7 @@ export class GoogleSheetsDataProvider implements IDataProvider {
 
   async findShareById(shareId: string): Promise<Share | undefined> {
     const { row: shareRow } = await this._sharesTable.findRow(
-      (r) => r.id === shareId
+      (r) => r.id === shareId,
     );
     if (shareRow) {
       const relatedUserIds = [
@@ -267,52 +267,52 @@ export class GoogleSheetsDataProvider implements IDataProvider {
       ];
       const { rowsByKey: userRowsById } = await this._usersTable.findKeyRows(
         (r) => r.id,
-        relatedUserIds
+        relatedUserIds,
       );
 
       return rowToShare(
         shareRow,
         userRowsById[shareRow.created_by],
-        userRowsById[shareRow.claimed_by]
+        userRowsById[shareRow.claimed_by],
       );
     }
   }
 
   async findSharesByClaimedUserId(userID: string): Promise<Share[]> {
     const { rows: shareRows } = await this._sharesTable.findRows(
-      (r) => r.claimed_by === userID
+      (r) => r.claimed_by === userID,
     );
 
     const relatedUserIds = shareRows.reduce(
       (p, c) => [...p, c.created_by, c.claimed_by],
-      <string[]>[]
+      <string[]>[],
     );
     const { rowsByKey: userRowsById } = await this._usersTable.findKeyRows(
       (r) => r.id,
-      relatedUserIds
+      relatedUserIds,
     );
 
     return shareRows.map((r) =>
-      rowToShare(r, userRowsById[r.created_by], userRowsById[r.claimed_by])
+      rowToShare(r, userRowsById[r.created_by], userRowsById[r.claimed_by]),
     );
   }
 
   async findSharesByCreatedUserId(userID: string): Promise<Share[]> {
     const { rows: shareRows } = await this._sharesTable.findRows(
-      (r) => r.created_by === userID
+      (r) => r.created_by === userID,
     );
 
     const relatedUserIds = shareRows.reduce(
       (p, c) => [...p, c.created_by, ...(c.claimed_by ? [c.claimed_by] : [])],
-      <string[]>[]
+      <string[]>[],
     );
     const { rowsByKey: userRowsById } = await this._usersTable.findKeyRows(
       (r) => r.id,
-      relatedUserIds
+      relatedUserIds,
     );
 
     return shareRows.map((r) =>
-      rowToShare(r, userRowsById[r.created_by], userRowsById[r.claimed_by])
+      rowToShare(r, userRowsById[r.created_by], userRowsById[r.claimed_by]),
     );
   }
 

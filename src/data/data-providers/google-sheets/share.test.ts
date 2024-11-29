@@ -103,9 +103,9 @@ test("data/data-providers/google-sheets/share", async (t) => {
             "claimed",
             "claimedBy",
             "toUsername",
-            "expireDuration"
+            "expireDuration",
           ),
-          omit(unclaimedShare, "createdBy", "claimed", "claimedBy")
+          omit(unclaimedShare, "createdBy", "claimed", "claimedBy"),
         );
         t.equal(result.createdBy, unclaimedShare.createdBy);
         t.equal(result.claimed, undefined);
@@ -129,7 +129,7 @@ test("data/data-providers/google-sheets/share", async (t) => {
           t.equal(calls.length, 2);
           t.equal(calls[0].firstArg, createdByRow);
           t.equal(calls[1].firstArg, claimedByRow);
-        }
+        },
       );
 
       t.test("returns expected invite", async (t) => {
@@ -140,7 +140,7 @@ test("data/data-providers/google-sheets/share", async (t) => {
 
         t.same(
           omit(result, "createdBy", "claimedBy"),
-          omit(claimedShare, "createdBy", "claimedBy")
+          omit(claimedShare, "createdBy", "claimedBy"),
         );
         t.equal(result.createdBy, claimedShare.createdBy);
         t.equal(result.claimedBy, claimedShare.claimedBy);
@@ -176,9 +176,9 @@ test("data/data-providers/google-sheets/share", async (t) => {
             "claimed",
             "claimed_by",
             "to_username",
-            "expire_duration"
+            "expire_duration",
           ),
-          unclaimedShareRow
+          unclaimedShareRow,
         );
         t.same(result.createdByRow, createdByRow);
         t.same(result.claimedByRow, undefined);
@@ -198,7 +198,7 @@ test("data/data-providers/google-sheets/share", async (t) => {
           t.equal(calls.length, 2);
           t.equal(calls[0].firstArg, createdByUser);
           t.equal(calls[1].firstArg, claimedByUser);
-        }
+        },
       );
 
       t.test("returns expected rows", async (t) => {

@@ -5,7 +5,7 @@ import { Authenticator, User } from "./entity";
 export interface AuthenticatedRequest<
   P = ParamsDictionary,
   ReqBody = any,
-  ReqQuery = Query
+  ReqQuery = Query,
 > extends Request<P, any, ReqBody, ReqQuery> {
   user?: User;
   credential?: Authenticator;

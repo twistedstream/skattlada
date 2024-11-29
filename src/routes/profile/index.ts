@@ -28,7 +28,7 @@ router.get(
       ...viewData,
       title: "Profile",
     });
-  }
+  },
 );
 
 router.post(
@@ -42,7 +42,7 @@ router.post(
       display_name: string;
       cred_id?: string;
     }>,
-    res: Response
+    res: Response,
   ) => {
     const user = assertValue(req.user);
     const credential = assertValue(req.credential);
@@ -78,7 +78,7 @@ router.post(
     if (action === "delete_cred" && cred_id) {
       if (credential.credentialID === cred_id) {
         throw BadRequestError(
-          "Cannot delete credential that was used to sign into the current session"
+          "Cannot delete credential that was used to sign into the current session",
         );
       }
 
@@ -88,7 +88,7 @@ router.post(
     }
 
     throw BadRequestError("Unsupported profile action");
-  }
+  },
 );
 
 export default router;

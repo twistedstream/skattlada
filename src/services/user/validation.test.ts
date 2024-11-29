@@ -19,7 +19,7 @@ test("services/user-validation", async (t) => {
           message: "Username cannot be empty",
           entity: "User",
           field: "username",
-        }
+        },
       );
     });
 
@@ -37,7 +37,7 @@ test("services/user-validation", async (t) => {
           message: /^Username must match pattern: .*$/,
           entity: "User",
           field: "username",
-        }
+        },
       );
     });
 
@@ -55,7 +55,7 @@ test("services/user-validation", async (t) => {
           message: "Display name cannot be empty",
           entity: "User",
           field: "displayName",
-        }
+        },
       );
     });
 
@@ -73,7 +73,7 @@ test("services/user-validation", async (t) => {
           message: /^Display name must match pattern: .*$/,
           entity: "User",
           field: "displayName",
-        }
+        },
       );
     });
 
@@ -85,7 +85,7 @@ test("services/user-validation", async (t) => {
           username: "bob",
           displayName: "Bob User",
           isAdmin: false,
-        })
+        }),
       );
     });
   });
