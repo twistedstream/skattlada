@@ -80,7 +80,7 @@
     "node-html-parser": "^6.1.13",
     "nodemon": "^3.1.7",
     "pino-pretty": "^13.0.0",
-    "prettier": "^3.2.4",
+    "prettier": "^3.4.1",
     "set-cookie-parser": "^2.7.1",
     "sinon": "^19.0.2",
     "supertest": "^6.3.4",
