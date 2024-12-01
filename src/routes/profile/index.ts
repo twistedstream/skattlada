@@ -9,6 +9,7 @@ import {
 import { requiresAuth } from "../../utils/auth";
 import { generateCsrfToken, validateCsrfToken } from "../../utils/csrf";
 import { BadRequestError, assertValue } from "../../utils/error";
+import { redirectBack } from "../../utils/express";
 import { buildViewData } from "./view";
 
 const router = Router();
@@ -71,7 +72,7 @@ router.post(
         throw err;
       }
 
-      return res.redirect("back");
+      return redirectBack(req, res);
     }
 
     const { cred_id } = req.body;
@@ -84,7 +85,7 @@ router.post(
 
       await removeUserCredential(user.id, cred_id);
 
-      return res.redirect("back");
+      return redirectBack(req, res);
     }
 
     throw BadRequestError("Unsupported profile action");
