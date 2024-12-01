@@ -14,3 +14,5 @@ test-env:
   - FILE_PROVIDER_NAME=local
   - GOOGLE_AUTH_CLIENT_EMAIL=google-client@example.com
   - GOOGLE_AUTH_PRIVATE_KEY=google_Bananas!
+
+coverage-map: code-coverage-map.js
