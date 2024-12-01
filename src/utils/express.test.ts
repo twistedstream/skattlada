@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t } from "tap";
 
 import { redirectBack } from "./express";
 
@@ -11,7 +11,7 @@ const res: any = {
 
 // tests
 
-test("utils/express", async (t) => {
+t.test("utils/express", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();
