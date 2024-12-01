@@ -4,8 +4,6 @@ import path from "path";
 import querystring from "querystring";
 import sinon from "sinon";
 import { Response as SupertestResponse } from "supertest";
-// makes it so no need to try/catch errors in middleware
-import "express-async-errors";
 
 import { Authenticator, User } from "../../types/entity";
 import { AuthenticatedRequest } from "../../types/express";
@@ -55,7 +53,7 @@ export function createTestExpressApp({
 
   if (authSetup) {
     app.all(
-      "*",
+      /.*/,
       (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
         req.originalUrl = authSetup.originalUrl;
         req.user = authSetup.activeUser;

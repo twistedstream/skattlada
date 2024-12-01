@@ -1,7 +1,5 @@
 import sinon from "sinon";
 import { test } from "tap";
-// makes it so no need to try/catch errors in middleware
-import "express-async-errors";
 
 import { LocalFileProvider } from "../data/file-providers/local";
 import { testCredential1, testUser1 } from "../utils/testing/data";

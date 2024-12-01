@@ -1,8 +1,6 @@
 import { parse as parseHtml } from "node-html-parser";
 import sinon from "sinon";
 import { test } from "tap";
-// makes it so no need to try/catch errors in middleware
-import "express-async-errors";
 
 import supertest from "supertest";
 import { LocalFileProvider } from "../data/file-providers/local";
