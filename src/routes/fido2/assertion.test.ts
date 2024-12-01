@@ -5,7 +5,7 @@ import request, {
   Test as SuperTest,
   Response as SupertestResponse,
 } from "supertest";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { StatusCodes } from "http-status-codes";
 import { testCredential1, testUser1 } from "../../utils/testing/data";
@@ -51,10 +51,10 @@ const signInStub = sinon.stub();
 // helpers
 
 function importModule(
-  test: Tap.Test,
+  t: Test,
   { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
-  const { default: router } = test.mock("./assertion", {
+  const { default: router } = t.mockRequire("./assertion", {
     ...(mockExpress && {
       express: {
         Router: routerFake,
@@ -88,10 +88,10 @@ function importModule(
 }
 
 function createAssertionTestExpressApp(
-  test: Tap.Test,
+  t: Test,
   { withAuth, suppressErrorOutput }: AssertionTestExpressAppOptions = {},
 ) {
-  const router = importModule(test, { mockModules: true });
+  const router = importModule(t, { mockModules: true });
 
   return createTestExpressApp({
     authSetup: withAuth
@@ -105,7 +105,7 @@ function createAssertionTestExpressApp(
       app.use(router);
     },
     errorHandlerSetup: {
-      test,
+      test: t,
       modulePath: "../../routes/fido2/error-handler",
       suppressErrorOutput,
     },
@@ -113,11 +113,11 @@ function createAssertionTestExpressApp(
 }
 
 function verifyFailedAuthenticationFido2ErrorResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
 ) {
   verifyUserErrorFido2ServerResponse(
-    test,
+    t,
     response,
     StatusCodes.BAD_REQUEST,
     "We couldn't sign you in",
@@ -140,7 +140,7 @@ function performResultPostRequest(app: Express): SuperTest {
 
 // tests
 
-test("routes/fido2/assertion", async (t) => {
+t.test("routes/fido2/assertion", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

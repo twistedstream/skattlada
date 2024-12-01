@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -10,8 +10,8 @@ const logger = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./media-type", {
+function importModule(t: Test) {
+  return t.mockRequire("./media-type", {
     "friendly-mimes": { resolveMime: resolveMimeStub },
     "./logger": { logger },
   });
@@ -19,7 +19,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("utils/media-type", async (t) => {
+t.test("utils/media-type", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

@@ -4,6 +4,7 @@ import path from "path";
 import querystring from "querystring";
 import sinon from "sinon";
 import { Response as SupertestResponse } from "supertest";
+import { Test } from "tap";
 
 import { Authenticator, User } from "../../types/entity";
 import { AuthenticatedRequest } from "../../types/express";
@@ -15,7 +16,7 @@ type AuthSetup = {
 };
 type MiddlewareSetup = (app: Express) => void;
 type ErrorHandlerSetup = {
-  test: Tap.Test;
+  test: Test;
   modulePath: string;
   suppressErrorOutput?: boolean;
 };
@@ -78,12 +79,13 @@ export function createTestExpressApp({
     };
 
     // include error handler behavior, but fake the logging
-    const { default: errorHandler } = errorHandlerSetup.test.mock(
+    const { default: errorHandler } = errorHandlerSetup.test.mockRequire(
       errorHandlerSetup.modulePath,
       {
         "../../utils/logger": { logger },
       },
     );
+
     errorHandler(app);
   }
 
@@ -94,24 +96,24 @@ export function createTestExpressApp({
  * Verifies the state of the provided Express.Request object
  */
 export function verifyRequest(
-  test: Tap.Test,
+  t: Test,
   req: Request,
   expectations: ExpressRequestExpectations,
 ) {
-  test.ok(req, "req exists");
-  test.equal(req.url, expectations.url, "expected req.url");
-  test.equal(req.method, expectations.method, "expected req.method");
+  t.ok(req, "req exists");
+  t.equal(req.url, expectations.url, "expected req.url");
+  t.equal(req.method, expectations.method, "expected req.method");
   // FUTURE: additional verifications
 }
 
 /**
  * Verifies the state of the provided Express.Response object
  */
-export function verifyResponse(test: Tap.Test, res: Response) {
-  test.ok(res, "res exists");
-  test.ok(res.render, "res.render exists");
-  test.ok(res.send, "res.send exists");
-  test.ok(res.json, "res.json exists");
+export function verifyResponse(t: Test, res: Response) {
+  t.ok(res, "res exists");
+  t.ok(res.render, "res.render exists");
+  t.ok(res.send, "res.send exists");
+  t.ok(res.json, "res.json exists");
   // FUTURE: additional verifications
 }
 
@@ -120,16 +122,16 @@ export function verifyResponse(test: Tap.Test, res: Response) {
  * to the specified URL
  */
 export function verifyRedirectResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   url: string,
 ) {
-  test.equal(
+  t.equal(
     response.status,
     StatusCodes.MOVED_TEMPORARILY,
     "expected HTTP status",
   );
-  test.equal(response.headers.location, url, "expected HTTP location");
+  t.equal(response.headers.location, url, "expected HTTP location");
 }
 
 /**
@@ -137,19 +139,19 @@ export function verifyRedirectResponse(
  * to the login endpoint
  */
 export function verifyAuthenticationRequiredResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   return_to: string = "/",
 ) {
   verifyRedirectResponse(
-    test,
+    t,
     response,
     "/login?" + querystring.encode({ return_to }),
   );
 }
 
 export function verifyHtmlErrorResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   renderArgs: ViewRenderArgs,
   statusCode: StatusCodes,
@@ -158,35 +160,35 @@ export function verifyHtmlErrorResponse(
 ) {
   const { viewName, options } = renderArgs;
 
-  test.equal(response.status, statusCode, "expected HTTP status");
-  test.match(
+  t.equal(response.status, statusCode, "expected HTTP status");
+  t.match(
     response.headers["content-type"],
     "text/html",
     "expected HTTP content type",
   );
-  test.equal(viewName, "error", "expected view name");
-  test.equal(options.title, title, "expected title");
-  test.match(options.message, errorMessage, "expected error message");
+  t.equal(viewName, "error", "expected view name");
+  t.equal(options.title, title, "expected title");
+  t.match(options.message, errorMessage, "expected error message");
 }
 
 export function verifyFido2ErrorResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   statusCode: StatusCodes,
   errorMessage: string | RegExp,
   errorContext?: string,
 ) {
-  test.equal(response.statusCode, statusCode, "expected HTTP status");
-  test.match(
+  t.equal(response.statusCode, statusCode, "expected HTTP status");
+  t.match(
     response.headers["content-type"],
     "application/json",
     "expected HTTP content type",
   );
   const json = JSON.parse(response.text);
-  test.equal(json.status, "failed", "expected FIDO status");
-  test.match(json.errorMessage, errorMessage, "expected FIDO error message");
+  t.equal(json.status, "failed", "expected FIDO status");
+  t.match(json.errorMessage, errorMessage, "expected FIDO error message");
   if (errorContext) {
-    test.match(json.errorContext, errorContext, "expected FIDO error context");
+    t.match(json.errorContext, errorContext, "expected FIDO error context");
   }
 
   delete json.status;
@@ -195,16 +197,16 @@ export function verifyFido2ErrorResponse(
 }
 
 export function verifyUserErrorFido2ServerResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   statusCode: StatusCodes,
   errorMessage: string | RegExp,
   errorContext?: string,
 ) {
-  test.ok(statusCode >= 400 && statusCode < 500, "HTTP status is user error");
+  t.ok(statusCode >= 400 && statusCode < 500, "HTTP status is user error");
 
   const json = verifyFido2ErrorResponse(
-    test,
+    t,
     response,
     statusCode,
     errorMessage,
@@ -212,47 +214,43 @@ export function verifyUserErrorFido2ServerResponse(
   );
 
   // assert no correlation ID
-  test.equal(
-    json.correlation_id,
-    undefined,
-    "expected undefined correlation_id",
-  );
+  t.equal(json.correlation_id, undefined, "expected undefined correlation_id");
 }
 
 export function verifyServerErrorFido2ServerResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   statusCode: StatusCodes,
 ) {
-  test.ok(statusCode >= 500, "HTTP status is server error");
+  t.ok(statusCode >= 500, "HTTP status is server error");
 
   const json = verifyFido2ErrorResponse(
-    test,
+    t,
     response,
     statusCode,
     "Something unexpected happened",
   );
 
   // assert correlation ID
-  test.ok(json.correlation_id, "correlation_id exists");
-  test.ok(json.correlation_id.length > 0, "correlation_id is non-empty");
+  t.ok(json.correlation_id, "correlation_id exists");
+  t.ok(json.correlation_id.length > 0, "correlation_id is non-empty");
 }
 
 export function verifyFido2SuccessResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   expectedData: any,
 ) {
-  test.equal(response.statusCode, StatusCodes.OK, "expected HTTP status");
-  test.match(
+  t.equal(response.statusCode, StatusCodes.OK, "expected HTTP status");
+  t.match(
     response.headers["content-type"],
     "application/json",
     "expected HTTP content type",
   );
   const json = JSON.parse(response.text);
-  test.equal(json.status, "ok", "expected FIDO status");
-  test.notOk(json.errorMessage, "expected no FIDO error message");
-  test.match(json, expectedData, "expected FIDO data");
+  t.equal(json.status, "ok", "expected FIDO status");
+  t.notOk(json.errorMessage, "expected no FIDO error message");
+  t.match(json, expectedData, "expected FIDO data");
 }
 
 /**

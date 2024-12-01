@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import sinon from "sinon";
 import request from "supertest";
-import { test } from "tap";
+import { t } from "tap";
 
 import * as utilsError from "./utils/error";
 import { BadRequestError, UnauthorizedError } from "./utils/error";
@@ -23,13 +23,13 @@ const redirectToLoginStub = sinon
 
 // tests
 
-test("(root): error handler", async (t) => {
+t.test("(root): error handler", async (t) => {
   t.beforeEach(() => {
     logger.error.resetHistory();
     buildErrorHandlerDataStub.resetHistory();
   });
 
-  const { default: errorHandler } = t.mock("./error-handler", {
+  const { default: errorHandler } = t.mockRequire("./error-handler", {
     "./utils/logger": { logger },
     "./utils/error": {
       ...utilsError,

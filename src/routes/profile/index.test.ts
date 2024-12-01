@@ -2,7 +2,7 @@ import { Express, NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import sinon from "sinon";
 import request, { Test as SuperTest } from "supertest";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { Authenticator, User } from "../../types/entity";
 import { ValidationError } from "../../types/error";
@@ -12,10 +12,10 @@ import {
   testUser1,
 } from "../../utils/testing/data";
 import {
-  ViewRenderArgs,
   createTestExpressApp,
   verifyHtmlErrorResponse,
   verifyRedirectResponse,
+  ViewRenderArgs,
 } from "../../utils/testing/unit";
 
 type MockOptions = {
@@ -44,14 +44,17 @@ const testCsrfToken = "CSRF_TOKEN";
 const generateCsrfTokenFake = sinon.fake.returns(testCsrfToken);
 const validateCsrfTokenStub = sinon.stub();
 const buildViewDataStub = sinon.stub();
+const redirectBackFake = sinon.fake((_req, res) => {
+  return res.redirect("/");
+});
 
 // helpers
 
 function importModule(
-  test: Tap.Test,
+  t: Test,
   { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
-  const { default: router } = test.mock("./index", {
+  const { default: router } = t.mockRequire("./index", {
     ...(mockExpress && {
       express: {
         Router: routerFake,
@@ -69,6 +72,9 @@ function importModule(
         generateCsrfToken: generateCsrfTokenFake,
         validateCsrfToken: validateCsrfTokenStub,
       },
+      "../../utils/express": {
+        redirectBack: redirectBackFake,
+      },
       "./view": {
         buildViewData: buildViewDataStub,
       },
@@ -79,7 +85,7 @@ function importModule(
 }
 
 function createProfileTestExpressApp(
-  test: Tap.Test,
+  t: Test,
   {
     withAuth,
     suppressErrorOutput,
@@ -87,7 +93,7 @@ function createProfileTestExpressApp(
     activeCredential = testCredential1(),
   }: ProfileTestExpressAppOptions = {},
 ) {
-  const router = importModule(test, { mockModules: true });
+  const router = importModule(t, { mockModules: true });
 
   return createTestExpressApp({
     authSetup: withAuth
@@ -101,7 +107,7 @@ function createProfileTestExpressApp(
       app.use(router);
     },
     errorHandlerSetup: {
-      test,
+      test: t,
       modulePath: "../../error-handler",
       suppressErrorOutput,
     },
@@ -120,7 +126,7 @@ function performPostRequest(app: Express): SuperTest {
 
 // tests
 
-test("routes/profile/index", async (t) => {
+t.test("routes/profile/index", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();
@@ -353,6 +359,7 @@ test("routes/profile/index", async (t) => {
             displayName: "Good Bob",
             isAdmin: false,
           });
+          t.ok(redirectBackFake.called);
           verifyRedirectResponse(t, response, "/");
         },
       );
@@ -403,6 +410,7 @@ test("routes/profile/index", async (t) => {
             removeUserCredentialStub.firstCall.args[1],
             cred2.credentialID,
           );
+          t.ok(redirectBackFake.called);
           verifyRedirectResponse(t, response, "/");
         },
       );

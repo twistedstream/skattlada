@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { Duration } from "luxon";
 import sinon from "sinon";
-import { test } from "tap";
+import { t } from "tap";
 
 import { LocalFileProvider } from "../data/file-providers/local";
 import { assertValue } from "../utils/error";
@@ -21,7 +21,7 @@ import {
 
 // NOTE: Tap should be run with --bail to stop on first failed assertion
 
-test("Recipient loses access to claimed share when it expires", async (t) => {
+t.test("Recipient loses access to claimed share when it expires", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

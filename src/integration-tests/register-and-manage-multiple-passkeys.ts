@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t } from "tap";
 
 import { LocalFileProvider } from "../data/file-providers/local";
 import {
@@ -21,7 +21,7 @@ import {
 
 // NOTE: Tap should be run with --bail to stop on first failed assertion
 
-test("Register and manage multiple authenticators", async (t) => {
+t.test("Register and manage multiple authenticators", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

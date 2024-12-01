@@ -2,7 +2,7 @@ import { isoBase64URL } from "@simplewebauthn/server/helpers";
 import { Express } from "express";
 import sinon from "sinon";
 import request, { Test as SuperTest } from "supertest";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { StatusCodes } from "http-status-codes";
 import { ValidationError } from "../../types/error";
@@ -70,10 +70,10 @@ const getRegistrationStub = sinon.stub();
 // helpers
 
 function importModule(
-  test: Tap.Test,
+  t: Test,
   { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
-  const { default: router } = test.mock("./attestation", {
+  const { default: router } = t.mockRequire("./attestation", {
     ...(mockExpress && {
       express: {
         Router: routerFake,
@@ -113,10 +113,10 @@ function importModule(
 }
 
 function createAttestationTestExpressApp(
-  test: Tap.Test,
+  t: Test,
   { withAuth, suppressErrorOutput }: AttestationTestExpressAppOptions = {},
 ) {
-  const router = importModule(test, { mockModules: true });
+  const router = importModule(t, { mockModules: true });
 
   return createTestExpressApp({
     authSetup: withAuth
@@ -130,7 +130,7 @@ function createAttestationTestExpressApp(
       app.use(router);
     },
     errorHandlerSetup: {
-      test,
+      test: t,
       modulePath: "../../routes/fido2/error-handler",
       suppressErrorOutput,
     },
@@ -153,7 +153,7 @@ function performResultPostRequest(app: Express): SuperTest {
 
 // tests
 
-test("routes/fido2/attestation", async (t) => {
+t.test("routes/fido2/attestation", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

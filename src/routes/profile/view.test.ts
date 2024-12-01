@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import {
   testCredential1,
@@ -14,8 +14,8 @@ const fetchMetadataByIdStub = sinon.stub();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./view", {
+function importModule(t: Test) {
+  return t.mockRequire("./view", {
     "../../services/user": {
       fetchCredentialsByUserId: fetchCredentialsByUserIdStub,
     },
@@ -27,7 +27,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("routes/profile/view", async (t) => {
+t.test("routes/profile/view", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

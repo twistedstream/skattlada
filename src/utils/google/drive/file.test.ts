@@ -1,8 +1,8 @@
-import { test } from "tap";
+import { t } from "tap";
 
 import { fileIdFromUrl } from "./file";
 
-test("utils/google/drive/file", async (t) => {
+t.test("utils/google/drive/file", async (t) => {
   t.test("fileIdFromUrl", async (t) => {
     t.test("extracts file ID from given URLs", async (t) => {
       [

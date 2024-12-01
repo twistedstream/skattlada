@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -12,11 +12,11 @@ const attestationRoute = {};
 
 // helpers
 
-function importModule(test: Tap.Test) {
+function importModule(t: Test) {
   expressRouter.use.resetHistory();
   routerFake.resetHistory();
 
-  const { default: router } = test.mock("./index", {
+  const { default: router } = t.mockRequire("./index", {
     express: {
       Router: routerFake,
     },
@@ -29,7 +29,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("routes/fido2/index", async (t) => {
+t.test("routes/fido2/index", async (t) => {
   t.beforeEach(async (t) => {
     sinon.resetBehavior();
     sinon.resetHistory();

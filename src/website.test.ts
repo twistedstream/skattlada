@@ -1,6 +1,6 @@
 import { NextFunction } from "express";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -19,8 +19,8 @@ const cookieSecret = "Bananas!";
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  const { default: website } = test.mock("./website", {
+function importModule(t: Test) {
+  const { default: website } = t.mockRequire("./website", {
     express: {
       Router: routerFake,
     },
@@ -38,7 +38,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("website", async (t) => {
+t.test("website", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

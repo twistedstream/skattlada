@@ -2,7 +2,7 @@ import { Express, NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import sinon from "sinon";
 import request, { Test as SuperTest } from "supertest";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { Duration } from "luxon";
 import { Share, User } from "../types/entity";
@@ -16,13 +16,13 @@ import {
   testUser2,
 } from "../utils/testing/data";
 import {
-  ViewRenderArgs,
   createTestExpressApp,
   verifyAuthenticationRequiredResponse,
   verifyHtmlErrorResponse,
   verifyRedirectResponse,
   verifyRequest,
   verifyResponse,
+  ViewRenderArgs,
 } from "../utils/testing/unit";
 
 type MockOptions = {
@@ -70,10 +70,10 @@ const validateCsrfTokenStub = sinon.stub();
 // helpers
 
 function importModule(
-  test: Tap.Test,
+  t: Test,
   { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
-  const { default: router } = test.mock("./shares", {
+  const { default: router } = t.mockRequire("./shares", {
     ...(mockExpress && {
       express: {
         Router: routerFake,
@@ -116,7 +116,7 @@ function importModule(
 }
 
 function createSharesTestExpressApp(
-  test: Tap.Test,
+  t: Test,
   {
     withAuth,
     activeUser,
@@ -124,7 +124,7 @@ function createSharesTestExpressApp(
     suppressErrorOutput,
   }: SharesTestExpressAppOptions = {},
 ) {
-  const router = importModule(test, { mockModules: true });
+  const router = importModule(t, { mockModules: true });
 
   return createTestExpressApp({
     authSetup: withAuth
@@ -138,7 +138,7 @@ function createSharesTestExpressApp(
       app.use(router);
     },
     errorHandlerSetup: {
-      test,
+      test: t,
       modulePath: "../../error-handler",
       suppressErrorOutput,
     },
@@ -180,7 +180,7 @@ function performPostExistingShareRequest(
 
 // tests
 
-test("routes/shares", async (t) => {
+t.test("routes/shares", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();
@@ -392,7 +392,7 @@ test("routes/shares", async (t) => {
       t.ok(requiresAdminStub.called);
     });
 
-    function commonPostNewTests(t: Tap.Test, action: "validate" | "create") {
+    function commonPostNewTests(t: Test, action: "validate" | "create") {
       t.test("generates a new share", async (t) => {
         newShareStub.resolves({});
 

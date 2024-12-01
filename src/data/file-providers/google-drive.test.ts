@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -14,8 +14,8 @@ const mediaTypeFromMimeTypeStub = sinon.stub();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./google-drive", {
+function importModule(t: Test) {
+  return t.mockRequire("./google-drive", {
     "../../utils/logger": { logger },
     "../../utils/google/drive/client": {
       drive: {
@@ -37,7 +37,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("data/file-providers/google-drive", async (t) => {
+t.test("data/file-providers/google-drive", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

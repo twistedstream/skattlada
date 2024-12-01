@@ -1,7 +1,7 @@
 import { Express, NextFunction, Request, Response } from "express";
 import sinon from "sinon";
 import request, { Test as SuperTest } from "supertest";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { StatusCodes } from "http-status-codes";
 import {
@@ -11,12 +11,12 @@ import {
   testUser2,
 } from "../utils/testing/data";
 import {
-  ViewRenderArgs,
   createTestExpressApp,
   verifyHtmlErrorResponse,
   verifyRedirectResponse,
   verifyRequest,
   verifyResponse,
+  ViewRenderArgs,
 } from "../utils/testing/unit";
 
 type MockOptions = {
@@ -53,10 +53,10 @@ const validateCsrfTokenStub = sinon.stub();
 // helpers
 
 function importModule(
-  test: Tap.Test,
+  t: Test,
   { mockExpress = false, mockModules = false }: MockOptions = {},
 ) {
-  const { default: router } = test.mock("./invites", {
+  const { default: router } = t.mockRequire("./invites", {
     ...(mockExpress && {
       express: {
         Router: routerFake,
@@ -87,10 +87,10 @@ function importModule(
 }
 
 function createInvitesTestExpressApp(
-  test: Tap.Test,
+  t: Test,
   { withAuth, suppressErrorOutput }: InvitesTestExpressAppOptions = {},
 ) {
-  const router = importModule(test, { mockModules: true });
+  const router = importModule(t, { mockModules: true });
 
   return createTestExpressApp({
     authSetup: withAuth
@@ -104,7 +104,7 @@ function createInvitesTestExpressApp(
       app.use(router);
     },
     errorHandlerSetup: {
-      test,
+      test: t,
       modulePath: "../../error-handler",
       suppressErrorOutput,
     },
@@ -123,7 +123,7 @@ function performPostRequest(app: Express, inviteId: string): SuperTest {
 
 // tests
 
-test("routes/invites", async (t) => {
+t.test("routes/invites", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

@@ -1,6 +1,6 @@
 import { omit } from "lodash";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { RowData } from "google-sheets-table";
 import { Duration } from "luxon";
@@ -59,8 +59,8 @@ const userToRowStub = sinon.stub();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./share", {
+function importModule(t: Test) {
+  return t.mockRequire("./share", {
     "./user": {
       rowToUser: rowToUserStub,
       userToRow: userToRowStub,
@@ -68,7 +68,7 @@ function importModule(test: Tap.Test) {
   });
 }
 
-test("data/data-providers/google-sheets/share", async (t) => {
+t.test("data/data-providers/google-sheets/share", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

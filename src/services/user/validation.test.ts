@@ -1,9 +1,9 @@
-import { test } from "tap";
+import { t } from "tap";
 
 import { DateTime } from "luxon";
 import { validateUser } from "./validation";
 
-test("services/user-validation", async (t) => {
+t.test("services/user-validation", async (t) => {
   t.test("validateUser", async (t) => {
     t.test("throws error if username is empty", async (t) => {
       t.throws(
@@ -15,8 +15,8 @@ test("services/user-validation", async (t) => {
             displayName: "Bob User",
             isAdmin: false,
           }),
+        "Username cannot be empty",
         {
-          message: "Username cannot be empty",
           entity: "User",
           field: "username",
         },
@@ -33,8 +33,8 @@ test("services/user-validation", async (t) => {
             displayName: "Bob User",
             isAdmin: false,
           }),
+        /^Username must match pattern: .*$/,
         {
-          message: /^Username must match pattern: .*$/,
           entity: "User",
           field: "username",
         },
@@ -51,8 +51,8 @@ test("services/user-validation", async (t) => {
             displayName: "",
             isAdmin: false,
           }),
+        "Display name cannot be empty",
         {
-          message: "Display name cannot be empty",
           entity: "User",
           field: "displayName",
         },
@@ -69,8 +69,8 @@ test("services/user-validation", async (t) => {
             displayName: "B",
             isAdmin: false,
           }),
+        /^Display name must match pattern: .*$/,
         {
-          message: /^Display name must match pattern: .*$/,
           entity: "User",
           field: "displayName",
         },

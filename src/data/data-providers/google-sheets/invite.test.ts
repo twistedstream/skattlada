@@ -1,6 +1,6 @@
 import { omit } from "lodash";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { RowData } from "google-sheets-table";
 import { testInvite1, testUser1, testUser2 } from "../../../utils/testing/data";
@@ -29,8 +29,8 @@ const userToRowStub = sinon.stub();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./invite", {
+function importModule(t: Test) {
+  return t.mockRequire("./invite", {
     "./user": {
       rowToUser: rowToUserStub,
       userToRow: userToRowStub,
@@ -38,7 +38,7 @@ function importModule(test: Tap.Test) {
   });
 }
 
-test("data/data-providers/google-sheets/invite", async (t) => {
+t.test("data/data-providers/google-sheets/invite", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

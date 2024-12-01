@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { testNowDate } from "../../utils/testing/data";
 
@@ -23,8 +23,8 @@ const nowFake = sinon.fake.returns(testNowDate);
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./index", {
+function importModule(t: Test) {
+  return t.mockRequire("./index", {
     "../../data": { getDataProvider: () => dataProvider },
     "../../utils/identifier": { unique: uniqueStub },
     "../../utils/time": { now: nowFake },
@@ -36,7 +36,7 @@ function importModule(test: Tap.Test) {
 
 //tests
 
-test("services/user", async (t) => {
+t.test("services/user", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

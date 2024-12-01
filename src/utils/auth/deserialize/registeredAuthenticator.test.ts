@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -7,15 +7,15 @@ const fixCreatedFake = sinon.fake();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./registeredAuthenticator", {
+function importModule(t: Test) {
+  return t.mockRequire("./registeredAuthenticator", {
     "./created": { fixCreated: fixCreatedFake },
   });
 }
 
 // tests
 
-test("utils/auth/deserialize/registeredAuthenticator", async (t) => {
+t.test("utils/auth/deserialize/registeredAuthenticator", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

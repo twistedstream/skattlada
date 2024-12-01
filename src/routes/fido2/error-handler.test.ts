@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import sinon from "sinon";
 import request from "supertest";
-import { test } from "tap";
+import { t } from "tap";
 
 import { StatusCodes } from "http-status-codes";
 import * as utilsError from "../../utils/error";
@@ -21,13 +21,13 @@ const logger = {
 
 // tests
 
-test("routes/fido2: error handler", async (t) => {
+t.test("routes/fido2: error handler", async (t) => {
   t.beforeEach(() => {
     logger.error.resetHistory();
     buildErrorHandlerDataStub.resetHistory();
   });
 
-  const { default: errorHandler } = t.mock("./error-handler", {
+  const { default: errorHandler } = t.mockRequire("./error-handler", {
     "../../utils/logger": { logger },
     "../../utils/error": {
       ...utilsError,

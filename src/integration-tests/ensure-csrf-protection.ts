@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import sinon from "sinon";
 import { Response as SupertestResponse } from "supertest";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { LocalFileProvider } from "../data/file-providers/local";
 import { testCredential1, testUser1 } from "../utils/testing/data";
@@ -13,25 +13,25 @@ import {
 
 // NOTE: Tap should be run with --bail to stop on first failed assertion
 
-function assertCsrfErrorResponse(test: Tap.Test, response: SupertestResponse) {
-  test.equal(
+function assertCsrfErrorResponse(t: Test, response: SupertestResponse) {
+  t.equal(
     response.status,
     StatusCodes.FORBIDDEN,
     "expected forbidden http status",
   );
-  test.match(
+  t.match(
     response.headers["content-type"],
     "text/html",
     "expected html content",
   );
-  test.match(response.text, "csrf", "expected CSRF error content");
+  t.match(response.text, "csrf", "expected CSRF error content");
 }
 
 // These tests are designed to ensure endpoints that should be protected
 // from CSRF attacks are doing so. The test starts with an existing user
 // session and then each endpoint is tested.
 
-test("Ensure CSRF protection", async (t) => {
+t.test("Ensure CSRF protection", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

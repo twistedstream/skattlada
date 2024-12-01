@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -9,8 +9,8 @@ const metadataProvider = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./metadata", {
+function importModule(t: Test) {
+  return t.mockRequire("./metadata", {
     "../data": {
       getMetadataProvider: () => metadataProvider,
     },
@@ -19,7 +19,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("services/metadata", async (t) => {
+t.test("services/metadata", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

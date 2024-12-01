@@ -1,8 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import { DateTime } from "luxon";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
+import { HttpError } from "../error";
 import { testNowDate, testUser1 } from "../testing/data";
 
 // test objects
@@ -14,8 +15,8 @@ const fixUserFake = sinon.fake();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./index", {
+function importModule(t: Test) {
+  return t.mockRequire("./index", {
     "../../utils/time": { now: nowFake },
     "./deserialize": {
       fixRegisterableSource: fixRegisterableSourceFake,
@@ -27,7 +28,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("utils/auth", async (t) => {
+t.test("utils/auth", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();
@@ -405,11 +406,10 @@ test("utils/auth", async (t) => {
         middleware(req, res, nextFake);
 
         t.ok(nextFake.called);
-        t.same(nextFake.firstCall.firstArg, {
-          name: "Error",
-          message: "Unauthorized",
-          statusCode: StatusCodes.UNAUTHORIZED,
-        });
+        t.same(
+          nextFake.firstCall.firstArg,
+          new HttpError(StatusCodes.UNAUTHORIZED, "Unauthorized"),
+        );
       },
     );
 
@@ -441,11 +441,10 @@ test("utils/auth", async (t) => {
         middleware(req, res, nextFake);
 
         t.ok(nextFake.called);
-        t.same(nextFake.firstCall.firstArg, {
-          name: "Error",
-          message: "Forbidden: Requires admin role",
-          statusCode: StatusCodes.FORBIDDEN,
-        });
+        t.same(
+          nextFake.firstCall.firstArg,
+          new HttpError(StatusCodes.FORBIDDEN, "Requires admin role"),
+        );
       },
     );
 
@@ -460,11 +459,10 @@ test("utils/auth", async (t) => {
       middleware(req, res, nextFake);
 
       t.ok(nextFake.called);
-      t.same(nextFake.firstCall.firstArg, {
-        name: "Error",
-        message: "Forbidden: Requires admin role",
-        statusCode: StatusCodes.FORBIDDEN,
-      });
+      t.same(
+        nextFake.firstCall.firstArg,
+        new HttpError(StatusCodes.FORBIDDEN, "Requires admin role"),
+      );
     });
 
     t.test("if user is an admin, nothing happens", async (t) => {

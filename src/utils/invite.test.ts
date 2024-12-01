@@ -1,6 +1,6 @@
 import { DateTime, Duration } from "luxon";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -12,8 +12,8 @@ const nowStub = sinon.stub();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./invite", {
+function importModule(t: Test) {
+  return t.mockRequire("./invite", {
     "../utils/logger": { logger },
     "../services/invite": { fetchInviteById: fetchInviteByIdStub },
     "./time": { now: nowStub },
@@ -23,7 +23,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("utils/invite", async (t) => {
+t.test("utils/invite", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

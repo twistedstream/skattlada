@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 import { testNowDate } from "../utils/testing/data";
 
 // test objects
@@ -15,7 +15,7 @@ const newInviteStub = sinon.stub();
 
 // helpers
 
-function importModule(test: Tap.Test) {
+function importModule(t: Test) {
   const dependencies: any = {
     "../data": { getDataProvider: () => dataProvider },
     "../utils/time": { now: nowFake },
@@ -23,12 +23,12 @@ function importModule(test: Tap.Test) {
     "./invite": { newInvite: newInviteStub },
   };
 
-  return test.mock("./index", dependencies);
+  return t.mockRequire("./index", dependencies);
 }
 
 // tests
 
-test("services/index", async (t) => {
+t.test("services/index", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();
