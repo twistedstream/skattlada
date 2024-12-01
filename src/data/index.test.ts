@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -75,10 +75,10 @@ type ImportModuleOptions = {
   metadataProviderName?: string;
 };
 
-function importModule(test: Tap.Test, options: ImportModuleOptions = {}) {
+function importModule(t: Test, options: ImportModuleOptions = {}) {
   const { dataProviderName, fileProviderName, metadataProviderName } = options;
 
-  return test.mock("./index", {
+  return t.mockRequire("./index", {
     "../utils/config": {
       dataProviderName,
       fileProviderName,
@@ -109,7 +109,7 @@ function importModule(test: Tap.Test, options: ImportModuleOptions = {}) {
 
 // tests
 
-test("data/index", async (t) => {
+t.test("data/index", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

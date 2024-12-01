@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -9,15 +9,15 @@ const logger = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./base", {
+function importModule(t: Test) {
+  return t.mockRequire("./base", {
     "../../utils/logger": { logger },
   });
 }
 
 // tests
 
-test("data/metadata-providers/base", async (t) => {
+t.test("data/metadata-providers/base", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

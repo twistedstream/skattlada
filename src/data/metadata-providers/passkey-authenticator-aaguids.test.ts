@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -15,20 +15,20 @@ global.fetch = fetchFake;
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  const { BaseMetadataProvider } = test.mock("./base", {
+function importModule(t: Test) {
+  const { BaseMetadataProvider } = t.mockRequire("./base", {
     // just to suppress log messages
     "../../utils/logger": { logger },
   });
 
-  return test.mock("./passkey-authenticator-aaguids", {
+  return t.mockRequire("./passkey-authenticator-aaguids", {
     "./base": { BaseMetadataProvider },
   });
 }
 
 // tests
 
-test("data/metadata-providers/remote", async (t) => {
+t.test("data/metadata-providers/remote", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

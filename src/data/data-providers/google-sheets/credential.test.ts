@@ -1,6 +1,6 @@
 import { omit } from "lodash";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { RowData } from "google-sheets-table";
 import { testCredential2, testUser2 } from "../../../utils/testing/data";
@@ -26,15 +26,15 @@ const rowToUserFake = sinon.fake.returns(user);
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./credential", {
+function importModule(t: Test) {
+  return t.mockRequire("./credential", {
     "./user": {
       rowToUser: rowToUserFake,
     },
   });
 }
 
-test("data/data-providers/google-sheets/credential", async (t) => {
+t.test("data/data-providers/google-sheets/credential", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

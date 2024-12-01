@@ -1,6 +1,6 @@
 import { DateTime, Duration } from "luxon";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { StatusCodes } from "http-status-codes";
 import { assertValue } from "../utils/error";
@@ -23,8 +23,8 @@ const fileProvider = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./share", {
+function importModule(t: Test) {
+  return t.mockRequire("./share", {
     "../utils/logger": { logger },
     "../services/share": { fetchShareById: fetchShareByIdStub },
     "./time": { now: nowStub },
@@ -36,7 +36,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("utils/share", async (t) => {
+t.test("utils/share", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

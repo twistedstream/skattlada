@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 import { testFile1 } from "../../utils/testing/data";
 
 // test objects
@@ -12,8 +12,8 @@ const logger = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./local", {
+function importModule(t: Test) {
+  return t.mockRequire("./local", {
     "./files": { loadFiles: loadFilesStub, getFileStream: getFileStreamStub },
     "../../utils/logger": { logger },
   });
@@ -21,7 +21,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("data/file-providers/local", async (t) => {
+t.test("data/file-providers/local", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

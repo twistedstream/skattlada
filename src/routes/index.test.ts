@@ -1,6 +1,6 @@
 import sinon from "sinon";
 import request from "supertest";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { StatusCodes } from "http-status-codes";
 import { createTestExpressApp, verifyRequest } from "../utils/testing/unit";
@@ -29,14 +29,14 @@ const sharesRoute = sinon.fake();
 // helpers
 
 function importModule(
-  test: Tap.Test,
+  t: Test,
   {
     mockExpress = false,
     mockChildRoutes = false,
     mockModules = false,
   }: MockOptions = {},
 ) {
-  const { default: router } = test.mock("./index", {
+  const { default: router } = t.mockRequire("./index", {
     ...(mockExpress && {
       express: {
         Router: routerFake,
@@ -60,8 +60,8 @@ function importModule(
   return router;
 }
 
-function createIndexTestExpressApp(test: Tap.Test) {
-  const router = importModule(test, {
+function createIndexTestExpressApp(t: Test) {
+  const router = importModule(t, {
     mockModules: true,
     mockChildRoutes: true,
   });
@@ -71,7 +71,7 @@ function createIndexTestExpressApp(test: Tap.Test) {
       app.use(router);
     },
     errorHandlerSetup: {
-      test,
+      test: t,
       modulePath: "../../error-handler",
     },
   });
@@ -79,7 +79,7 @@ function createIndexTestExpressApp(test: Tap.Test) {
 
 // tests
 
-test("routes/index", async (t) => {
+t.test("routes/index", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

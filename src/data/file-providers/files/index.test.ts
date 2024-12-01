@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 import { MediaType } from "../../../types/entity";
 
 // test objects
@@ -12,8 +12,8 @@ const fileTypeFromMediaTypeStub = sinon.stub();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./index", {
+function importModule(t: Test) {
+  return t.mockRequire("./index", {
     "node:fs/promises": { readdir: readdirStub },
     "node:fs": { createReadStream: createReadStreamStub },
     "friendly-mimes": { resolveFileType: resolveFileTypeStub },
@@ -26,7 +26,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("data/file-providers/local", async (t) => {
+t.test("data/file-providers/local", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

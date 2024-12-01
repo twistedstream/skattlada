@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -7,15 +7,15 @@ const fixDateTimeFake = sinon.fake();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./created", {
+function importModule(t: Test) {
+  return t.mockRequire("./created", {
     "./dateTime": { fixDateTime: fixDateTimeFake },
   });
 }
 
 // tests
 
-test("utils/auth/deserialize/created", async (t) => {
+t.test("utils/auth/deserialize/created", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

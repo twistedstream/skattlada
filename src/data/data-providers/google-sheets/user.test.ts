@@ -1,4 +1,4 @@
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import { RowData } from "google-sheets-table";
 import sinon from "sinon";
@@ -18,11 +18,11 @@ const row: RowData = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./user", {});
+function importModule(t: Test) {
+  return t.mockRequire("./user", {});
 }
 
-test("data/data-providers/google-sheets/user", async (t) => {
+t.test("data/data-providers/google-sheets/user", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

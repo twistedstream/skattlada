@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -13,8 +13,8 @@ const csrfSecret = "Bananas?";
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./csrf", {
+function importModule(t: Test) {
+  return t.mockRequire("./csrf", {
     "csrf-csrf": {
       doubleCsrf: doubleCsrfFake,
     },
@@ -24,7 +24,7 @@ function importModule(test: Tap.Test) {
   });
 }
 
-test("utils/csrf", async (t) => {
+t.test("utils/csrf", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

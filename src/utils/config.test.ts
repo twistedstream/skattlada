@@ -1,9 +1,11 @@
 import { Duration } from "luxon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // helpers
-function importModule(test: Tap.Test) {
-  return test.mock("./config", {
+function importModule(t: Test) {
+  return t.mockRequire("./config", {
+    // make sure dotenv doesn't import local .env file
+    "dotenv/config": {},
     "../../package.json": {
       name: "test-package",
       description: "Test Package",
@@ -12,7 +14,7 @@ function importModule(test: Tap.Test) {
   });
 }
 
-test("utils/config", async (t) => {
+t.test("utils/config", async (t) => {
   t.test("exports expected values", async (t) => {
     const config = importModule(t);
 
@@ -51,6 +53,7 @@ test("utils/config", async (t) => {
     t.test("using GOOGLE_AUTH_PRIVATE_KEY_BASE64", async (t) => {
       delete process.env.GOOGLE_AUTH_PRIVATE_KEY;
       process.env.GOOGLE_AUTH_PRIVATE_KEY_BASE64 = "Z29vZ2xlX0JhbmFuYXMh";
+
       const { googleAuthPrivateKey } = importModule(t);
 
       t.test("is expected value", async (t) => {

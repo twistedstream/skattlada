@@ -1,14 +1,14 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t } from "tap";
 
 // NOTE: Env vars are being sourced from test.env
 
-test("utils/logger", async (t) => {
+t.test("utils/logger", async (t) => {
   t.test("logger", async (t) => {
     t.test("creates a pino logger with expected configuration", async (t) => {
       const pinoFake = sinon.fake();
 
-      t.mock("./logger", {
+      t.mockRequire("./logger", {
         pino: pinoFake,
         "./config": {
           packageName: "test-package",

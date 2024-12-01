@@ -1,18 +1,18 @@
-import { test } from "tap";
+import { t } from "tap";
 
 import { StatusCodes } from "http-status-codes";
 import {
+  assertValue,
   BadRequestError,
+  buildErrorHandlerData,
   ErrorWithData,
   ForbiddenError,
   HttpError,
   NotFoundError,
   UnauthorizedError,
-  assertValue,
-  buildErrorHandlerData,
 } from "./error";
 
-test("utils/error", async (t) => {
+t.test("utils/error", async (t) => {
   t.test("ErrorWithData", async (t) => {
     t.test("constructor creates expected error", async (t) => {
       const data = { foo: "bar" };

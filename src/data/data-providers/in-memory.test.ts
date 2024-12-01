@@ -1,7 +1,7 @@
 import { cloneDeep } from "lodash";
 import { DateTime } from "luxon";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import {
   Invite,
@@ -31,15 +31,15 @@ const logger = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./in-memory", {
+function importModule(t: Test) {
+  return t.mockRequire("./in-memory", {
     "../../utils/logger": { logger },
   });
 }
 
 // tests
 
-test("data/data-providers/in-memory", async (t) => {
+t.test("data/data-providers/in-memory", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

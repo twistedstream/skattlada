@@ -1,6 +1,7 @@
 import { DateTime, Duration } from "luxon";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
+
 import { testNowDate } from "../utils/testing/data";
 
 // test objects
@@ -23,8 +24,8 @@ const nowFake = sinon.fake.returns(testNowDate);
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./share", {
+function importModule(t: Test) {
+  return t.mockRequire("./share", {
     "../data": {
       getDataProvider: () => dataProvider,
       getFileProvider: () => fileProvider,
@@ -36,7 +37,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("services/share", async (t) => {
+t.test("services/share", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();
@@ -151,12 +152,15 @@ test("services/share", async (t) => {
     t.test("If file info does't exist, throws expected error", async (t) => {
       fileProvider.getFileInfo.resolves(undefined);
 
-      t.rejects(() => newShare({}, "https://example.com/doc1"), {
-        message: "File not found or invalid URL",
-        type: "validation",
-        entity: "Share",
-        field: "backingUrl",
-      });
+      t.rejects(
+        () => newShare({}, "https://example.com/doc1"),
+        "File not found or invalid URL",
+        {
+          type: "validation",
+          entity: "Share",
+          field: "backingUrl",
+        },
+      );
     });
 
     t.test("when file exists", async (t) => {
@@ -189,8 +193,8 @@ test("services/share", async (t) => {
 
           t.rejects(
             () => newShare({}, "https://example.com/doc1", "user-name"),
+            "User does not exist",
             {
-              message: "User does not exist",
               type: "validation",
               entity: "Share",
               field: "toUsername",

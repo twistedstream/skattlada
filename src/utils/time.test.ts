@@ -1,9 +1,9 @@
 import { DateTime, Duration } from "luxon";
-import { test } from "tap";
+import { t } from "tap";
 
 import { now } from "./time";
 
-test("utils/time", async (t) => {
+t.test("utils/time", async (t) => {
   t.test("now", async (t) => {
     t.test("returns a date that is close to actual now", async (t) => {
       const delta = Duration.fromMillis(10);

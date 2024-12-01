@@ -1,16 +1,16 @@
-import { test } from "tap";
+import { t } from "tap";
 
 import { unique } from "./identifier";
 
-test("utils/identifier", async (t) => {
-  test("unique", async (t) => {
-    test("returns a string ID in the expected format", async (t) => {
+t.test("utils/identifier", async (t) => {
+  t.test("unique", async (t) => {
+    t.test("returns a string ID in the expected format", async (t) => {
       const result = unique();
 
       t.match(result, /^[\S]{22}/);
     });
 
-    test("doesn't return the same ID twice", async (t) => {
+    t.test("doesn't return the same ID twice", async (t) => {
       // generate a bunch of IDs
       const ids = Array.from({ length: 10 }).map(() => unique());
 

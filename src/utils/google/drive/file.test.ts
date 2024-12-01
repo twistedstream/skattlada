@@ -1,8 +1,8 @@
-import { test } from "tap";
+import { t } from "tap";
 
 import { fileIdFromUrl } from "./file";
 
-test("utils/google/drive/file", async (t) => {
+t.test("utils/google/drive/file", async (t) => {
   t.test("fileIdFromUrl", async (t) => {
     t.test("extracts file ID from given URLs", async (t) => {
       [
@@ -68,6 +68,12 @@ test("utils/google/drive/file", async (t) => {
 
         t.equal(result, id, `${url} -> ${id}`);
       });
+    });
+
+    t.test("returns nothing if file ID cannot be extracted", async (t) => {
+      const result = fileIdFromUrl("https://example.com/no-id");
+
+      t.equal(result, undefined);
     });
   });
 });

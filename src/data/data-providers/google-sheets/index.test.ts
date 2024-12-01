@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 import {
   GoogleSheetsTableOptions,
@@ -99,8 +99,8 @@ const logger = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./index", {
+function importModule(t: Test) {
+  return t.mockRequire("./index", {
     "google-sheets-table": {
       GoogleSheetsTable: MockGoogleSheetsTable,
     },
@@ -139,7 +139,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("data/data-providers/google-sheets/index", async (t) => {
+t.test("data/data-providers/google-sheets/index", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

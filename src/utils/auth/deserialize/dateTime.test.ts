@@ -1,12 +1,12 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t } from "tap";
 
 import { DateTime } from "luxon";
 import { fixDateTime } from "./dateTime";
 
 //tests
 
-test("utils/auth/deserialize/dateTime", async (t) => {
+t.test("utils/auth/deserialize/dateTime", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

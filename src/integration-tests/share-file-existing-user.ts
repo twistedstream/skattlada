@@ -1,6 +1,6 @@
 import { parse as parseHtml } from "node-html-parser";
 import sinon from "sinon";
-import { test } from "tap";
+import { t } from "tap";
 
 import supertest from "supertest";
 import { LocalFileProvider } from "../data/file-providers/local";
@@ -24,7 +24,7 @@ import {
 
 // NOTE: Tap should be run with --bail to stop on first failed assertion
 
-test("Share a file to an existing user, that user accepts", async (t) => {
+t.test("Share a file to an existing user, that user accepts", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

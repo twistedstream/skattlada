@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -18,8 +18,8 @@ const driveFake = sinon.fake.returns(driveMock);
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  return test.mock("./client", {
+function importModule(t: Test) {
+  return t.mockRequire("./client", {
     // FIX: for some reason this mock makes this test file run very slow
     "@googleapis/drive": {
       drive: driveFake,
@@ -34,7 +34,7 @@ function importModule(test: Tap.Test) {
   });
 }
 
-test("utils/google/drive/client", async (t) => {
+t.test("utils/google/drive/client", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

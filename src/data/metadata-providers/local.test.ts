@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -24,13 +24,13 @@ const testMetadata = {
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  const { BaseMetadataProvider } = test.mock("./base", {
+function importModule(t: Test) {
+  const { BaseMetadataProvider } = t.mockRequire("./base", {
     // just to suppress log messages
     "../../utils/logger": { logger },
   });
 
-  return test.mock("./local", {
+  return t.mockRequire("./local", {
     "./base": { BaseMetadataProvider },
     "./test-metadata.json": testMetadata,
   });
@@ -38,7 +38,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("data/metadata-providers/local", async (t) => {
+t.test("data/metadata-providers/local", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

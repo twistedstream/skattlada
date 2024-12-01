@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
+
 import { testNowDate } from "../utils/testing/data";
 
 // test objects
@@ -17,19 +18,19 @@ const nowFake = sinon.fake.returns(testNowDate);
 
 // helpers
 
-function importModule(test: Tap.Test) {
+function importModule(t: Test) {
   const dependencies: any = {
     "../data": { getDataProvider: () => dataProvider },
     "../utils/time": { now: nowFake },
     "../utils/identifier": { unique: uniqueStub },
   };
 
-  return test.mock("./invite", dependencies);
+  return t.mockRequire("./invite", dependencies);
 }
 
 // tests
 
-test("services/invite", async (t) => {
+t.test("services/invite", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

@@ -6,6 +6,7 @@ import { parse as parseHtml } from "node-html-parser";
 import { parse as parseSetCookie } from "set-cookie-parser";
 import sinon from "sinon";
 import request, { Response as SupertestResponse } from "supertest";
+import { Test } from "tap";
 
 import path from "path";
 import { InMemoryDataProvider } from "../../data/data-providers/in-memory";
@@ -20,7 +21,7 @@ import {
 // general
 
 export async function createIntegrationTestState(
-  test: Tap.Test,
+  t: Test,
   fileProvider: LocalFileProvider,
   dataProviderOptions: InMemoryDataProviderOptions,
 ): Promise<IntegrationTestState> {
@@ -33,7 +34,7 @@ export async function createIntegrationTestState(
   const metadataProvider = new LocalMetadataProvider();
   await metadataProvider.initialize();
 
-  const { default: app } = test.mock("../../app", {
+  const { default: app } = t.mockRequire("../../app", {
     "../../data": {
       getDataProvider: () => dataProvider,
       getFileProvider: () => fileProvider,
@@ -46,7 +47,7 @@ export async function createIntegrationTestState(
     },
   });
 
-  const { initializeServices } = test.mock("../../services", {
+  const { initializeServices } = t.mockRequire("../../services", {
     "../../data": {
       getDataProvider: () => dataProvider,
     },
@@ -173,12 +174,9 @@ export async function postForm(
 
 // response assertions
 
-export function assertHtmlResponse(
-  test: Tap.Test,
-  response: SupertestResponse,
-) {
-  test.equal(response.status, StatusCodes.OK, "expected OK http status");
-  test.match(
+export function assertHtmlResponse(t: Test, response: SupertestResponse) {
+  t.equal(response.status, StatusCodes.OK, "expected OK http status");
+  t.match(
     response.headers["content-type"],
     "text/html",
     "expected html content",
@@ -186,12 +184,12 @@ export function assertHtmlResponse(
 }
 
 export function assertJsonResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   schemaTest: (json: any) => void,
 ) {
-  test.equal(response.status, StatusCodes.OK, "expected OK http status");
-  test.match(
+  t.equal(response.status, StatusCodes.OK, "expected OK http status");
+  t.match(
     response.headers["content-type"],
     "application/json",
     "expected JSON content",
@@ -201,17 +199,17 @@ export function assertJsonResponse(
 }
 
 export function assertRedirectResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   expectedLocation: string,
 ) {
-  test.equal(
+  t.equal(
     response.status,
     StatusCodes.MOVED_TEMPORARILY,
     "expected 302 http status",
   );
-  test.ok(response.headers.location, "http location exists");
-  test.equal(
+  t.ok(response.headers.location, "http location exists");
+  t.equal(
     response.headers.location,
     expectedLocation,
     "expected http location",
@@ -219,13 +217,13 @@ export function assertRedirectResponse(
 }
 
 export async function assertDownloadResponse(
-  test: Tap.Test,
+  t: Test,
   response: SupertestResponse,
   expectedContentType: string,
   expectedContentFile: FileInfo,
 ) {
-  test.equal(response.status, StatusCodes.OK, "expected OK http status");
-  test.match(
+  t.equal(response.status, StatusCodes.OK, "expected OK http status");
+  t.match(
     response.headers["content-type"],
     expectedContentType,
     "expected html content",
@@ -240,21 +238,21 @@ export async function assertDownloadResponse(
     path.join(__dirname, `../../data/file-providers/files/${fileName}`),
     { encoding: "utf-8" },
   );
-  test.equal(response.text, fileData);
+  t.equal(response.text, fileData);
 
   response;
 }
 
 export function assertNoUsersOrCredentials(
-  test: Tap.Test,
+  t: Test,
   state: IntegrationTestState,
 ) {
-  test.equal(state.users.length, 0, "expected no users");
-  test.equal(state.credentials.length, 0, "expected no credentials");
+  t.equal(state.users.length, 0, "expected no users");
+  t.equal(state.credentials.length, 0, "expected no credentials");
 }
 
 export function assertUserAndAssociatedCredentials(
-  test: Tap.Test,
+  t: Test,
   state: IntegrationTestState,
   username: string,
   displayName: string,
@@ -263,7 +261,7 @@ export function assertUserAndAssociatedCredentials(
   const foundUser = state.users.find(
     (u) => u.username === username && u.displayName === displayName,
   );
-  test.ok(foundUser, "expected user");
+  t.ok(foundUser, "expected user");
 
   for (const credential of associatedCredentials) {
     const foundCredential = state.credentials.find(
@@ -271,14 +269,14 @@ export function assertUserAndAssociatedCredentials(
         c.credentialID === credential.credentialID &&
         c.user.id === foundUser?.id,
     );
-    test.ok(foundCredential, "expected credential");
+    t.ok(foundCredential, "expected credential");
   }
 }
 
 // composite
 
 export async function doRegistration(
-  test: Tap.Test,
+  t: Test,
   state: IntegrationTestState,
   username: string,
   displayName: string,
@@ -297,9 +295,9 @@ export async function doRegistration(
     attestation: "direct",
   });
 
-  assertJsonResponse(test, optionsResponse, (json) => {
-    test.equal(json.status, "ok", "expected FIDO status = ok");
-    test.match(
+  assertJsonResponse(t, optionsResponse, (json) => {
+    t.equal(json.status, "ok", "expected FIDO status = ok");
+    t.match(
       json,
       {
         challenge: /\S+/,
@@ -343,9 +341,9 @@ export async function doRegistration(
     },
   });
 
-  assertJsonResponse(test, resultResponse, (json) => {
-    test.equal(json.status, "ok", "expected FIDO status = ok");
-    test.match(
+  assertJsonResponse(t, resultResponse, (json) => {
+    t.equal(json.status, "ok", "expected FIDO status = ok");
+    t.match(
       json,
       {
         return_to: "/",
@@ -354,11 +352,11 @@ export async function doRegistration(
     );
   });
 
-  test.ok(state.verifyRegistrationResponseStub.called);
+  t.ok(state.verifyRegistrationResponseStub.called);
 }
 
 export async function doSignIn(
-  test: Tap.Test,
+  t: Test,
   state: IntegrationTestState,
   username: string,
   expectedCredential: Authenticator,
@@ -369,7 +367,7 @@ export async function doSignIn(
   });
 
   const associatedUser = state.users.find((u) => u.username === username);
-  test.ok(associatedUser, `No user in test state with name: ${username}`);
+  t.ok(associatedUser, `No user in test state with name: ${username}`);
   const allowCredentials = state.credentials
     .filter((c) => c.user.id === associatedUser?.id)
     .map((c) => ({
@@ -377,9 +375,9 @@ export async function doSignIn(
       id: c.credentialID,
     }));
 
-  assertJsonResponse(test, optionsResponse, (json) => {
-    test.equal(json.status, "ok", "expected FIDO status = ok");
-    test.match(json, {
+  assertJsonResponse(t, optionsResponse, (json) => {
+    t.equal(json.status, "ok", "expected FIDO status = ok");
+    t.match(json, {
       challenge: /\S+/,
       allowCredentials,
       userVerification: "preferred",
@@ -392,9 +390,9 @@ export async function doSignIn(
     id: expectedCredential.credentialID,
   });
 
-  assertJsonResponse(test, resultResponse, (json) => {
-    test.equal(json.status, "ok", "expected FIDO status = ok");
-    test.match(
+  assertJsonResponse(t, resultResponse, (json) => {
+    t.equal(json.status, "ok", "expected FIDO status = ok");
+    t.match(
       json,
       {
         return_to: "/",
@@ -403,13 +401,13 @@ export async function doSignIn(
     );
   });
 
-  test.ok(
+  t.ok(
     state.verifyAuthenticationResponseStub.called,
     "expected called: verifyAuthenticationResponse",
   );
 }
 
-export async function doSignOut(test: Tap.Test, state: IntegrationTestState) {
+export async function doSignOut(t: Test, state: IntegrationTestState) {
   const response = await navigatePage(state, "/logout");
-  assertRedirectResponse(test, response, "/");
+  assertRedirectResponse(t, response, "/");
 }

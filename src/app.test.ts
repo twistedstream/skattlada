@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -25,8 +25,8 @@ const errorHandlerFake = sinon.fake();
 
 // helpers
 
-function importModule(test: Tap.Test) {
-  const { default: app } = test.mock("./app", {
+function importModule(t: Test) {
+  const { default: app } = t.mockRequire("./app", {
     express: expressFactoryFake,
     helmet: helmetFake,
     "pino-http": pinoHttpFake,
@@ -49,7 +49,7 @@ function importModule(test: Tap.Test) {
 
 // tests
 
-test("app", async (t) => {
+t.test("app", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();

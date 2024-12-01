@@ -28,7 +28,7 @@ const errorHandler = (router: IRouter) => {
         logger.error({ err, correlation_id });
       }
 
-      return res.status(statusCode).json({
+      res.status(statusCode).json({
         status: "failed",
         errorMessage: message,
         errorContext: context,

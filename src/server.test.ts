@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { test } from "tap";
+import { t, Test } from "tap";
 
 // test objects
 
@@ -45,12 +45,12 @@ const rpID = "example.com";
 // helpers
 
 function importModule(
-  test: Tap.Test,
+  t: Test,
   environment: "production" | "development",
   port: number,
   scheme: "http" | "https",
 ) {
-  const { default: server } = test.mock("./server", {
+  const { default: server } = t.mockRequire("./server", {
     http,
     https,
     fs,
@@ -93,7 +93,7 @@ async function waitForServerListening() {
 
 // tests
 
-test("server", async (t) => {
+t.test("server", async (t) => {
   t.beforeEach(async () => {
     sinon.resetBehavior();
     sinon.resetHistory();
