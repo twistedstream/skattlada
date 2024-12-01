@@ -53,7 +53,7 @@ export function createTestExpressApp({
 
   if (authSetup) {
     app.all(
-      "*",
+      /.*/,
       (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
         req.originalUrl = authSetup.originalUrl;
         req.user = authSetup.activeUser;
