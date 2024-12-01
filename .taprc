@@ -16,3 +16,4 @@ test-env:
   - GOOGLE_AUTH_PRIVATE_KEY=google_Bananas!
 
 coverage-map: code-coverage-map.js
+output-file: .tap/test-results/full.tap
