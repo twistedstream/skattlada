@@ -44,7 +44,7 @@
   "homepage": "https://github.com/twistedstream/skattlada#readme",
   "dependencies": {
     "@googleapis/drive": "^8.14.0",
-    "@simplewebauthn/server": "^9.0.1",
+    "@simplewebauthn/server": "^10.0.1",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
     "cookie-session": "^2.1.0",
