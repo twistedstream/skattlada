@@ -1,9 +1,35 @@
-import { t } from "tap";
+import sinon from "sinon";
+import { t, Test } from "tap";
 
-import { fileIdFromUrl } from "./file";
+// test objects
+
+const getFileStub = sinon.stub();
+
+// helpers
+
+function importModule(t: Test) {
+  return t.mockRequire("./file", {
+    "./client": {
+      drive: {
+        files: {
+          get: getFileStub,
+        },
+      },
+    },
+  });
+}
+
+// tests
 
 t.test("utils/google/drive/file", async (t) => {
+  t.beforeEach(async () => {
+    sinon.resetBehavior();
+    sinon.resetHistory();
+  });
+
   t.test("fileIdFromUrl", async (t) => {
+    const { fileIdFromUrl } = importModule(t);
+
     t.test("extracts file ID from given URLs", async (t) => {
       [
         {
@@ -75,5 +101,44 @@ t.test("utils/google/drive/file", async (t) => {
 
       t.equal(result, undefined);
     });
+  });
+
+  t.test("getDriveFileInfo", async (t) => {
+    const { getDriveFileInfo } = importModule(t);
+
+    t.test("fetches the file metadata from Google Drive", async (t) => {
+      try {
+        await getDriveFileInfo("FILE_ID");
+      } catch {}
+
+      t.ok(getFileStub.called);
+      t.same(getFileStub.firstCall.firstArg, {
+        fileId: "FILE_ID",
+        fields: "id,name,mimeType,exportLinks",
+      });
+    });
+
+    t.test(
+      "if Google Drives throws a 404 error, returns nothing",
+      async (t) => {
+        const error: any = new Error("Don't know that file");
+        error.status = 404;
+        getFileStub.rejects(error);
+
+        const result = await getDriveFileInfo("FILE_ID");
+
+        t.equal(result, undefined);
+      },
+    );
+
+    t.test(
+      "if Google Drives throws any other error, throws that error",
+      async (t) => {
+        const error: any = new Error("BOOM!");
+        getFileStub.rejects(error);
+
+        t.rejects(() => getDriveFileInfo("FILE_ID"), error);
+      },
+    );
   });
 });

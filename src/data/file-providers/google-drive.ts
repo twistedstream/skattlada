@@ -1,12 +1,10 @@
-import { drive_v3 } from "@googleapis/drive";
 import { Response } from "express";
-import { StatusCodes } from "http-status-codes";
 
 import { IFileProvider } from "../../types/data";
 import { FileInfo, MediaType } from "../../types/entity";
-import { assertValue } from "../../utils/error";
+import { assertValue, NotFoundError } from "../../utils/error";
 import { drive } from "../../utils/google/drive/client";
-import { fileIdFromUrl } from "../../utils/google/drive/file";
+import { fileIdFromUrl, getDriveFileInfo } from "../../utils/google/drive/file";
 import { logger } from "../../utils/logger";
 import {
   fileTypeFromMediaType,
@@ -42,34 +40,25 @@ export class GoogleDriveFileProvider implements IFileProvider {
       return;
     }
 
-    let data: drive_v3.Schema$File;
-    try {
-      const file = await drive.files.get({
-        fileId,
-        fields: "id,name,mimeType,exportLinks",
-      });
-      data = file.data;
-    } catch (err: any) {
-      if (err.status === StatusCodes.NOT_FOUND) {
-        return;
-      }
-      throw err;
+    const info = await getDriveFileInfo(fileId);
+    if (!info) {
+      return;
     }
 
-    const mediaType = mediaTypeFromMimeType(assertValue(data.mimeType));
+    const mediaType = mediaTypeFromMimeType(assertValue(info.mimeType));
     if (!mediaType) {
       throw new Error(
-        `Google Drive file (${fileId}) has an unknown media type: ${data.mimeType}`,
+        `Google Drive file (${fileId}) has an unknown media type: ${info.mimeType}`,
       );
     }
 
     const type = assertValue(fileTypeFromMediaType(mediaType));
     return {
-      id: assertValue(data.id),
-      title: assertValue(data.name),
+      id: assertValue(info.id),
+      title: assertValue(info.name),
       type,
-      availableMediaTypes: data.exportLinks
-        ? Object.keys(data.exportLinks).reduce((p: MediaType[], c: string) => {
+      availableMediaTypes: info.exportLinks
+        ? Object.keys(info.exportLinks).reduce((p: MediaType[], c: string) => {
             const mediaType = mediaTypeFromMimeType(c);
             if (mediaType) {
               return [...p, mediaType];
@@ -89,15 +78,32 @@ export class GoogleDriveFileProvider implements IFileProvider {
     const { id: fileId } = file;
     const { name: mimeType } = mediaType;
 
-    const res = await drive.files.export(
-      { fileId, mimeType },
-      { responseType: "stream" },
-    );
+    const info = await getDriveFileInfo(fileId);
+    if (!info) {
+      throw NotFoundError();
+    }
 
-    const fileName = `${file.title}.${mediaType.extension}`;
+    const exportable = !!info.exportLinks;
+
+    const fileExtension = exportable ? `.${mediaType.extension}` : "";
+    const fileName = `${file.title}${fileExtension}`;
     destination.attachment(fileName);
 
-    const { data: stream } = res;
+    const { data: stream } = exportable
+      ? // perform export if a Docs Editor (exportable) file
+        await drive.files.export(
+          { fileId, mimeType },
+          { responseType: "stream" },
+        )
+      : // otherwise perform direct download
+        await drive.files.get(
+          {
+            fileId,
+            alt: "media",
+          },
+          { responseType: "stream" },
+        );
+
     stream.on("error", (err) => {
       throw err;
     });
