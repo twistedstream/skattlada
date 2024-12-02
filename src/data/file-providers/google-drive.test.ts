@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import sinon from "sinon";
 import { t, Test } from "tap";
 
@@ -9,15 +10,16 @@ const logger = {
 const getFileStub = sinon.stub();
 const exportFileStub = sinon.stub();
 const fileIdFromUrlStub = sinon.stub();
+const getDriveFileInfoStub = sinon.stub();
 const fileTypeFromMediaTypeStub = sinon.stub();
 const mediaTypeFromMimeTypeStub = sinon.stub();
 
 // helpers
 
 function importModule(t: Test) {
-  return t.mockRequire("./index", {
-    "../../../utils/logger": { logger },
-    "../../../utils/google/drive/client": {
+  return t.mockRequire("./google-drive", {
+    "../../utils/logger": { logger },
+    "../../utils/google/drive/client": {
       drive: {
         files: {
           get: getFileStub,
@@ -25,10 +27,11 @@ function importModule(t: Test) {
         },
       },
     },
-    "../../../utils/google/drive/file": {
+    "../../utils/google/drive/file": {
       fileIdFromUrl: fileIdFromUrlStub,
+      getDriveFileInfo: getDriveFileInfoStub,
     },
-    "../../../utils/media-type": {
+    "../../utils/media-type": {
       fileTypeFromMediaType: fileTypeFromMediaTypeStub,
       mediaTypeFromMimeType: mediaTypeFromMimeTypeStub,
     },
@@ -114,24 +117,19 @@ t.test("data/file-providers/google-drive", async (t) => {
               fileIdFromUrlStub.returns("FILE_ID");
             });
 
-            t.test("fetches the file metadata from Google Drive", async (t) => {
+            t.test("fetches drive file metadata", async (t) => {
               try {
                 await provider.getFileInfo("https://example.com/FILE_ID");
               } catch {}
 
-              t.ok(getFileStub.called);
-              t.same(getFileStub.firstCall.firstArg, {
-                fileId: "FILE_ID",
-                fields: "id,name,mimeType,exportLinks",
-              });
+              t.ok(getDriveFileInfoStub.called);
+              t.equal(getDriveFileInfoStub.firstCall.firstArg, "FILE_ID");
             });
 
             t.test(
-              "if Google Drives throws a 404 error, returns nothing",
+              "if no drive file metadata exists, return nothing",
               async (t) => {
-                const error: any = new Error("Don't know that file");
-                error.status = 404;
-                getFileStub.rejects(error);
+                getDriveFileInfoStub.returns(undefined);
 
                 const result = await provider.getFileInfo(
                   "https://example.com/FILE_ID",
@@ -141,29 +139,16 @@ t.test("data/file-providers/google-drive", async (t) => {
               },
             );
 
-            t.test(
-              "if Google Drives throws any other error, throws that error",
-              async (t) => {
-                const error: any = new Error("BOOM!");
-                getFileStub.rejects(error);
-
-                t.rejects(
-                  () => provider.getFileInfo("https://example.com/FILE_ID"),
-                  error,
-                );
-              },
-            );
-
-            t.test("when file metadata is fetched", async (t) => {
-              let data: any;
+            t.test("when drive file metadata exists", async (t) => {
+              let info: any;
 
               t.beforeEach(async () => {
-                data = {
+                info = {
                   id: "FILE_ID",
                   name: "Some file",
                   mimeType: "mime-type",
                 };
-                getFileStub.resolves({ data });
+                getDriveFileInfoStub.resolves(info);
               });
 
               t.test(
@@ -236,7 +221,7 @@ t.test("data/file-providers/google-drive", async (t) => {
 
                   t.test("when the Google file has export links", async (t) => {
                     t.beforeEach(async () => {
-                      data.exportLinks = {
+                      info.exportLinks = {
                         "mime-type-1": "https://example.com/export-link-1",
                         "mime-type-2": "https://example.com/export-link-2",
                         "mime-type-3": "https://example.com/export-link-3",
@@ -345,67 +330,159 @@ t.test("data/file-providers/google-drive", async (t) => {
             await provider.initialize();
           });
 
-          t.test("exports the file from Google Drive", async (t) => {
+          t.test("fetches drive file metadata", async (t) => {
             try {
               await provider.sendFile(file, mediaType, destination);
             } catch {}
 
-            t.ok(exportFileStub.called);
-            t.same(exportFileStub.firstCall.args[0], {
-              fileId: "FILE_ID",
-              mimeType: "mime-type",
-            });
-            t.same(exportFileStub.firstCall.args[1], {
-              responseType: "stream",
-            });
+            t.ok(getDriveFileInfoStub.called);
+            t.equal(getDriveFileInfoStub.firstCall.firstArg, "FILE_ID");
           });
 
-          t.test("with the exported file", async (t) => {
+          t.test(
+            "if no drive file metadata is obtained, throws expected exception",
+            async (t) => {
+              getDriveFileInfoStub.returns(undefined);
+
+              t.rejects(
+                provider.sendFile(file, mediaType, destination),
+                "Not found",
+                {
+                  statusCode: StatusCodes.NOT_FOUND,
+                },
+              );
+            },
+          );
+
+          t.test("when drive file metadata exists", async (t) => {
+            let info: any;
+
             t.beforeEach(async () => {
-              exportFileStub.resolves({ data: mockGoogleDriveStream });
+              info = {
+                id: "FILE_ID",
+                name: "Some file",
+                mimeType: "mime-type",
+              };
+              getDriveFileInfoStub.resolves(info);
             });
 
-            t.test(
-              "attaches the file name to the server response",
-              async (t) => {
+            function commonOutputStreamTests(t: Test) {
+              t.test("handles the 'error' event", async (t) => {
                 try {
                   await provider.sendFile(file, mediaType, destination);
                 } catch {}
 
-                t.ok(destination.attachment.called);
-                t.equal(
-                  destination.attachment.firstCall.firstArg,
-                  "Example Doc.doc",
-                );
-              },
-            );
+                t.ok(mockGoogleDriveStream.on.called);
+                t.equal(mockGoogleDriveStream.on.firstCall.args[0], "error");
+                const handler = mockGoogleDriveStream.on.firstCall.args[1];
+                const error = new Error("BOOM!");
+                t.throws(() => handler(error), error);
+              });
 
-            t.test("handles the 'error' event", async (t) => {
-              try {
-                await provider.sendFile(file, mediaType, destination);
-              } catch {}
+              t.test(
+                "pipes the file stream to the server response",
+                async (t) => {
+                  try {
+                    await provider.sendFile(file, mediaType, destination);
+                  } catch {}
 
-              t.ok(mockGoogleDriveStream.on.called);
-              t.equal(mockGoogleDriveStream.on.firstCall.args[0], "error");
-              const handler = mockGoogleDriveStream.on.firstCall.args[1];
-              const error = new Error("BOOM!");
-              t.throws(() => handler(error), error);
-            });
+                  t.ok(mockGoogleDriveStream.pipe.called);
+                  t.equal(
+                    mockGoogleDriveStream.pipe.firstCall.firstArg,
+                    destination,
+                  );
+                },
+              );
+            }
 
-            t.test(
-              "pipes the file stream to the server response",
-              async (t) => {
+            t.test("when the file is exportable", async (t) => {
+              t.beforeEach(async () => {
+                info.exportLinks = {
+                  "mime-type-1": "https://example.com/export-link-1",
+                  "mime-type-2": "https://example.com/export-link-2",
+                  "mime-type-3": "https://example.com/export-link-3",
+                };
+              });
+
+              t.test(
+                "attaches the expected file name to the server response",
+                async (t) => {
+                  try {
+                    await provider.sendFile(file, mediaType, destination);
+                  } catch {}
+
+                  t.ok(destination.attachment.called);
+                  t.equal(
+                    destination.attachment.firstCall.firstArg,
+                    "Example Doc.doc",
+                  );
+                },
+              );
+
+              t.test("exports the file from Google Drive", async (t) => {
                 try {
                   await provider.sendFile(file, mediaType, destination);
                 } catch {}
 
-                t.ok(mockGoogleDriveStream.pipe.called);
-                t.equal(
-                  mockGoogleDriveStream.pipe.firstCall.firstArg,
-                  destination,
-                );
-              },
-            );
+                t.ok(exportFileStub.called);
+                t.same(exportFileStub.firstCall.args[0], {
+                  fileId: "FILE_ID",
+                  mimeType: "mime-type",
+                });
+                t.same(exportFileStub.firstCall.args[1], {
+                  responseType: "stream",
+                });
+              });
+
+              t.test("with the resulting stream", async (t) => {
+                t.beforeEach(async () => {
+                  exportFileStub.resolves({ data: mockGoogleDriveStream });
+                });
+
+                commonOutputStreamTests(t);
+              });
+            });
+
+            t.test("when the file is not exportable", async (t) => {
+              t.test(
+                "attaches the expected file name to the server response",
+                async (t) => {
+                  try {
+                    await provider.sendFile(file, mediaType, destination);
+                  } catch {}
+
+                  t.ok(destination.attachment.called);
+                  t.equal(
+                    destination.attachment.firstCall.firstArg,
+                    // no file extension since the file title should include an extension
+                    "Example Doc",
+                  );
+                },
+              );
+
+              t.test("downloads the file from Google Drive", async (t) => {
+                try {
+                  await provider.sendFile(file, mediaType, destination);
+                } catch {}
+
+                t.ok(getFileStub.called);
+                t.same(getFileStub.firstCall.args[0], {
+                  fileId: "FILE_ID",
+                  alt: "media",
+                });
+                t.same(getFileStub.firstCall.args[1], {
+                  responseType: "stream",
+                });
+              });
+
+              t.test("with the resulting stream", async (t) => {
+                t.beforeEach(async () => {
+                  getFileStub.resolves({ data: mockGoogleDriveStream });
+                });
+
+                commonOutputStreamTests(t);
+              });
+            });
           });
         });
       });

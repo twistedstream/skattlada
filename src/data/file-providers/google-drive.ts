@@ -1,16 +1,15 @@
 import { Response } from "express";
 
-import { IFileProvider } from "../../../types/data";
-import { FileInfo, MediaType } from "../../../types/entity";
-import { assertValue, NotFoundError } from "../../../utils/error";
-import { drive } from "../../../utils/google/drive/client";
-import { fileIdFromUrl } from "../../../utils/google/drive/file";
-import { logger } from "../../../utils/logger";
+import { IFileProvider } from "../../types/data";
+import { FileInfo, MediaType } from "../../types/entity";
+import { assertValue, NotFoundError } from "../../utils/error";
+import { drive } from "../../utils/google/drive/client";
+import { fileIdFromUrl, getDriveFileInfo } from "../../utils/google/drive/file";
+import { logger } from "../../utils/logger";
 import {
   fileTypeFromMediaType,
   mediaTypeFromMimeType,
-} from "../../../utils/media-type";
-import { getDriveFileInfo } from "./file-info";
+} from "../../utils/media-type";
 
 export class GoogleDriveFileProvider implements IFileProvider {
   private _initialized: boolean = false;
@@ -85,8 +84,8 @@ export class GoogleDriveFileProvider implements IFileProvider {
     }
 
     const exportable = !!info.exportLinks;
-    const fileExtension = exportable ? `.${mediaType.extension}` : "";
 
+    const fileExtension = exportable ? `.${mediaType.extension}` : "";
     const fileName = `${file.title}${fileExtension}`;
     destination.attachment(fileName);
 
