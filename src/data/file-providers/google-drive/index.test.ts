@@ -15,9 +15,9 @@ const mediaTypeFromMimeTypeStub = sinon.stub();
 // helpers
 
 function importModule(t: Test) {
-  return t.mockRequire("./google-drive", {
-    "../../utils/logger": { logger },
-    "../../utils/google/drive/client": {
+  return t.mockRequire("./index", {
+    "../../../utils/logger": { logger },
+    "../../../utils/google/drive/client": {
       drive: {
         files: {
           get: getFileStub,
@@ -25,10 +25,10 @@ function importModule(t: Test) {
         },
       },
     },
-    "../../utils/google/drive/file": {
+    "../../../utils/google/drive/file": {
       fileIdFromUrl: fileIdFromUrlStub,
     },
-    "../../utils/media-type": {
+    "../../../utils/media-type": {
       fileTypeFromMediaType: fileTypeFromMediaTypeStub,
       mediaTypeFromMimeType: mediaTypeFromMimeTypeStub,
     },
