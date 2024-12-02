@@ -1,6 +1,6 @@
 {
   "name": "skattlada",
-  "version": "0.12.12",
+  "version": "0.12.13",
   "private": true,
   "description": "Skattlåda File Sharing Server",
   "engines": {
