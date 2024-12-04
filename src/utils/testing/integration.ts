@@ -324,7 +324,7 @@ export async function doRegistration(
 
   const testValidatedCredential = {
     ...newCredential,
-    credentialID: isoBase64URL.toBuffer(newCredential.credentialID),
+    credentialID: newCredential.credentialID,
     credentialPublicKey: isoBase64URL.toBuffer(
       newCredential.credentialPublicKey,
     ),
