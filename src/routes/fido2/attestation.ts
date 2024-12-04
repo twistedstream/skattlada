@@ -3,7 +3,7 @@ import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
 } from "@simplewebauthn/server";
-import { isoBase64URL } from "@simplewebauthn/server/helpers";
+import { isoBase64URL, isoUint8Array } from "@simplewebauthn/server/helpers";
 import { json } from "body-parser";
 import { Response, Router } from "express";
 
@@ -98,13 +98,12 @@ router.post(
     const attestationOptions = await generateRegistrationOptions({
       rpName,
       rpID,
-      userID: registeringUser.id,
+      userID: isoUint8Array.fromUTF8String(registeringUser.id),
       userName: registeringUser.username,
       userDisplayName: registeringUser.displayName,
       attestationType: attestation,
       excludeCredentials: excludeCredentials.map((c) => ({
-        id: isoBase64URL.toBuffer(c.credentialID),
-        type: "public-key",
+        id: c.credentialID,
         transports: c.transports,
       })),
     });
@@ -179,7 +178,7 @@ router.post(
     } = registrationInfo;
     const validatedCredential: Authenticator = {
       created: now(),
-      credentialID: isoBase64URL.fromBuffer(credentialID),
+      credentialID,
       credentialPublicKey: isoBase64URL.fromBuffer(credentialPublicKey),
       counter,
       aaguid,

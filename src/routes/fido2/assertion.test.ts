@@ -268,8 +268,7 @@ t.test("routes/fido2/assertion", async (t) => {
           generateAuthenticationOptionsStub.firstCall.args[0].allowCredentials,
           [
             {
-              id: isoBase64URL.toBuffer(cred1.credentialID),
-              type: "public-key",
+              id: cred1.credentialID,
               transports: cred1.transports ? [...cred1.transports] : [],
             },
           ],
@@ -622,7 +621,6 @@ t.test("routes/fido2/assertion", async (t) => {
         expectedRPID: "example.com",
         authenticator: {
           ...cred1,
-          credentialID: isoBase64URL.toBuffer(cred1.credentialID),
           credentialPublicKey: isoBase64URL.toBuffer(cred1.credentialPublicKey),
           user: user1,
         },
