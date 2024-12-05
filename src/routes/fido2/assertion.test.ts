@@ -619,9 +619,10 @@ t.test("routes/fido2/assertion", async (t) => {
         expectedChallenge: "CHALLENGE!",
         expectedOrigin: "https://example.com",
         expectedRPID: "example.com",
-        authenticator: {
+        credential: {
           ...cred1,
-          credentialPublicKey: isoBase64URL.toBuffer(cred1.credentialPublicKey),
+          id: cred1.credentialID,
+          publicKey: isoBase64URL.toBuffer(cred1.credentialPublicKey),
           user: user1,
         },
       });

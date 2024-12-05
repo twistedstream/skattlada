@@ -152,11 +152,10 @@ router.post("/result", json(), async (req: Request, res: Response) => {
       expectedChallenge: authentication.challenge,
       expectedOrigin: baseUrl,
       expectedRPID: rpID,
-      authenticator: {
+      credential: {
         ...activeCredential,
-        credentialPublicKey: isoBase64URL.toBuffer(
-          activeCredential.credentialPublicKey,
-        ),
+        id: activeCredential.credentialID,
+        publicKey: isoBase64URL.toBuffer(activeCredential.credentialPublicKey),
       },
     });
   } catch (err) {
