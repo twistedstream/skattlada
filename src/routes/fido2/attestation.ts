@@ -170,9 +170,7 @@ router.post(
     const registrationInfo = assertValue(verification.registrationInfo);
     const {
       aaguid,
-      credentialPublicKey,
-      credentialID,
-      counter,
+      credential: { publicKey: credentialPublicKey, id: credentialID, counter },
       credentialDeviceType,
       credentialBackedUp,
     } = registrationInfo;

@@ -34,8 +34,12 @@ type AttestationTestExpressAppOptions = {
 const testCred1 = testCredential1();
 const testValidatedCredential = {
   ...testCred1,
-  credentialID: testCred1.credentialID,
-  credentialPublicKey: isoBase64URL.toBuffer(testCred1.credentialPublicKey),
+  credential: {
+    id: testCred1.credentialID,
+    publicKey: isoBase64URL.toBuffer(testCred1.credentialPublicKey),
+    counter: testCred1.counter,
+    transports: testCred1.transports,
+  },
 };
 
 const testRegistration = {
