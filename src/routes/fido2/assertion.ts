@@ -59,10 +59,10 @@ router.post(
 
     // generate assertion options (challenge)
     const assertionOptions = await generateAuthenticationOptions({
+      rpID,
       // Require users to use a previously-registered authenticator
       allowCredentials: existingCredentials.map((authenticator) => ({
-        id: isoBase64URL.toBuffer(authenticator.credentialID),
-        type: "public-key",
+        id: authenticator.credentialID,
         // Optional
         transports: authenticator.transports,
       })),
@@ -152,12 +152,10 @@ router.post("/result", json(), async (req: Request, res: Response) => {
       expectedChallenge: authentication.challenge,
       expectedOrigin: baseUrl,
       expectedRPID: rpID,
-      authenticator: {
+      credential: {
         ...activeCredential,
-        credentialID: isoBase64URL.toBuffer(activeCredential.credentialID),
-        credentialPublicKey: isoBase64URL.toBuffer(
-          activeCredential.credentialPublicKey,
-        ),
+        id: activeCredential.credentialID,
+        publicKey: isoBase64URL.toBuffer(activeCredential.credentialPublicKey),
       },
     });
   } catch (err) {

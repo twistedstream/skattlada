@@ -324,10 +324,12 @@ export async function doRegistration(
 
   const testValidatedCredential = {
     ...newCredential,
-    credentialID: isoBase64URL.toBuffer(newCredential.credentialID),
-    credentialPublicKey: isoBase64URL.toBuffer(
-      newCredential.credentialPublicKey,
-    ),
+    credential: {
+      id: newCredential.credentialID,
+      publicKey: isoBase64URL.toBuffer(newCredential.credentialPublicKey),
+      transports: newCredential.transports,
+      counter: newCredential.counter,
+    },
   };
 
   state.verifyRegistrationResponseStub.returns({

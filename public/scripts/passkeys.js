@@ -62,9 +62,9 @@ async function registerUser(username, displayName) {
 
   let attestationResultRequest;
   try {
-    attestationResultRequest = await startRegistration(
-      attestationOptionsResponse,
-    );
+    attestationResultRequest = await startRegistration({
+      optionsJSON: attestationOptionsResponse,
+    });
   } catch (err) {
     if (err.name === "NotAllowedError") {
       return console.warn("User cancelled:", err);
@@ -129,10 +129,10 @@ async function authenticateUser(username) {
   const useBrowserAutofill = username === undefined;
   let assertionResultRequest;
   try {
-    assertionResultRequest = await startAuthentication(
-      assertionOptionsResponse,
+    assertionResultRequest = await startAuthentication({
+      optionsJSON: assertionOptionsResponse,
       useBrowserAutofill,
-    );
+    });
   } catch (err) {
     if (err.name === "NotAllowedError") {
       return console.warn("User cancelled:", err);
