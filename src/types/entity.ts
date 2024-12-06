@@ -52,6 +52,7 @@ export interface FileInfo {
   title: string;
   type: FileType;
   availableMediaTypes: MediaType[];
+  hasThumbnail: boolean;
 }
 
 export interface RegisterableSource {

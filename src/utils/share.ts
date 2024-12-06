@@ -124,6 +124,23 @@ export async function ensureShare(req: AuthenticatedRequest): Promise<Share> {
   return share;
 }
 
+export async function renderShareThumbnail(
+  req: AuthenticatedRequest,
+  res: Response,
+  share: Share
+) {
+  const file = await getFileInfo(share.backingUrl);
+  if (!file) {
+    throw ForbiddenError("File no longer exists");
+  }
+
+  if (!file.hasThumbnail) {
+    throw NotFoundError();
+  }
+
+  await sendFile(file, selectedMediaType, res);
+}
+
 export async function renderSharedFile(
   req: AuthenticatedRequest,
   res: Response,
@@ -143,6 +160,10 @@ export async function renderSharedFile(
         media_type: t.name,
       })}`,
     }));
+
+    if (req.user && file.hasThumbnail) {
+
+    }
 
     return res.render("shared_file", {
       title: "Ready to download your shared file?",
