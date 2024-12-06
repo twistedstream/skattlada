@@ -38,6 +38,7 @@ import {
   ensureShare,
   getFileTypeStyle,
   renderSharedFile,
+  renderShareThumbnail,
 } from "../utils/share";
 
 const router = Router();
@@ -210,6 +211,25 @@ router.get(
     });
   },
 );
+
+router.get(
+  "/:share_id/thumbnail",
+  async (
+    req: AuthenticatedRequestWithTypedQuery<{ media_type?: string }>,
+    res: Response,
+  ) => {
+    const share = await ensureShare(req);
+    const { user } = req;
+
+    if (!user) {
+      throw UnauthorizedError("Share thumbnails cannot be viewed ananymously");
+    }
+    if (share.createdBy.id !== user.id || share.claimedBy?.id !== user.id) {
+      throw ForbiddenError("Share thumbnail cannot be viewed by this user");
+    }
+  
+    return renderShareThumbnail(req, res, share);
+});
 
 router.post(
   "/:share_id",
