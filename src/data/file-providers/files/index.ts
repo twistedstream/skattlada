@@ -57,6 +57,7 @@ export async function loadFiles(): Promise<LocalFiles> {
         title: name,
         type: fileType,
         availableMediaTypes: [mediaType],
+        hasThumbnail: false,
       };
     });
 
