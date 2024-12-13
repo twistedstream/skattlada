@@ -16,7 +16,7 @@ import { logger } from "./logger";
 import { now } from "./time";
 
 const fileProvider = getFileProvider();
-const { getFileInfo, sendFile } = fileProvider;
+const { getFileInfo, sendFile, sendThumbnail } = fileProvider;
 
 const EXPIRATIONS: string[] = [
   "PT5M",
@@ -127,7 +127,7 @@ export async function ensureShare(req: AuthenticatedRequest): Promise<Share> {
 export async function renderShareThumbnail(
   req: AuthenticatedRequest,
   res: Response,
-  share: Share
+  share: Share,
 ) {
   const file = await getFileInfo(share.backingUrl);
   if (!file) {
@@ -138,7 +138,7 @@ export async function renderShareThumbnail(
     throw NotFoundError();
   }
 
-  await sendFile(file, selectedMediaType, res);
+  await sendThumbnail(file, res);
 }
 
 export async function renderSharedFile(
@@ -162,7 +162,6 @@ export async function renderSharedFile(
     }));
 
     if (req.user && file.hasThumbnail) {
-
     }
 
     return res.render("shared_file", {

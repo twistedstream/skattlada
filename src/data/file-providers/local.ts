@@ -11,6 +11,7 @@ export class LocalFileProvider implements IFileProvider {
     // bind method "this"'s to instance "this"
     this.initialize = this.initialize.bind(this);
     this.getFileInfo = this.getFileInfo.bind(this);
+    this.sendThumbnail = this.sendThumbnail.bind(this);
     this.sendFile = this.sendFile.bind(this);
   }
 
@@ -35,6 +36,10 @@ export class LocalFileProvider implements IFileProvider {
     if (file) {
       return cloneDeep(file);
     }
+  }
+
+  sendThumbnail(file: FileInfo, destination: Response): void {
+    throw new Error("Method not implemented.");
   }
 
   sendFile(file: FileInfo, mediaType: MediaType, destination: Response) {

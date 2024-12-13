@@ -27,10 +27,10 @@ import {
 import { baseUrl } from "../utils/config";
 import { generateCsrfToken, validateCsrfToken } from "../utils/csrf";
 import {
+  assertValue,
   BadRequestError,
   ForbiddenError,
   UnauthorizedError,
-  assertValue,
 } from "../utils/error";
 import { logger } from "../utils/logger";
 import {
@@ -218,18 +218,25 @@ router.get(
     req: AuthenticatedRequestWithTypedQuery<{ media_type?: string }>,
     res: Response,
   ) => {
+    // TODO: modify ensureShare (or use different logic) to relax access requirements:
+    // - thumbnails can be viewed by:
+    //   * the creator
+    //   * if the share has no share_to, anyone who has accessed the share link
+    //   * if the share has a share_to, the user is signed in, and they are that user
+    //   * the recipient who claimed it
     const share = await ensureShare(req);
     const { user } = req;
 
     if (!user) {
-      throw UnauthorizedError("Share thumbnails cannot be viewed ananymously");
+      throw UnauthorizedError("Share thumbnails cannot be viewed anonymously");
     }
     if (share.createdBy.id !== user.id || share.claimedBy?.id !== user.id) {
       throw ForbiddenError("Share thumbnail cannot be viewed by this user");
     }
-  
+
     return renderShareThumbnail(req, res, share);
-});
+  },
+);
 
 router.post(
   "/:share_id",

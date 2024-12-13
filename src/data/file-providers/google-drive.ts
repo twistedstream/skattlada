@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { Readable } from "node:stream";
 
 import { IFileProvider } from "../../types/data";
 import { FileInfo, MediaType } from "../../types/entity";
@@ -18,6 +19,7 @@ export class GoogleDriveFileProvider implements IFileProvider {
     // bind method "this"'s to instance "this"
     this.initialize = this.initialize.bind(this);
     this.getFileInfo = this.getFileInfo.bind(this);
+    this.sendThumbnail = this.sendThumbnail.bind(this);
     this.sendFile = this.sendFile.bind(this);
   }
 
@@ -66,11 +68,10 @@ export class GoogleDriveFileProvider implements IFileProvider {
             return p;
           }, [])
         : [mediaType],
-      hasThumbnail: !!info.hasThumbnail
+      hasThumbnail: !!info.hasThumbnail,
     };
   }
 
-  // TODO: add method to IFileProvider
   async sendThumbnail(file: FileInfo, destination: Response) {
     if (!this._initialized) {
       throw new Error("Provider not initialized");
@@ -86,8 +87,21 @@ export class GoogleDriveFileProvider implements IFileProvider {
       throw NotFoundError();
     }
 
-    // TODO: figure out how to make a proxied "credentialed request" to this link and pipe it back to destination
-    info.thumbnailLink
+    const token = "foo";
+
+    const result = await fetch(info.thumbnailLink, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const body = assertValue(result.body);
+
+    const stream = Readable.from(body);
+    stream.on("error", (err: any) => {
+      throw err;
+    });
+    stream.pipe(destination);
   }
 
   // NOTE: caller does not need to await a Promise from sendFile
