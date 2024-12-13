@@ -48,10 +48,7 @@
             <div class="form-row mt-2">
               <div class="col-sm mb-2">
                 <div class="input-group">
-                  <div class="input-group-prepend">
-                    <div class="input-group-text">@</div>
-                  </div>
-                  {{> textbox_field name="toUsername" type="text" value=toUsername error=toUsername_error placeholder="Share to (optional)"}}
+                  {{> textbox_field name="toIdentifier" type="text" value=toIdentifier error=toIdentifier_error placeholder="Share to @user or #group (optional)"}}
                 </div>
               </div>
 

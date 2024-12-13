@@ -100,35 +100,44 @@ router.post(
     req: AuthenticatedRequestWithTypedBody<{
       action: "validate" | "create";
       backingUrl: string;
-      toUsername?: string;
+      toIdentifier?: string;
       expires?: string;
     }>,
     res: Response,
   ) => {
     const user = assertValue(req.user);
-    const { action, backingUrl, toUsername, expires } = req.body;
+    const { action, backingUrl, toIdentifier, expires } = req.body;
 
     if (action === "validate" || action === "create") {
       const expireDuration: Duration | undefined = expires
         ? Duration.fromISO(expires)
         : undefined;
 
+      // TODO: parse toIdentifier to require "@" or "#" prefix
+
       let share: Share;
       try {
-        share = await newShare(user, backingUrl, toUsername, expireDuration);
+        // TODO: modify newShare to process toIdentifier
+        // - instead of toUsername
+        // - identifier can be either a username or a group
+        share = await newShare(user, backingUrl, toIdentifier, expireDuration);
       } catch (err: any) {
         if (err.type === "validation") {
           const [, errorField] = err.context.split(".");
+
+          const errorFieldName = ["toUsername", "toGroup"].includes(errorField)
+            ? "toIdentifier"
+            : errorField;
 
           const csrf_token = generateCsrfToken(req, res, false);
           return res.status(StatusCodes.BAD_REQUEST).render("new_share", {
             csrf_token,
             title: "New share",
             expirations: buildExpirations(expireDuration),
-            [`${errorField}_error`]: err.message,
+            [`${errorFieldName}_error`]: err.message,
             backingUrl,
             backingUrl_valid: errorField !== "backingUrl",
-            toUsername,
+            toIdentifier,
             expires,
           });
         }
