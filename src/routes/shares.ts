@@ -237,6 +237,14 @@ router.get(
       ) {
         throw UnauthorizedError();
       }
+
+      // check to see if share is for a group and doesn't need to be claimed
+      if (share.toGroup) {
+        // authorize registration since user won't be accepting & claiming share
+        authorizeRegistration(req, share);
+
+        throw UnauthorizedError();
+      }
     }
 
     // display accept form

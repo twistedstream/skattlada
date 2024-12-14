@@ -931,6 +931,26 @@ t.test("routes/shares", async (t) => {
         },
       );
 
+      t.test(
+        "if share ws intended for a specific group, authorizes registration and redirects to the login page",
+        async (t) => {
+          const share = testShare1(testUser2());
+          share.toGroup = "foo";
+          ensureShareStub.resolves(share);
+
+          const response = await performGetShareRequest(app, share.id);
+
+          t.ok(authorizeRegistrationStub.called);
+          verifyRequest(t, authorizeRegistrationStub.firstCall.args[0], {
+            method: "GET",
+            url: `/${testShare.id}`,
+          });
+          t.equal(authorizeRegistrationStub.firstCall.args[1], share);
+
+          verifyAuthenticationRequiredResponse(t, response, `/${testShare.id}`);
+        },
+      );
+
       t.test("if accept share can be rendered", async (t) => {
         t.beforeEach(async () => {
           ensureShareStub.resolves(testShare);
