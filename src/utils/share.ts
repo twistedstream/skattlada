@@ -4,7 +4,7 @@ import querystring from "querystring";
 
 import { getFileProvider } from "../data";
 import { fetchShareById } from "../services/share";
-import { FileType, Share } from "../types/entity";
+import { FileType, Share, User } from "../types/entity";
 import { AuthenticatedRequest } from "../types/express";
 import {
   BadRequestError,
@@ -122,6 +122,21 @@ export async function ensureShare(req: AuthenticatedRequest): Promise<Share> {
 
   // share can be accessed
   return share;
+}
+
+export async function canRenderShare(
+  share: Share,
+  user: User,
+): Promise<boolean> {
+  if (share.toGroup === "everyone") {
+    return true;
+  }
+
+  if (share.claimed && share.claimedBy?.id === user.id) {
+    return true;
+  }
+
+  return false;
 }
 
 export async function renderSharedFile(

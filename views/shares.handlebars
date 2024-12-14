@@ -68,10 +68,10 @@
                   <small>[<a class="copy_link" href="#" data-url="{{url}}">copy</a>]</small>
                 </td>
                 <td>{{created}}</td>
-                <td>{{#if expires}}{{expires}}{{else}}(never){{/if}}</td>
-                <td>{{#if to}}@{{to}}{{else}}(anyone){{/if}}</td>
+                <td>{{expires}}</td>
+                <td>{{to}}</td>
                 <td>{{claimed}}</td>
-                <td>{{#if claimed_by}}@{{claimed_by}}{{/if}}</td>
+                <td>{{claimed_by}}</td>
                 <td><small>[<a class="copy_link" href="#" data-url="{{backing_url}}">copy</a>]</small></td>
               </tr>
               {{/each}}
