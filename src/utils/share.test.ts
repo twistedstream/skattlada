@@ -356,6 +356,41 @@ t.test("utils/share", async (t) => {
     });
   });
 
+  t.test("canRenderShare", async (t) => {
+    let canRenderShare: any;
+
+    t.beforeEach(async () => {
+      canRenderShare = importModule(t).canRenderShare;
+    });
+
+    t.test("if share has been shared to everyone, returns true", async (t) => {
+      const share = { toGroup: "everyone" };
+      const user = {};
+
+      const result = await canRenderShare(share, user);
+
+      t.ok(result);
+    });
+
+    t.test("if share is claimed by current user, returns true", async (t) => {
+      const share = { claimed: "some-date", claimedBy: { id: "user-id" } };
+      const user = { id: "user-id" };
+
+      const result = await canRenderShare(share, user);
+
+      t.ok(result);
+    });
+
+    t.test("otherwise, returns false", async (t) => {
+      const share = {};
+      const user = {};
+
+      const result = await canRenderShare(share, user);
+
+      t.notOk(result);
+    });
+  });
+
   t.test("renderSharedFile", async (t) => {
     const req = {
       user: { username: "bob" },

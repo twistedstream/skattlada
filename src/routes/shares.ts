@@ -133,7 +133,7 @@ router.post(
             csrf_token,
             title: "New share",
             expirations: buildExpirations(expireDuration),
-            shareTo_error: "Share to must start with a @ or a #",
+            shareTo_error: "Share To must start with a @ or a #",
             backingUrl,
             backingUrl_valid: true,
             shareTo,
