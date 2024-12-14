@@ -33,6 +33,8 @@ const EXPIRATIONS: string[] = [
   "P1Y",
 ];
 
+export const EVERYONE_GROUP_NAME = "everyone";
+
 export function buildExpirations(current?: Duration) {
   return EXPIRATIONS.map((k) => ({
     value: k,
@@ -128,7 +130,7 @@ export async function canRenderShare(
   share: Share,
   user: User,
 ): Promise<boolean> {
-  if (share.toGroup === "everyone") {
+  if (share.toGroup === EVERYONE_GROUP_NAME) {
     return true;
   }
 

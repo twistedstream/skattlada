@@ -5,6 +5,7 @@ import { Share, User } from "../types/entity";
 import { ValidationError } from "../types/error";
 import { assertValue } from "../utils/error";
 import { unique } from "../utils/identifier";
+import { EVERYONE_GROUP_NAME } from "../utils/share";
 import { now } from "../utils/time";
 
 const dataProvider = getDataProvider();
@@ -75,7 +76,7 @@ export async function newShare(
 
   // make sure to-group exists
   if (toGroup) {
-    if (toGroup !== "everyone") {
+    if (toGroup !== EVERYONE_GROUP_NAME) {
       throw new ValidationError("Share", "toGroup", "Group does not exist");
     }
   }
