@@ -49,6 +49,7 @@
         { "name": "file_type" },
         { "name": "available_media_types" },
         { "name": "to_username" },
+        { "name": "to_group" },
         { "name": "expire_duration" }
       ]
     }

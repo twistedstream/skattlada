@@ -103,6 +103,7 @@ t.test("data/data-providers/google-sheets/share", async (t) => {
             "claimed",
             "claimedBy",
             "toUsername",
+            "toGroup",
             "expireDuration",
           ),
           omit(unclaimedShare, "createdBy", "claimed", "claimedBy"),
@@ -139,8 +140,8 @@ t.test("data/data-providers/google-sheets/share", async (t) => {
         const result = rowToShare(claimedShareRow, createdByRow, claimedByRow);
 
         t.same(
-          omit(result, "createdBy", "claimedBy"),
-          omit(claimedShare, "createdBy", "claimedBy"),
+          omit(result, "createdBy", "claimedBy", "toGroup"),
+          omit(claimedShare, "createdBy", "claimedBy", "toGroup"),
         );
         t.equal(result.createdBy, claimedShare.createdBy);
         t.equal(result.claimedBy, claimedShare.claimedBy);
@@ -176,6 +177,7 @@ t.test("data/data-providers/google-sheets/share", async (t) => {
             "claimed",
             "claimed_by",
             "to_username",
+            "to_group",
             "expire_duration",
           ),
           unclaimedShareRow,
@@ -207,7 +209,10 @@ t.test("data/data-providers/google-sheets/share", async (t) => {
 
         const result = shareToRow(claimedShare);
 
-        t.same(result.shareRow, claimedShareRow);
+        t.same(
+          omit(result.shareRow, "to_group"),
+          omit(claimedShareRow, "to_group"),
+        );
         t.same(result.createdByRow, createdByRow);
         t.same(result.claimedByRow, claimedByRow);
       });

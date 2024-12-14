@@ -89,7 +89,7 @@ t.test("Share a file to an existing user, that user accepts", async (t) => {
       csrf_token: state.csrfToken,
       action: "validate",
       backingUrl,
-      toUsername: user1.username,
+      shareTo: `@${user1.username}`,
     });
     assertHtmlResponse(t, response);
 
@@ -98,7 +98,7 @@ t.test("Share a file to an existing user, that user accepts", async (t) => {
       csrf_token: state.csrfToken,
       action: "create",
       backingUrl,
-      toUsername: user1.username,
+      shareTo: `@${user1.username}`,
     });
     assertRedirectResponse(t, response, "/shares");
 
