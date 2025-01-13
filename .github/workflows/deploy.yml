@@ -63,40 +63,30 @@ jobs:
           push: true
           tags: ${{ steps.get_docker_org.outputs.result }}/${{ steps.get_docker_repo.outputs.result }}:${{ steps.get_image_tag.outputs.result }}
 
-      - name: Build Portainer environment variables
-        id: build_portainer_env_vars
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const vars = {
-              APP_VERSION: "${{ steps.get_image_tag.outputs.result }}",
-              HOST_PORT: "${{ vars.HOST_PORT_PROD }}",
-              LOG_LEVEL: "${{ vars.LOG_LEVEL_PROD }}",
-              RP_ID: "${{ vars.RP_ID_PROD }}",
-              RP_NAME: "${{ vars.RP_NAME_PROD }}",
-              BASE_URL: "${{ vars.BASE_URL_PROD }}",
-              COOKIE_SECRET: "${{ secrets.COOKIE_SECRET_PROD }}",
-              CSRF_SECRET: "${{ secrets.CSRF_SECRET_PROD }}",
-              MAX_INVITE_LIFETIME: "${{ vars.MAX_INVITE_LIFETIME_PROD }}",
-              DATA_PROVIDER_NAME: "${{ vars.DATA_PROVIDER_NAME_PROD }}",
-              FILE_PROVIDER_NAME: "${{ vars.FILE_PROVIDER_NAME_PROD }}",
-              GOOGLE_SPREADSHEET_ID: "${{ vars.GOOGLE_SPREADSHEET_ID_PROD }}",
-              GOOGLE_AUTH_CLIENT_EMAIL: "${{ vars.GOOGLE_AUTH_CLIENT_EMAIL_PROD }}",
-              GOOGLE_AUTH_PRIVATE_KEY_BASE64: "${{ secrets.GOOGLE_AUTH_PRIVATE_KEY_BASE64_PROD }}",
-              METADATA_PROVIDER_NAME: "${{ vars.METADATA_PROVIDER_NAME }}"
-            }
-            const varsArray = Object.keys(vars).map((k) => ({ name: k, value: vars[k]}));
-            return JSON.stringify(varsArray);
-          result-encoding: string
-
       - name: Deploy Docker image to Portainer
-        uses: datntdev0/actions-deploy-portainer@v0.1.0
+        uses: cssnr/portainer-stack-deploy-action@v1
         with:
-          base-url: ${{ vars.PORTAINER_HOST }}
-          access-token: ${{ secrets.PORTAINER_API_KEY }}
-          endpoint-id: ${{ vars.PORTAINER_ENV_ID }}
-          stack-name: ${{ vars.PORTAINER_STACK_NAME_PROD }}
-          repository-url: https://github.com/${{ github.repository }}.git
-          repository-ref: ${{ github.ref }}
-          compose-file: "./docker-compose.yml"
-          env-json: "${{ steps.build_portainer_env_vars.outputs.result }}"
+          url: ${{ vars.PORTAINER_HOST }}
+          token: ${{ secrets.PORTAINER_API_KEY }}
+          name: ${{ vars.PORTAINER_STACK_NAME_PROD }}
+          standalone: true
+          type: file
+          file: "./docker-compose.yml"
+          env_json: |
+            {
+              "APP_VERSION": "${{ steps.get_image_tag.outputs.result }}",
+              "HOST_PORT": "${{ vars.HOST_PORT_PROD }}",
+              "LOG_LEVEL": "${{ vars.LOG_LEVEL_PROD }}",
+              "RP_ID": "${{ vars.RP_ID_PROD }}",
+              "RP_NAME": "${{ vars.RP_NAME_PROD }}",
+              "BASE_URL": "${{ vars.BASE_URL_PROD }}",
+              "COOKIE_SECRET": "${{ secrets.COOKIE_SECRET_PROD }}",
+              "CSRF_SECRET": "${{ secrets.CSRF_SECRET_PROD }}",
+              "MAX_INVITE_LIFETIME": "${{ vars.MAX_INVITE_LIFETIME_PROD }}",
+              "DATA_PROVIDER_NAME": "${{ vars.DATA_PROVIDER_NAME_PROD }}",
+              "FILE_PROVIDER_NAME": "${{ vars.FILE_PROVIDER_NAME_PROD }}",
+              "GOOGLE_SPREADSHEET_ID": "${{ vars.GOOGLE_SPREADSHEET_ID_PROD }}",
+              "GOOGLE_AUTH_CLIENT_EMAIL": "${{ vars.GOOGLE_AUTH_CLIENT_EMAIL_PROD }}",
+              "GOOGLE_AUTH_PRIVATE_KEY_BASE64": "${{ secrets.GOOGLE_AUTH_PRIVATE_KEY_BASE64_PROD }}",
+              "METADATA_PROVIDER_NAME": "${{ vars.METADATA_PROVIDER_NAME }}"
+            }
