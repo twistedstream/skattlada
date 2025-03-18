@@ -16,7 +16,7 @@ import { logger } from "./logger";
 import { now } from "./time";
 
 const fileProvider = getFileProvider();
-const { getFileInfo, sendFile } = fileProvider;
+const { getFileInfo, sendFile, sendThumbnail } = fileProvider;
 
 const EXPIRATIONS: string[] = [
   "PT5M",
@@ -124,6 +124,23 @@ export async function ensureShare(req: AuthenticatedRequest): Promise<Share> {
   return share;
 }
 
+export async function renderShareThumbnail(
+  req: AuthenticatedRequest,
+  res: Response,
+  share: Share,
+) {
+  const file = await getFileInfo(share.backingUrl);
+  if (!file) {
+    throw ForbiddenError("File no longer exists");
+  }
+
+  if (!file.hasThumbnail) {
+    throw NotFoundError();
+  }
+
+  await sendThumbnail(file, res);
+}
+
 export async function renderSharedFile(
   req: AuthenticatedRequest,
   res: Response,
@@ -143,6 +160,9 @@ export async function renderSharedFile(
         media_type: t.name,
       })}`,
     }));
+
+    if (req.user && file.hasThumbnail) {
+    }
 
     return res.render("shared_file", {
       title: "Ready to download your shared file?",

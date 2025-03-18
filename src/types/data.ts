@@ -68,6 +68,8 @@ export interface IFileProvider {
 
   getFileInfo(url: string): Promise<FileInfo | undefined>;
 
+  sendThumbnail(file: FileInfo, destination: Response): void;
+
   sendFile(file: FileInfo, mediaType: MediaType, destination: Response): void;
 }
 

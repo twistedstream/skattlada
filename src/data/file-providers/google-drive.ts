@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { Readable } from "node:stream";
 
 import { IFileProvider } from "../../types/data";
 import { FileInfo, MediaType } from "../../types/entity";
@@ -18,6 +19,7 @@ export class GoogleDriveFileProvider implements IFileProvider {
     // bind method "this"'s to instance "this"
     this.initialize = this.initialize.bind(this);
     this.getFileInfo = this.getFileInfo.bind(this);
+    this.sendThumbnail = this.sendThumbnail.bind(this);
     this.sendFile = this.sendFile.bind(this);
   }
 
@@ -66,7 +68,40 @@ export class GoogleDriveFileProvider implements IFileProvider {
             return p;
           }, [])
         : [mediaType],
+      hasThumbnail: !!info.hasThumbnail,
     };
+  }
+
+  async sendThumbnail(file: FileInfo, destination: Response) {
+    if (!this._initialized) {
+      throw new Error("Provider not initialized");
+    }
+
+    const { id: fileId } = file;
+
+    const info = await getDriveFileInfo(fileId);
+    if (!info) {
+      throw NotFoundError();
+    }
+    if (!info.thumbnailLink) {
+      throw NotFoundError();
+    }
+
+    const token = "foo";
+
+    const result = await fetch(info.thumbnailLink, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const body = assertValue(result.body);
+
+    const stream = Readable.from(body);
+    stream.on("error", (err: any) => {
+      throw err;
+    });
+    stream.pipe(destination);
   }
 
   // NOTE: caller does not need to await a Promise from sendFile
@@ -104,7 +139,7 @@ export class GoogleDriveFileProvider implements IFileProvider {
           { responseType: "stream" },
         );
 
-    stream.on("error", (err) => {
+    stream.on("error", (err: any) => {
       throw err;
     });
     stream.pipe(destination);
