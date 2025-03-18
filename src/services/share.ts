@@ -5,6 +5,7 @@ import { Share, User } from "../types/entity";
 import { ValidationError } from "../types/error";
 import { assertValue } from "../utils/error";
 import { unique } from "../utils/identifier";
+import { EVERYONE_GROUP_NAME } from "../utils/share";
 import { now } from "../utils/time";
 
 const dataProvider = getDataProvider();
@@ -44,6 +45,7 @@ export async function newShare(
   by: User,
   backingUrl: string,
   toUsername?: string,
+  toGroup?: string,
   expireDuration?: Duration,
 ): Promise<Share> {
   // get file info and make sure it exists
@@ -56,10 +58,26 @@ export async function newShare(
     );
   }
 
+  // enforce to-user and to-group being mutually exclusive
+  if (toUsername && toGroup) {
+    throw new ValidationError(
+      "Share",
+      "toUsername",
+      "Share cannot be to both a user and a group",
+    );
+  }
+
   // make sure to-user exists
   if (toUsername) {
     if (!(await findUserByName(toUsername))) {
       throw new ValidationError("Share", "toUsername", "User does not exist");
+    }
+  }
+
+  // make sure to-group exists
+  if (toGroup) {
+    if (toGroup !== EVERYONE_GROUP_NAME) {
+      throw new ValidationError("Share", "toGroup", "Group does not exist");
     }
   }
 
@@ -71,6 +89,7 @@ export async function newShare(
     sourceType: "share",
     backingUrl,
     toUsername,
+    toGroup,
     expireDuration,
     fileTitle: fileInfo.title,
     fileType: fileInfo.type,

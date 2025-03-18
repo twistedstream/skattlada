@@ -4,7 +4,7 @@ import querystring from "querystring";
 
 import { getFileProvider } from "../data";
 import { fetchShareById } from "../services/share";
-import { FileType, Share } from "../types/entity";
+import { FileType, Share, User } from "../types/entity";
 import { AuthenticatedRequest } from "../types/express";
 import {
   BadRequestError,
@@ -32,6 +32,8 @@ const EXPIRATIONS: string[] = [
   "P6M",
   "P1Y",
 ];
+
+export const EVERYONE_GROUP_NAME = "everyone";
 
 export function buildExpirations(current?: Duration) {
   return EXPIRATIONS.map((k) => ({
@@ -122,6 +124,21 @@ export async function ensureShare(req: AuthenticatedRequest): Promise<Share> {
 
   // share can be accessed
   return share;
+}
+
+export async function canRenderShare(
+  share: Share,
+  user: User,
+): Promise<boolean> {
+  if (share.toGroup === EVERYONE_GROUP_NAME) {
+    return true;
+  }
+
+  if (share.claimed && share.claimedBy?.id === user.id) {
+    return true;
+  }
+
+  return false;
 }
 
 export async function renderSharedFile(

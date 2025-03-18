@@ -12,6 +12,7 @@ import {
   testShare2,
   testShare3,
   testShare4,
+  testShare5,
   testUser1,
   testUser2,
 } from "../utils/testing/data";
@@ -56,6 +57,7 @@ const getFileTypeStyleStub = sinon.stub();
 const newShareStub = sinon.stub();
 const authorizeRegistrationStub = sinon.stub();
 const clearRegisterableFake = sinon.fake();
+const canRenderShareStub = sinon.stub();
 const getRegisterableStub = sinon.stub();
 const redirectToRegisterStub = sinon.stub();
 const ensureShareStub = sinon.stub();
@@ -100,6 +102,7 @@ function importModule(
         buildExpirations: buildExpirationsStub,
         getFileTypeStyle: getFileTypeStyleStub,
         ensureShare: ensureShareStub,
+        canRenderShare: canRenderShareStub,
         renderSharedFile: renderSharedFileStub,
       },
       "../utils/csrf": {
@@ -229,6 +232,8 @@ t.test("routes/shares", async (t) => {
     share3.toUsername = "foo";
     share3.expireDuration = Duration.fromObject({ days: 14 });
     const share4 = testShare4(user2);
+    share4.toGroup = "everyone";
+    const share5 = testShare5(user2);
     let app: Express;
     let renderArgs: ViewRenderArgs;
 
@@ -238,7 +243,7 @@ t.test("routes/shares", async (t) => {
         .resolves([share1, share2]);
       fetchSharesByCreatedUserIdStub
         .withArgs(user2.id)
-        .resolves([share3, share4]);
+        .resolves([share3, share4, share5]);
       const result = createSharesTestExpressApp(t, {
         withAuth: true,
         activeUser: user2,
@@ -283,21 +288,31 @@ t.test("routes/shares", async (t) => {
           title: share3.fileTitle,
           url: "https://example.com/shares/" + share3.id,
           created: share3.created.toISO(),
-          to: share3.toUsername,
+          to: `@${share3.toUsername}`,
           expires: share3.expireDuration?.toHuman(),
           claimed: share3.claimed?.toISO(),
-          claimed_by: share3.claimedBy?.username,
+          claimed_by: `@${share3.claimedBy?.username}`,
           backing_url: share3.backingUrl,
         },
         {
           title: share4.fileTitle,
           url: "https://example.com/shares/" + share4.id,
           created: share4.created.toISO(),
-          to: share4.toUsername,
-          expires: share4.expireDuration?.toHuman(),
+          to: "#everyone",
+          expires: "(never)",
           claimed: undefined,
-          claimed_by: undefined,
+          claimed_by: "",
           backing_url: share4.backingUrl,
+        },
+        {
+          title: share5.fileTitle,
+          url: "https://example.com/shares/" + share5.id,
+          created: share5.created.toISO(),
+          to: "(anyone)",
+          expires: "(never)",
+          claimed: undefined,
+          claimed_by: "",
+          backing_url: share5.backingUrl,
         },
       ]);
     });
@@ -393,20 +408,65 @@ t.test("routes/shares", async (t) => {
     });
 
     function commonPostNewTests(t: Test, action: "validate" | "create") {
-      t.test("generates a new share", async (t) => {
-        newShareStub.resolves({});
+      t.test(
+        "when shareTo is a user, generates a new share to a user",
+        async (t) => {
+          newShareStub.resolves({});
 
-        await performPostNewShareRequest(app).send({
-          action,
-          backingUrl: "https://example.com/path",
-          toUsername: "foo",
-        });
+          await performPostNewShareRequest(app).send({
+            action,
+            backingUrl: "https://example.com/path",
+            shareTo: "@foo",
+          });
 
-        t.ok(newShareStub.called);
-        t.equal(newShareStub.firstCall.args[0], activeUser);
-        t.equal(newShareStub.firstCall.args[1], "https://example.com/path");
-        t.equal(newShareStub.firstCall.args[2], "foo");
-      });
+          t.ok(newShareStub.called);
+          t.equal(newShareStub.firstCall.args[0], activeUser);
+          t.equal(newShareStub.firstCall.args[1], "https://example.com/path");
+          t.equal(newShareStub.firstCall.args[2], "foo");
+        },
+      );
+
+      t.test(
+        "when shareTo is a group, generates a new share to a group",
+        async (t) => {
+          newShareStub.resolves({});
+
+          await performPostNewShareRequest(app).send({
+            action,
+            backingUrl: "https://example.com/path",
+            shareTo: "#foo",
+          });
+
+          t.ok(newShareStub.called);
+          t.equal(newShareStub.firstCall.args[0], activeUser);
+          t.equal(newShareStub.firstCall.args[1], "https://example.com/path");
+          t.equal(newShareStub.firstCall.args[2], undefined);
+          t.equal(newShareStub.firstCall.args[3], "foo");
+        },
+      );
+
+      t.test(
+        "when shareTo is neither a user or group, renders HTML with expected user error",
+        async (t) => {
+          const response = await performPostNewShareRequest(app).send({
+            action,
+            backingUrl: "https://example.com/path",
+            shareTo: "foo",
+          });
+
+          const { viewName, options } = renderArgs;
+
+          t.equal(response.status, StatusCodes.BAD_REQUEST);
+          t.match(response.headers["content-type"], "text/html");
+          t.equal(viewName, "new_share");
+          t.equal(options.title, "New share");
+          t.equal(options.expirations, undefined);
+          t.equal(options.backingUrl, "https://example.com/path");
+          t.equal(options.backingUrl_valid, true);
+          t.equal(options.shareTo, "foo");
+          t.equal(options.shareTo_error, "Share To must start with a @ or a #");
+        },
+      );
 
       t.test("if specified, builds expires duration", async (t) => {
         newShareStub.resolves({});
@@ -414,13 +474,13 @@ t.test("routes/shares", async (t) => {
         await performPostNewShareRequest(app).send({
           action,
           backingUrl: "https://example.com/path",
-          toUsername: "foo",
+          shareTo: "@foo",
           expires: "P2D",
         });
 
         t.ok(newShareStub.called);
         t.same(
-          newShareStub.firstCall.args[3],
+          newShareStub.firstCall.args[4],
           Duration.fromObject({ days: 2 }),
         );
       });
@@ -433,62 +493,102 @@ t.test("routes/shares", async (t) => {
           await performPostNewShareRequest(app).send({
             action,
             backingUrl: "https://example.com/path",
-            toUsername: "foo",
+            shareTo: "@foo",
           });
 
           t.ok(newShareStub.called);
-          t.equal(newShareStub.firstCall.args[3], undefined);
+          t.equal(newShareStub.firstCall.args[4], undefined);
         },
       );
 
       t.test("if a validation error occurs", async (t) => {
         const expirations = [{}];
 
-        t.beforeEach(async () => {
-          newShareStub.rejects({
-            type: "validation",
-            context: "Share.backingUrl",
-            message: "That's a bad URL",
+        function commonValidationErrorTests(t: Test) {
+          t.test("generates an existing CSRF token", async (t) => {
+            await performPostNewShareRequest(app).send({
+              action,
+              backingUrl: "https://example.com/path",
+              shareTo: "@foo",
+              expires: "P2D",
+            });
+
+            t.ok(generateCsrfTokenFake.called);
+            verifyRequest(t, generateCsrfTokenFake.firstCall.args[0], {
+              method: "POST",
+              url: `/new`,
+            });
+            verifyResponse(t, generateCsrfTokenFake.firstCall.args[1]);
+            t.equal(generateCsrfTokenFake.firstCall.args[2], false);
           });
-          buildExpirationsStub.returns(expirations);
+        }
+
+        t.test("when backingUrl error occurs", async (t) => {
+          t.beforeEach(async () => {
+            newShareStub.rejects({
+              type: "validation",
+              context: "Share.backingUrl",
+              message: "That's a bad URL",
+            });
+            buildExpirationsStub.returns(expirations);
+          });
+
+          commonValidationErrorTests(t);
+
+          t.test("renders HTML with expected user error", async (t) => {
+            const response = await performPostNewShareRequest(app).send({
+              action,
+              backingUrl: "https://example.com/path",
+              shareTo: "@foo",
+              expires: "P2D",
+            });
+            const { viewName, options } = renderArgs;
+
+            t.equal(response.status, StatusCodes.BAD_REQUEST);
+            t.match(response.headers["content-type"], "text/html");
+            t.equal(viewName, "new_share");
+            t.equal(options.title, "New share");
+            t.equal(options.expirations, expirations);
+            t.equal(options.backingUrl_error, "That's a bad URL");
+            t.equal(options.backingUrl, "https://example.com/path");
+            t.equal(options.backingUrl_valid, false);
+            t.equal(options.shareTo, "@foo");
+            t.equal(options.expires, "P2D");
+          });
         });
 
-        t.test("generates an existing CSRF token", async (t) => {
-          await performPostNewShareRequest(app).send({
-            action,
-            backingUrl: "https://example.com/path",
-            toUsername: "foo",
-            expires: "P2D",
+        t.test("when shareTo error occurs", async (t) => {
+          t.beforeEach(async () => {
+            newShareStub.rejects({
+              type: "validation",
+              context: "Share.toUsername",
+              message: "User does not exist",
+            });
+            buildExpirationsStub.returns(expirations);
           });
 
-          t.ok(generateCsrfTokenFake.called);
-          verifyRequest(t, generateCsrfTokenFake.firstCall.args[0], {
-            method: "POST",
-            url: `/new`,
-          });
-          verifyResponse(t, generateCsrfTokenFake.firstCall.args[1]);
-          t.equal(generateCsrfTokenFake.firstCall.args[2], false);
-        });
+          commonValidationErrorTests(t);
 
-        t.test("renders HTML with expected user error", async (t) => {
-          const response = await performPostNewShareRequest(app).send({
-            action,
-            backingUrl: "https://example.com/path",
-            toUsername: "foo",
-            expires: "P2D",
-          });
-          const { viewName, options } = renderArgs;
+          t.test("renders HTML with expected user error", async (t) => {
+            const response = await performPostNewShareRequest(app).send({
+              action,
+              backingUrl: "https://example.com/path",
+              shareTo: "@foo",
+              expires: "P2D",
+            });
+            const { viewName, options } = renderArgs;
 
-          t.equal(response.status, StatusCodes.BAD_REQUEST);
-          t.match(response.headers["content-type"], "text/html");
-          t.equal(viewName, "new_share");
-          t.equal(options.title, "New share");
-          t.equal(options.expirations, expirations);
-          t.equal(options.backingUrl_error, "That's a bad URL");
-          t.equal(options.backingUrl, "https://example.com/path");
-          t.equal(options.backingUrl_valid, false);
-          t.equal(options.toUsername, "foo");
-          t.equal(options.expires, "P2D");
+            t.equal(response.status, StatusCodes.BAD_REQUEST);
+            t.match(response.headers["content-type"], "text/html");
+            t.equal(viewName, "new_share");
+            t.equal(options.title, "New share");
+            t.equal(options.expirations, expirations);
+            t.equal(options.backingUrl, "https://example.com/path");
+            t.equal(options.backingUrl_valid, true);
+            t.equal(options.shareTo, "@foo");
+            t.equal(options.shareTo_error, "User does not exist");
+            t.equal(options.expires, "P2D");
+          });
         });
       });
 
@@ -507,7 +607,7 @@ t.test("routes/shares", async (t) => {
           const response = await performPostNewShareRequest(app).send({
             action,
             backingUrl: "https://example.com/path",
-            toUsername: "foo",
+            shareTo: "@foo",
             expires: "P2D",
           });
 
@@ -547,7 +647,7 @@ t.test("routes/shares", async (t) => {
           await performPostNewShareRequest(app).send({
             action: "validate",
             backingUrl: "ignored",
-            toUsername: "ignored",
+            shareTo: "@ignored",
             expires: "ignored",
           });
 
@@ -564,7 +664,7 @@ t.test("routes/shares", async (t) => {
           const response = await performPostNewShareRequest(app).send({
             action: "validate",
             backingUrl: "ignored",
-            toUsername: "ignored",
+            shareTo: "@ignored",
             expires: "ignored",
           });
           const { viewName, options } = renderArgs;
@@ -638,7 +738,7 @@ t.test("routes/shares", async (t) => {
   });
 
   t.test("GET /:share_id", async (t) => {
-    t.test("ensures invite", async (t) => {
+    t.test("ensures share", async (t) => {
       ensureShareStub.resolves({ share: testShare, isClaimed: true });
       const { app } = createSharesTestExpressApp(t);
 
@@ -657,6 +757,8 @@ t.test("routes/shares", async (t) => {
       let renderArgs: ViewRenderArgs;
 
       t.beforeEach(async () => {
+        ensureShareStub.resolves(testShare);
+
         const result = createSharesTestExpressApp(t, {
           withAuth: true,
           activeUser: testUser,
@@ -665,117 +767,136 @@ t.test("routes/shares", async (t) => {
         renderArgs = result.renderArgs;
       });
 
-      t.test("if claimed, renders the existing shared file", async (t) => {
-        const share = testShare1(testUser2(), { claimedBy: testUser1() });
-
-        ensureShareStub.resolves(share);
-        renderSharedFileStub.callsFake(
-          (_req: Request, res: Response, _share: Share, _mediaType: string) => {
-            res.send("ignored");
-          },
-        );
-
-        await performGetShareRequest(app, share.id, "some/media-type");
-
-        t.ok(renderSharedFileStub.called);
-
-        verifyRequest(t, renderSharedFileStub.firstCall.args[0], {
-          method: "GET",
-          url: "/SHARE_1?media_type=some/media-type",
-        });
-        verifyResponse(t, renderSharedFileStub.firstCall.args[1]);
-        t.equal(renderSharedFileStub.firstCall.args[2], share);
-        t.equal(renderSharedFileStub.firstCall.args[3], "some/media-type");
-      });
-
-      t.test("gets registerable state", async (t) => {
-        ensureShareStub.resolves(testShare);
-
+      t.test("checks if share can be rendered", async (t) => {
         await performGetShareRequest(app, testShare.id);
 
-        t.ok(getRegisterableStub.called);
-        verifyRequest(t, getRegisterableStub.firstCall.firstArg, {
-          url: `/${testShare.id}`,
-          method: "GET",
-        });
+        t.ok(canRenderShareStub.called);
+        t.equal(canRenderShareStub.firstCall.args[0], testShare);
+        t.equal(canRenderShareStub.firstCall.args[1], testUser);
       });
 
-      t.test("when registerable state exists", async (t) => {
-        t.beforeEach(async () => {
-          ensureShareStub.resolves(testShare);
-          getRegisterableStub.returns({});
+      t.test(
+        "if share can be rendered, renders the existing shared file",
+        async (t) => {
+          canRenderShareStub.resolves(true);
           renderSharedFileStub.callsFake(
-            (_req: Request, res: Response, _share: Share) => {
+            (
+              _req: Request,
+              res: Response,
+              _share: Share,
+              _mediaType: string,
+            ) => {
               res.send("ignored");
             },
           );
+
+          await performGetShareRequest(app, testShare.id, "some/media-type");
+
+          t.ok(renderSharedFileStub.called);
+
+          verifyRequest(t, renderSharedFileStub.firstCall.args[0], {
+            method: "GET",
+            url: "/SHARE_1?media_type=some/media-type",
+          });
+          verifyResponse(t, renderSharedFileStub.firstCall.args[1]);
+          t.equal(renderSharedFileStub.firstCall.args[2], testShare);
+          t.equal(renderSharedFileStub.firstCall.args[3], "some/media-type");
+        },
+      );
+
+      t.test("when share cannot be rendered", async (t) => {
+        t.beforeEach(async () => {
+          canRenderShareStub.resolves(false);
         });
 
-        t.test("clears registerable state", async (t) => {
+        t.test("gets registerable state", async (t) => {
           await performGetShareRequest(app, testShare.id);
 
-          t.ok(clearRegisterableFake.called);
-          verifyRequest(t, clearRegisterableFake.firstCall.firstArg, {
+          t.ok(getRegisterableStub.called);
+          verifyRequest(t, getRegisterableStub.firstCall.firstArg, {
             url: `/${testShare.id}`,
             method: "GET",
           });
         });
 
-        t.test("claims the share for the current user", async (t) => {
-          await performGetShareRequest(app, testShare.id);
-
-          t.ok(claimShareStub.called);
-          t.equal(claimShareStub.firstCall.args[0], testShare.id);
-          t.equal(claimShareStub.firstCall.args[1], testUser);
-        });
-
-        t.test("logs the claimed share", async (t) => {
-          const claimedShare = {};
-          claimShareStub.resolves(claimedShare);
-
-          await performGetShareRequest(app, testShare.id);
-
-          t.ok(logger.info.called);
-          t.equal(logger.info.firstCall.args[0], claimedShare);
-          t.equal(logger.info.firstCall.args[1], "New user has claimed share");
-        });
-
-        t.test("renders the claimed share", async (t) => {
-          const claimedShare = {};
-          claimShareStub.resolves(claimedShare);
-
-          await performGetShareRequest(app, testShare.id);
-
-          t.ok(renderSharedFileStub.called);
-          verifyRequest(t, renderSharedFileStub.firstCall.args[0], {
-            method: "GET",
-            url: "/SHARE_1",
+        t.test("when registerable state exists", async (t) => {
+          t.beforeEach(async () => {
+            getRegisterableStub.returns({});
+            renderSharedFileStub.callsFake(
+              (_req: Request, res: Response, _share: Share) => {
+                res.send("ignored");
+              },
+            );
           });
-          verifyResponse(t, renderSharedFileStub.firstCall.args[1]);
-          t.equal(renderSharedFileStub.firstCall.args[2], claimedShare);
+
+          t.test("clears registerable state", async (t) => {
+            await performGetShareRequest(app, testShare.id);
+
+            t.ok(clearRegisterableFake.called);
+            verifyRequest(t, clearRegisterableFake.firstCall.firstArg, {
+              url: `/${testShare.id}`,
+              method: "GET",
+            });
+          });
+
+          t.test("claims the share for the current user", async (t) => {
+            await performGetShareRequest(app, testShare.id);
+
+            t.ok(claimShareStub.called);
+            t.equal(claimShareStub.firstCall.args[0], testShare.id);
+            t.equal(claimShareStub.firstCall.args[1], testUser);
+          });
+
+          t.test("logs the claimed share", async (t) => {
+            const claimedShare = {};
+            claimShareStub.resolves(claimedShare);
+
+            await performGetShareRequest(app, testShare.id);
+
+            t.ok(logger.info.called);
+            t.equal(logger.info.firstCall.args[0], claimedShare);
+            t.equal(
+              logger.info.firstCall.args[1],
+              "New user has claimed share",
+            );
+          });
+
+          t.test("renders the claimed share", async (t) => {
+            const claimedShare = {};
+            claimShareStub.resolves(claimedShare);
+
+            await performGetShareRequest(app, testShare.id);
+
+            t.ok(renderSharedFileStub.called);
+            verifyRequest(t, renderSharedFileStub.firstCall.args[0], {
+              method: "GET",
+              url: "/SHARE_1",
+            });
+            verifyResponse(t, renderSharedFileStub.firstCall.args[1]);
+            t.equal(renderSharedFileStub.firstCall.args[2], claimedShare);
+          });
         });
+
+        t.test(
+          "if registerable state is missing, renders HTML with the expected view state",
+          async (t) => {
+            getRegisterableStub.returns(undefined);
+            getFileTypeStyleStub
+              .withArgs(testShare.fileType)
+              .returns("doc_style");
+
+            const response = await performGetShareRequest(app, testShare.id);
+            const { viewName, options } = renderArgs;
+
+            t.equal(response.status, StatusCodes.OK);
+            t.match(response.headers["content-type"], "text/html");
+            t.equal(viewName, "accept_share");
+            t.equal(options.title, "Accept this shared file?");
+            t.equal(options.share, testShare);
+            t.same(options.fileTypeStyle, "doc_style");
+          },
+        );
       });
-
-      t.test(
-        "if registerable state is missing, renders HTML with the expected view state",
-        async (t) => {
-          ensureShareStub.resolves(testShare);
-          getRegisterableStub.returns(undefined);
-          getFileTypeStyleStub
-            .withArgs(testShare.fileType)
-            .returns("doc_style");
-
-          const response = await performGetShareRequest(app, testShare.id);
-          const { viewName, options } = renderArgs;
-
-          t.equal(response.status, StatusCodes.OK);
-          t.match(response.headers["content-type"], "text/html");
-          t.equal(viewName, "accept_share");
-          t.equal(options.title, "Accept this shared file?");
-          t.equal(options.share, testShare);
-          t.same(options.fileTypeStyle, "doc_style");
-        },
-      );
     });
 
     t.test("when user is not authenticated", async (t) => {
@@ -810,7 +931,27 @@ t.test("routes/shares", async (t) => {
         },
       );
 
-      t.test("if share can be rendered", async (t) => {
+      t.test(
+        "if share ws intended for a specific group, authorizes registration and redirects to the login page",
+        async (t) => {
+          const share = testShare1(testUser2());
+          share.toGroup = "foo";
+          ensureShareStub.resolves(share);
+
+          const response = await performGetShareRequest(app, share.id);
+
+          t.ok(authorizeRegistrationStub.called);
+          verifyRequest(t, authorizeRegistrationStub.firstCall.args[0], {
+            method: "GET",
+            url: `/${testShare.id}`,
+          });
+          t.equal(authorizeRegistrationStub.firstCall.args[1], share);
+
+          verifyAuthenticationRequiredResponse(t, response, `/${testShare.id}`);
+        },
+      );
+
+      t.test("if accept share can be rendered", async (t) => {
         t.beforeEach(async () => {
           ensureShareStub.resolves(testShare);
           getFileTypeStyleStub

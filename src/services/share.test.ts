@@ -178,6 +178,27 @@ t.test("services/share", async (t) => {
         });
       });
 
+      t.test(
+        "if both 'to' username and 'to' group are specified, throws expected error",
+        async (t) => {
+          t.rejects(
+            () =>
+              newShare(
+                {},
+                "https://example.com/doc1",
+                "user-name",
+                "group-name",
+              ),
+            "Share cannot be to both a user and a group",
+            {
+              type: "validation",
+              entity: "Share",
+              field: "toUsername",
+            },
+          );
+        },
+      );
+
       t.test("when 'to' username is specified", async (t) => {
         t.test("Finds user by name", async (t) => {
           try {
@@ -188,7 +209,7 @@ t.test("services/share", async (t) => {
           t.equal(dataProvider.findUserByName.firstCall.firstArg, "user-name");
         });
 
-        t.test("If user doesn't exist, throws expected error", async (t) => {
+        t.test("if user doesn't exist, throws expected error", async (t) => {
           dataProvider.findUserByName.resolves(undefined);
 
           t.rejects(
@@ -212,6 +233,7 @@ t.test("services/share", async (t) => {
             by,
             "https://example.com/doc1",
             "user-name",
+            undefined,
             expireDuration,
           );
 
@@ -224,6 +246,7 @@ t.test("services/share", async (t) => {
             sourceType: "share",
             backingUrl: "https://example.com/doc1",
             toUsername: "user-name",
+            toGroup: undefined,
             expireDuration,
             fileTitle: "Test Document",
             fileType: "document",
@@ -238,13 +261,40 @@ t.test("services/share", async (t) => {
         });
       });
 
-      t.test("when 'to' username is not specified", async (t) => {
-        t.test("returns expected share", async (t) => {
-          dataProvider.findUserByName.resolves({});
+      t.test("when 'to' group is specified", async (t) => {
+        t.test(
+          "if group isn't 'everyone', throws expected error",
+          async (t) => {
+            t.rejects(
+              () =>
+                newShare(
+                  {},
+                  "https://example.com/doc1",
+                  undefined,
+                  "some-group",
+                ),
+              "Group does not exist",
+              {
+                type: "validation",
+                entity: "Share",
+                field: "toGroup",
+              },
+            );
+          },
+        );
+
+        t.test("if group is 'everyone', returns expected share", async (t) => {
           uniqueStub.returns("share-id");
           const by = {};
+          const expireDuration = Duration.fromObject({ days: 2 });
 
-          const result = await newShare(by, "https://example.com/doc1");
+          const result = await newShare(
+            by,
+            "https://example.com/doc1",
+            undefined,
+            "everyone",
+            expireDuration,
+          );
 
           t.ok(result);
           t.same(result, {
@@ -255,7 +305,8 @@ t.test("services/share", async (t) => {
             sourceType: "share",
             backingUrl: "https://example.com/doc1",
             toUsername: undefined,
-            expireDuration: undefined,
+            toGroup: "everyone",
+            expireDuration,
             fileTitle: "Test Document",
             fileType: "document",
             availableMediaTypes: [
@@ -268,6 +319,41 @@ t.test("services/share", async (t) => {
           });
         });
       });
+
+      t.test(
+        "when 'to' username and 'to' group are not specified",
+        async (t) => {
+          t.test("returns expected share", async (t) => {
+            dataProvider.findUserByName.resolves({});
+            uniqueStub.returns("share-id");
+            const by = {};
+
+            const result = await newShare(by, "https://example.com/doc1");
+
+            t.ok(result);
+            t.same(result, {
+              id: "share-id",
+              isAdmin: false,
+              created: testNowDate,
+              createdBy: by,
+              sourceType: "share",
+              backingUrl: "https://example.com/doc1",
+              toUsername: undefined,
+              toGroup: undefined,
+              expireDuration: undefined,
+              fileTitle: "Test Document",
+              fileType: "document",
+              availableMediaTypes: [
+                {
+                  name: "simple/doc",
+                  description: "Simple Doc",
+                  fileExtension: "d",
+                },
+              ],
+            });
+          });
+        },
+      );
     });
   });
 

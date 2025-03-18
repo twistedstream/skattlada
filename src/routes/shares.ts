@@ -35,6 +35,7 @@ import {
 import { logger } from "../utils/logger";
 import {
   buildExpirations,
+  canRenderShare,
   ensureShare,
   getFileTypeStyle,
   renderSharedFile,
@@ -61,10 +62,14 @@ router.get(
       title: s.fileTitle,
       url: `${baseUrl}/shares/${s.id}`,
       created: s.created.toISO(),
-      to: s.toUsername,
-      expires: s.expireDuration?.toHuman(),
+      to: s.toUsername
+        ? `@${s.toUsername}`
+        : s.toGroup
+          ? `#${s.toGroup}`
+          : "(anyone)",
+      expires: s.expireDuration ? s.expireDuration?.toHuman() : "(never)",
       claimed: s.claimed?.toISO(),
-      claimed_by: s.claimedBy?.username,
+      claimed_by: s.claimedBy ? `@${s.claimedBy.username}` : "",
       backing_url: s.backingUrl,
     }));
 
@@ -100,35 +105,69 @@ router.post(
     req: AuthenticatedRequestWithTypedBody<{
       action: "validate" | "create";
       backingUrl: string;
-      toUsername?: string;
+      shareTo?: string;
       expires?: string;
     }>,
     res: Response,
   ) => {
     const user = assertValue(req.user);
-    const { action, backingUrl, toUsername, expires } = req.body;
+    const { action, backingUrl, shareTo, expires } = req.body;
 
     if (action === "validate" || action === "create") {
       const expireDuration: Duration | undefined = expires
         ? Duration.fromISO(expires)
         : undefined;
 
+      // parse shareTo into username or group
+      let toUsername: string | undefined;
+      let toGroup: string | undefined;
+      if (shareTo) {
+        if (shareTo.startsWith("@")) {
+          [, toUsername] = shareTo.split("@");
+        } else if (shareTo.startsWith("#")) {
+          [, toGroup] = shareTo.split("#");
+        } else {
+          // shareTo failed to parse
+          const csrf_token = generateCsrfToken(req, res, false);
+          return res.status(StatusCodes.BAD_REQUEST).render("new_share", {
+            csrf_token,
+            title: "New share",
+            expirations: buildExpirations(expireDuration),
+            shareTo_error: "Share To must start with a @ or a #",
+            backingUrl,
+            backingUrl_valid: true,
+            shareTo,
+            expires,
+          });
+        }
+      }
+
       let share: Share;
       try {
-        share = await newShare(user, backingUrl, toUsername, expireDuration);
+        share = await newShare(
+          user,
+          backingUrl,
+          toUsername,
+          toGroup,
+          expireDuration,
+        );
       } catch (err: any) {
         if (err.type === "validation") {
           const [, errorField] = err.context.split(".");
+
+          const errorFieldName = ["toUsername", "toGroup"].includes(errorField)
+            ? "shareTo"
+            : errorField;
 
           const csrf_token = generateCsrfToken(req, res, false);
           return res.status(StatusCodes.BAD_REQUEST).render("new_share", {
             csrf_token,
             title: "New share",
             expirations: buildExpirations(expireDuration),
-            [`${errorField}_error`]: err.message,
+            [`${errorFieldName}_error`]: err.message,
             backingUrl,
             backingUrl_valid: errorField !== "backingUrl",
-            toUsername,
+            shareTo,
             expires,
           });
         }
@@ -174,7 +213,7 @@ router.get(
     const { media_type } = req.query;
 
     if (user) {
-      if (share.claimed) {
+      if (await canRenderShare(share, user)) {
         // render share
         return renderSharedFile(req, res, share, media_type);
       }
@@ -196,6 +235,14 @@ router.get(
         // (to come back) if share was intended for a specific user
         share.toUsername
       ) {
+        throw UnauthorizedError();
+      }
+
+      // check to see if share is for a group and doesn't need to be claimed
+      if (share.toGroup) {
+        // authorize registration since user won't be accepting & claiming share
+        authorizeRegistration(req, share);
+
         throw UnauthorizedError();
       }
     }

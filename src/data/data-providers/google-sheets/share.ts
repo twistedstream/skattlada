@@ -36,6 +36,7 @@ export function rowToShare(
         extension: m.fileType.substring(1),
       })),
     toUsername: shareRow.to_username,
+    toGroup: shareRow.to_group,
     expireDuration:
       shareRow.expire_duration && Duration.fromISO(shareRow.expire_duration),
   };
@@ -61,6 +62,7 @@ export function shareToRow(share: Share): {
         .map((m) => m.name)
         .join(","),
       to_username: share.toUsername,
+      to_group: share.toGroup,
       expire_duration: share.expireDuration?.toISO(),
     },
     createdByRow: userToRow(share.createdBy),

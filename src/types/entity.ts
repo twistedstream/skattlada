@@ -72,5 +72,6 @@ export interface Share extends RegisterableSource {
   fileType: FileType;
   availableMediaTypes: MediaType[];
   toUsername?: string;
+  toGroup?: string;
   expireDuration?: Duration;
 }

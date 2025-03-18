@@ -301,6 +301,44 @@ export function testShare4(
   };
 }
 
+export function testShare5(
+  createdBy: User,
+  options: TestShareOptions = {},
+): Share {
+  const { claimedBy } = options;
+  const file = options.file || testFile4();
+
+  return {
+    id: "SHARE_5",
+    sourceType: "share",
+    isAdmin: false,
+    created: DateTime.fromObject(
+      {
+        year: 2023,
+        month: 5,
+        day: 1,
+      },
+      { zone: "utc" },
+    ),
+    createdBy,
+    ...(claimedBy && {
+      claimed: DateTime.fromObject(
+        {
+          year: 2023,
+          month: 5,
+          day: 2,
+        },
+        { zone: "utc" },
+      ),
+      claimedBy,
+    }),
+    backingUrl: `https://example.com/${file.id}`,
+    fileTitle: file.title,
+    fileType: file.type,
+    availableMediaTypes: file.availableMediaTypes,
+  };
+}
+
 export function testFile1(): FileInfo {
   return {
     id: "doc1",
