@@ -57,14 +57,14 @@ public/                    # Static assets (CSS, JS, images)
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `src/utils/config.ts` | Environment configuration loading |
-| `src/types/entity.ts` | Core domain models |
-| `src/types/data.ts` | Provider interfaces (`IDataProvider`, `IFileProvider`, `IMetadataProvider`) |
-| `src/utils/auth/index.ts` | Session management, `requiresAuth()`, `requiresAdmin()` middleware |
-| `src/data/index.ts` | Provider factory/initialization |
-| `CONFIG.md` | Comprehensive environment variable documentation |
+| File                      | Purpose                                                                     |
+| ------------------------- | --------------------------------------------------------------------------- |
+| `src/utils/config.ts`     | Environment configuration loading                                           |
+| `src/types/entity.ts`     | Core domain models                                                          |
+| `src/types/data.ts`       | Provider interfaces (`IDataProvider`, `IFileProvider`, `IMetadataProvider`) |
+| `src/utils/auth/index.ts` | Session management, `requiresAuth()`, `requiresAdmin()` middleware          |
+| `src/data/index.ts`       | Provider factory/initialization                                             |
+| `CONFIG.md`               | Comprehensive environment variable documentation                            |
 
 ## Architecture Patterns
 
@@ -154,16 +154,16 @@ npm run test:integration-single ./src/integration-tests/simple-registration-and-
 
 Key environment variables (see `CONFIG.md` for complete list):
 
-| Variable | Description |
-|----------|-------------|
-| `NODE_ENV` | development or production |
-| `PORT` | HTTP listening port |
-| `RP_ID` | FIDO relying party hostname |
-| `BASE_URL` | Full URL (protocol + hostname) |
+| Variable             | Description                    |
+| -------------------- | ------------------------------ |
+| `NODE_ENV`           | development or production      |
+| `PORT`               | HTTP listening port            |
+| `RP_ID`              | FIDO relying party hostname    |
+| `BASE_URL`           | Full URL (protocol + hostname) |
 | `DATA_PROVIDER_NAME` | `in-memory` or `google-sheets` |
-| `FILE_PROVIDER_NAME` | `local` or `google-drive` |
-| `COOKIE_SECRET` | Session encryption key |
-| `CSRF_SECRET` | CSRF token encryption key |
+| `FILE_PROVIDER_NAME` | `local` or `google-drive`      |
+| `COOKIE_SECRET`      | Session encryption key         |
+| `CSRF_SECRET`        | CSRF token encryption key      |
 
 ## CI/CD Pipeline
 
@@ -246,6 +246,7 @@ sudo ./cert/install-dev-cert.sh
 ### DNS Issues
 
 Ensure `/etc/hosts` contains:
+
 ```
 127.0.0.1  skattlada.dev
 ```
