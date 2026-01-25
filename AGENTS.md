@@ -170,12 +170,14 @@ Key environment variables (see `CONFIG.md` for complete list):
 GitHub Actions workflows in `.github/workflows/`:
 
 1. **build.yml**: Runs on every push
+
    - Installs dependencies
    - Builds TypeScript
    - Checks formatting (Prettier)
    - Runs unit and integration tests
 
 2. **release.yml**: Triggered on main branch merge
+
    - Automated version bumping
    - Creates GitHub release
 
